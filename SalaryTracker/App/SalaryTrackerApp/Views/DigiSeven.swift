@@ -45,7 +45,7 @@ struct DigiSeven: View {
     private var digitSpacing: CGFloat { digitWidth * 0.42 }
     /// Largo de los segmentos horizontales (a, g, d): el ancho del dígito menos
     /// los dos segmentos verticales y los huecos intermedios.
-    private var segLengthH: CGFloat { digitWidth - 2 * thickness - 2 * gap }
+    private var segLengthH: CGFloat { digitWidth - 1.5 * thickness - 2 * gap }
     /// Largo de los segmentos verticales (b, c, e, f): la mitad de la altura útil.
     private var segLengthV: CGFloat { (digitHeight - thickness - 2 * gap) / 2 }
 
