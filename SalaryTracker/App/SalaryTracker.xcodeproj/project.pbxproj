@@ -1,0 +1,414 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000020 /* SalaryTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* SalaryTrackerApp.swift */; };
+		A10000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* AppModel.swift */; };
+		A10000000000000000000022 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* MenuBarLabel.swift */; };
+		A10000000000000000000023 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* PopoverView.swift */; };
+		A10000000000000000000024 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* SettingsView.swift */; };
+		A10000000000000000000025 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* AppIcon.icns */; };
+		A10000000000000000000042 /* SalaryTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000041 /* SalaryTrackerCore */; };
+		A10000000000000000000051 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000050 /* AppModelTests.swift */; };
+		A10000000000000000000052 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* AppModel.swift */; };
+		A10000000000000000000061 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000060 /* SettingsWindowController.swift */; };
+		A10000000000000000000063 /* DigiSeven.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* DigiSeven.swift */; };
+		A10000000000000000000070 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* MenuBarLabel.swift */; };
+		A10000000000000000000071 /* DigiSeven.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* DigiSeven.swift */; };
+		A10000000000000000000072 /* MenuBarLabelRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000073 /* MenuBarLabelRenderTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10000000000000000000010 /* SalaryTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SalaryTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000012 /* SalaryTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalaryTrackerApp.swift; sourceTree = "<group>"; };
+		A10000000000000000000013 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000014 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
+		A10000000000000000000015 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
+		A10000000000000000000016 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A10000000000000000000017 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = file.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		A10000000000000000000050 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000073 /* MenuBarLabelRenderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabelRenderTests.swift; sourceTree = "<group>"; };
+		A10000000000000000000056 /* SalaryTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalaryTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000060 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		A10000000000000000000062 /* DigiSeven.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigiSeven.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		A10000000000000000000002 /* */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000004 /* SalaryTrackerApp */,
+				A10000000000000000000054 /* SalaryTrackerTests */,
+				A10000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000010 /* SalaryTracker.app */,
+				A10000000000000000000056 /* SalaryTrackerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000054 /* SalaryTrackerTests */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000050 /* AppModelTests.swift */,
+				A10000000000000000000073 /* MenuBarLabelRenderTests.swift */,
+			);
+			path = SalaryTrackerTests;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000004 /* SalaryTrackerApp */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000012 /* SalaryTrackerApp.swift */,
+				A10000000000000000000013 /* AppModel.swift */,
+				A10000000000000000000060 /* SettingsWindowController.swift */,
+				A10000000000000000000005 /* Views */,
+				A10000000000000000000017 /* AppIcon.icns */,
+			);
+			path = SalaryTrackerApp;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000005 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000014 /* MenuBarLabel.swift */,
+				A10000000000000000000015 /* PopoverView.swift */,
+				A10000000000000000000016 /* SettingsView.swift */,
+				A10000000000000000000062 /* DigiSeven.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10000000000000000000038 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000042 /* SalaryTrackerCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000000000000000000005A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A10000000000000000000030 /* SalaryTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000032 /* Build configuration list for PBXNativeTarget "SalaryTracker" */;
+			buildPhases = (
+				A10000000000000000000037 /* Sources */,
+				A10000000000000000000038 /* Frameworks */,
+				A10000000000000000000039 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SalaryTracker;
+			packageProductDependencies = (
+				A10000000000000000000041 /* SalaryTrackerCore */,
+			);
+			productName = SalaryTracker;
+			productReference = A10000000000000000000010 /* SalaryTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A10000000000000000000055 /* SalaryTrackerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000059 /* Build configuration list for PBXNativeTarget "SalaryTrackerTests" */;
+			buildPhases = (
+				A10000000000000000000053 /* Sources */,
+				A1000000000000000000005A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SalaryTrackerTests;
+			packageProductDependencies = (
+				A10000000000000000000041 /* SalaryTrackerCore */,
+			);
+			productName = SalaryTrackerTests;
+			productReference = A10000000000000000000056 /* SalaryTrackerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2660;
+				LastUpgradeCheck = 2660;
+				TargetAttributes = {
+					A10000000000000000000030 = {
+						CreatedOnToolsVersion = 26.6;
+					};
+				};
+			};
+			buildConfigurationList = A10000000000000000000031 /* Build configuration list for PBXProject "SalaryTracker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10000000000000000000002;
+			minSupportedProjectFormatVersion = 13.0;
+			packageReferences = (
+				A10000000000000000000040 /* Local package ".." */,
+			);
+			productRefGroup = A10000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10000000000000000000030 /* SalaryTracker */,
+				A10000000000000000000055 /* SalaryTrackerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10000000000000000000039 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000025 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10000000000000000000037 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000020 /* SalaryTrackerApp.swift in Sources */,
+				A10000000000000000000021 /* AppModel.swift in Sources */,
+				A10000000000000000000022 /* MenuBarLabel.swift in Sources */,
+				A10000000000000000000023 /* PopoverView.swift in Sources */,
+				A10000000000000000000024 /* SettingsView.swift in Sources */,
+				A10000000000000000000061 /* SettingsWindowController.swift in Sources */,
+				A10000000000000000000063 /* DigiSeven.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000053 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000051 /* AppModelTests.swift in Sources */,
+				A10000000000000000000052 /* AppModel.swift in Sources */,
+				A10000000000000000000070 /* MenuBarLabel.swift in Sources */,
+				A10000000000000000000071 /* DigiSeven.swift in Sources */,
+				A10000000000000000000072 /* MenuBarLabelRenderTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A10000000000000000000033 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INTERMEDIATE_DIR = "$(PROJECT_DERIVED_FILE_DIR)/$(PROJECTINTERMEDIATEDEPLOYMENTDIR)";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A10000000000000000000034 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A10000000000000000000035 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Salary Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000036 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Salary Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_LSUIElement = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A10000000000000000000057 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000058 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10000000000000000000031 /* Build configuration list for PBXProject "SalaryTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000033 /* Debug */,
+				A10000000000000000000034 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000032 /* Build configuration list for PBXNativeTarget "SalaryTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000035 /* Debug */,
+				A10000000000000000000036 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10000000000000000000059 /* Build configuration list for PBXNativeTarget "SalaryTrackerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000057 /* Debug */,
+				A10000000000000000000058 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A10000000000000000000040 /* Local package ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A10000000000000000000041 /* SalaryTrackerCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A10000000000000000000040 /* Local package ".." */;
+			productName = SalaryTrackerCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = A10000000000000000000001 /* Project object */;
+}

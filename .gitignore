@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────
+# SalaryTracker (app macOS) — archivos que NO se versionan
+# ─────────────────────────────────────────────────────────────
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Swift / SwiftPM
+.build/
+.swiftpm/
+Packages/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.profraw
+*.profdata
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Build de la app (el .app Release se genera; no se versiona)
+SalaryTracker/App/build/
+SalaryTracker/dist/
+*.app/
+
+# Xcode
+*.xcuserstate
+*.xcworkspace/
+!*.xcodeproj/project.pbxproj
+xcuserdata/
+DerivedData/
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/*
+!.vscode/extensions.json
+*.sw?
+*.swo
+
+# Entorno / secretos
+.env
+.env.*
+!.env.example
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+
+# macOS: ficheros de firma/exportación de certificados
+*.exportedctf
+
+# Sistema
+Thumbs.db
+ehthumbs.db
+desktop.ini
