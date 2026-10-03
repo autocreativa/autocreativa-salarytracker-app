@@ -18,7 +18,7 @@ configurado.
 
 #### Scenario: Secciones presentes
 - **WHEN** el usuario abre la vista de configuración
-- **THEN** se muestran las secciones Sueldo, Inicio del contrato, Día de pago y Resumen con sus respectivos campos, separados del borde de la ventana por márgenes visibles
+- **THEN** se muestran las secciones Sueldo, Inicio del contrato, Día de pago, Resumen e Inicio automático con sus respectivos campos, separados del borde de la ventana por márgenes visibles
 
 #### Scenario: Estabilidad al seleccionar valores
 - **WHEN** el usuario abre un selector (moneda, regla de pago) o un date picker dentro de la vista de configuración y selecciona un valor
@@ -107,6 +107,10 @@ pulsarse, mostrar el error sin persistir nada.
 - **WHEN** el usuario pulsa "Guardar cambios" con una configuración válida
 - **THEN** la configuración se persiste, la vista se cierra o confirma el guardado, y el indicador de la barra refleja los nuevos valores inmediatamente
 
+
+#### Scenario: Inicio automático
+- **WHEN** el usuario activa o desactiva "Abrir al iniciar sesión"
+- **THEN** la app se registra o se elimina de los Login Items de macOS; si macOS rechaza el cambio (p. ej. la app no está en /Applications), el toggle vuelve al estado real y se muestra un mensaje de error
 #### Scenario: Descartar cambios
 - **WHEN** el usuario modifica campos y cancela sin guardar
 - **THEN** la configuración persistida no cambia y la UI sigue mostrando los valores anteriores

@@ -102,6 +102,9 @@ ventana dedicada que no se cierra al seleccionar valores.
 > pre-renderiza a un `NSImage` non-template con `ImageRenderer` antes de
 > entregárselo al status item (ver `Views/MenuBarLabel.swift`).
 
+> **Abrir al iniciar sesión:** en Configuración existe la opción «Abrir al iniciar sesión». Al activarla, la app se agrega a Login Items de macOS (System Settings → General → Login Items). Para que el cambio persista entre reinicios, la app debe estar ubicada en `/Applications/`.
+
+
 ### Config (JSON local)
 
 Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
