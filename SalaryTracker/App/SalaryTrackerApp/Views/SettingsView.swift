@@ -2,10 +2,13 @@ import SwiftUI
 import Foundation
 import SalaryTrackerCore
 
-/// Vista de configuración dedicada (specs/settings-view). Secciones: Sueldo,
-/// Inicio del contrato, Día de pago y Resumen. Validación + guardado
-/// explícito: el botón se habilita solo con config válida; descartar no
-/// persiste. La vista previa recalcula en vivo sobre los valores pendientes.
+/// Vista de configuración dedicada (specs/settings-view), con la identidad
+/// visual de la landing: base crema, tarjetas blancas con borde `sageBorder`,
+/// etiqueta de sección en versalitas y botón primario verde bosque.
+///
+/// Secciones: Sueldo, Inicio del contrato, Día de pago y Resumen. Validación +
+/// guardado explícito: el botón se habilita solo con config válida; descartar
+/// no persiste. El resumen recalcula en vivo sobre los valores pendientes.
 struct SettingsView: View {
     @EnvironmentObject var model: AppModel
     /// Cierra la ventana de configuración (la provee `SettingsWindowController`).
@@ -32,123 +35,160 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Barra superior con título y acciones (márgenes generosos).
-            HStack {
-                Text("Configuración")
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                Spacer()
-                Button("Descartar") { discard() }
-                    .buttonStyle(.bordered)
-                Button("Guardar") { save() }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(!validation.isValid)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 14)
-
-            Divider()
+            header
+            Rectangle().fill(Theme.borderSoft).frame(height: 1)
 
             ScrollView {
-                VStack(spacing: 22) {
+                VStack(spacing: 14) {
                     salarySection
                     startSection
                     paymentRuleSection
-                    previewSection
+                    summarySection
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 18)
-                .padding(.bottom, 20)
+                .padding(16)
             }
         }
-        .frame(minWidth: 400, minHeight: 540)
+        .frame(minWidth: 420, minHeight: 560)
+        .background(Theme.base)
         .onAppear(perform: loadCurrent)
+    }
+
+    // MARK: - Encabezado
+
+    private var header: some View {
+        HStack(alignment: .center, spacing: 10) {
+            // `padding` extra a la izquierda: deja sitio a los botones de la
+            // ventana (titlebar transparente) y replica el mockup de la landing.
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Configuración")
+                    .font(Theme.display(16, .heavy))
+                    .foregroundStyle(Theme.ink)
+                Text("SalaryTracker · datos locales")
+                    .font(Theme.mono(10, .medium))
+                    .foregroundStyle(Theme.inkFaint)
+            }
+            Spacer()
+            Button("Descartar") { discard() }
+                .buttonStyle(OutlineButtonStyle(compact: true))
+            Button("Guardar") { save() }
+                .buttonStyle(ForestButtonStyle(compact: true))
+                .disabled(!validation.isValid)
+        }
+        .padding(.leading, 84)
+        .padding(.trailing, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 12)
     }
 
     // MARK: - Secciones
 
     private var salarySection: some View {
-        SectionView(title: "Sueldo", systemImage: "banknote") {
+        SectionCard(title: "Sueldo", systemImage: "banknote") {
             VStack(spacing: 10) {
-                TextField("Monto del período", text: $salaryText)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($salaryFocused)
-                    .onSubmit { formatSalaryField() }
-                Picker("Moneda", selection: $currencyCode) {
-                    ForEach(CurrencyCatalog.all, id: \.code) { c in
-                        Text("\(c.code)  \(c.symbol)").tag(c.code)
-                    }
+                FieldBox(focused: salaryFocused) {
+                    TextField("Monto del período", text: $salaryText)
+                        .textFieldStyle(.plain)
+                        .font(Theme.mono(14, .bold))
+                        .foregroundStyle(Theme.ink)
+                        .focused($salaryFocused)
+                        .onSubmit { formatSalaryField() }
                 }
-                .pickerStyle(.menu)
+                FieldBox {
+                    Picker("Moneda", selection: $currencyCode) {
+                        ForEach(CurrencyCatalog.all, id: \.code) { c in
+                            Text("\(c.code)  \(c.symbol)").tag(c.code)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                }
+                HStack(spacing: 6) {
+                    Image(systemName: "dollarsign.circle")
+                        .font(.system(size: 11))
+                    Text("El monto corresponde a un período de pago completo.")
+                        .font(Theme.body(11))
+                }
+                .foregroundStyle(Theme.inkFaint)
             }
         }
     }
 
     private var startSection: some View {
-        SectionView(title: "Inicio del contrato", systemImage: "calendar") {
+        SectionCard(title: "Inicio del contrato", systemImage: "calendar") {
             HStack(spacing: 10) {
-                DatePicker("Fecha", selection: $startDate,
-                           displayedComponents: .date)
-                    .labelsHidden()
-                DatePicker("Hora", selection: $startTime,
-                           displayedComponents: .hourAndMinute)
-                    .labelsHidden()
+                FieldBox {
+                    DatePicker("", selection: $startDate, displayedComponents: .date)
+                        .labelsHidden()
+                }
+                FieldBox {
+                    DatePicker("", selection: $startTime,
+                               displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                }
+                .frame(width: 140)
             }
         }
     }
 
     private var paymentRuleSection: some View {
-        SectionView(title: "Día de pago", systemImage: "clock") {
+        SectionCard(title: "Día de pago", systemImage: "clock") {
             VStack(alignment: .leading, spacing: 10) {
-                Picker("Regla", selection: $ruleType) {
-                    ForEach(RuleType.allCases) { t in Text(t.rawValue).tag(t) }
+                FieldBox {
+                    Picker("Regla", selection: $ruleType) {
+                        ForEach(RuleType.allCases) { t in Text(t.rawValue).tag(t) }
+                    }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
                 }
-                .pickerStyle(.menu)
-                .frame(maxWidth: .infinity, alignment: .leading)
 
                 switch ruleType {
                 case .lastFriday:
-                    Text("La hora de pago es la hora de inicio del contrato (R-PAYMENT-TIME).")
-                        .font(.system(size: 11, design: .rounded))
-                        .foregroundStyle(.secondary)
+                    hint("La hora de pago es la hora de inicio del contrato (R-PAYMENT-TIME).")
                 case .monthDay:
-                    HStack {
-                        Text("Día del mes:")
-                        TextField("1-31", value: $monthDay, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 60)
+                    HStack(spacing: 8) {
+                        SectionLabel(text: "Día del mes")
+                        FieldBox {
+                            TextField("1-31", value: $monthDay, format: .number)
+                                .textFieldStyle(.plain)
+                                .font(Theme.mono(13, .bold))
+                                .multilineTextAlignment(.trailing)
+                                .frame(width: 50)
+                        }
+                        .frame(width: 74)
                     }
                 case .specificDate:
-                    DatePicker("Fecha de pago", selection: $specificDate,
-                               displayedComponents: .date)
-                    Text("Tras esta fecha el período queda abierto (sin próximo pago).")
-                        .font(.system(size: 11, design: .rounded))
-                        .foregroundStyle(.secondary)
+                    FieldBox {
+                        DatePicker("", selection: $specificDate,
+                                   displayedComponents: .date)
+                            .labelsHidden()
+                    }
+                    hint("Tras esta fecha el período queda abierto (sin próximo pago).")
                 }
 
                 if let next = nextPaymentPreview {
                     HStack(spacing: 6) {
-                        Image(systemName: "arrow.right.circle")
-                        Text("Próximo pago: \(DateFmt.full.string(from: next))")
+                        Image(systemName: "arrow.right.circle.fill")
+                            .font(.system(size: 11))
+                        Text("Próximo pago: \(DateFmt.dateOnly.string(from: next))")
+                            .font(Theme.mono(11, .bold))
                     }
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Theme.mint)
                 }
             }
         }
     }
 
     @ViewBuilder
-    private var previewSection: some View {
-        SectionView(title: "Resumen", systemImage: "sum") {
+    private var summarySection: some View {
+        SectionCard(title: "Resumen", systemImage: "sum") {
             if validation.isValid {
-                previewValues
+                summaryValues
             } else {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(validation.errors, id: \.self) { e in
-                        Label(e, systemImage: "exclamationmark.circle")
-                            .font(.system(size: 12, design: .rounded))
-                            .foregroundStyle(.red)
+                        Label(e, systemImage: "exclamationmark.circle.fill")
+                            .font(Theme.body(12))
+                            .foregroundStyle(Color(hex: 0xC1442E))
                     }
                 }
             }
@@ -156,71 +196,89 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private var previewValues: some View {
+    private var summaryValues: some View {
         // Recalcula en vivo sobre los valores pendientes (specs/settings-view
-        // "Vista previa en vivo") usando el mismo motor puro que la app.
-        // (sección renombrada a "Resumen" en v1.3)
+        // "Resumen en vivo") usando el mismo motor puro que la app.
         let state = calculator.evaluate(config: pendingConfig, now: Date())
         switch state {
         case .active(let v):
-            previewView(v)
+            summaryView(v)
         case .openEnded(let v):
-            previewView(v)
+            summaryView(v)
         case .futureStart(startsAt: let starts, firstPayment: let firstPay,
                           salary: let salary, currencyCode: let code):
-            VStack(alignment: .leading, spacing: 8) {
-                previewRow("Sueldo base",
-                            CurrencyFormatter.format(salary, code: code))
-                previewRow("Ganado este mes",
-                            CurrencyFormatter.format(Decimal(0), code: code))
-                previewRow("Total ganado",
-                            CurrencyFormatter.format(Decimal(0), code: code))
-                previewRow("Progreso", CurrencyFormatter.formatProgress(0))
-                if let firstPay {
-                    previewRow("Primer pago", DateFmt.dateOnly.string(from: firstPay))
-                } else {
-                    previewRow("Inicio", DateFmt.dateOnly.string(from: starts))
-                }
+            VStack(spacing: 0) {
+                summaryRow("Sueldo base", CurrencyFormatter.format(salary, code: code))
+                summaryRow("Ganado este mes", CurrencyFormatter.format(Decimal(0), code: code))
+                summaryRow("Total ganado", CurrencyFormatter.format(Decimal(0), code: code))
+                summaryRow("Progreso", CurrencyFormatter.formatProgress(0))
+                summaryRow(firstPay == nil ? "Inicio" : "Primer pago",
+                           DateFmt.dateOnly.string(from: firstPay ?? starts))
             }
         case .invalid(let reason):
-            Label(reason, systemImage: "exclamationmark.circle")
-                .font(.system(size: 12, design: .rounded))
-                .foregroundStyle(.red)
+            Label(reason, systemImage: "exclamationmark.circle.fill")
+                .font(Theme.body(12))
+                .foregroundStyle(Color(hex: 0xC1442E))
         case .notConfigured:
-            Text("Sin valores para previsualizar.")
-                .font(.system(size: 12, design: .rounded))
-                .foregroundStyle(.secondary)
+            Text("Sin valores para resumir.")
+                .font(Theme.body(12))
+                .foregroundStyle(Theme.inkSoft)
         }
     }
 
-    private func previewView(_ v: PeriodView) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            previewRow("Sueldo base",
-                        CurrencyFormatter.format(v.salary, code: v.currencyCode))
-            previewRow("Ganado este mes",
-                        CurrencyFormatter.format(v.earned, code: v.currencyCode))
-            previewRow("Total ganado",
-                        CurrencyFormatter.format(v.totalEarned, code: v.currencyCode))
-            previewRow("Progreso", CurrencyFormatter.formatProgress(v.progress))
+    private func summaryView(_ v: PeriodView) -> some View {
+        VStack(spacing: 0) {
+            summaryRow("Sueldo base", CurrencyFormatter.format(v.salary, code: v.currencyCode))
+            summaryRow("Ganado este mes", CurrencyFormatter.format(v.earned, code: v.currencyCode), highlight: true)
+            summaryRow("Total ganado", CurrencyFormatter.format(v.totalEarned, code: v.currencyCode))
+            summaryRow("Período",
+                       "\(DateFmt.short.string(from: v.start)) → \(DateFmt.short.string(from: v.end ?? v.start))")
             if let end = v.end {
-                previewRow("Próximo pago", DateFmt.dateOnly.string(from: end))
+                summaryRow("Próximo pago", DateFmt.dateOnly.string(from: end))
                 if let rem = v.remainingSeconds {
-                    previewRow("Tiempo restante",
-                                CurrencyFormatter.formatRemaining(rem))
+                    summaryRow("Tiempo restante", CurrencyFormatter.formatRemaining(rem))
                 }
             } else {
-                previewRow("Próximo pago", "sin próximo pago")
+                summaryRow("Próximo pago", "sin próximo pago")
             }
+
+            VStack(alignment: .leading, spacing: 5) {
+                HStack {
+                    SectionLabel(text: "Progreso")
+                    Spacer()
+                    Text(CurrencyFormatter.formatProgress(v.progress))
+                        .font(Theme.mono(11, .bold))
+                        .foregroundStyle(Theme.forest)
+                }
+                BotanicalProgressBar(progress: v.progress)
+            }
+            .padding(.top, 10)
         }
     }
 
-    private func previewRow(_ label: String, _ value: String) -> some View {
+    private func summaryRow(_ label: String, _ value: String, highlight: Bool = false) -> some View {
         HStack {
-            Text(label).foregroundStyle(.secondary)
+            Text(label)
+                .font(Theme.body(12))
+                .foregroundStyle(Theme.inkSoft)
             Spacer()
-            Text(value).fontWeight(.medium).monospacedDigit()
+            Text(value)
+                .font(Theme.mono(12, .bold))
+                .foregroundStyle(highlight ? Theme.mint : Theme.ink)
         }
-        .font(.system(size: 13, design: .rounded))
+        .padding(.vertical, 5)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(Theme.borderSoft).frame(height: 1)
+        }
+    }
+
+    private func hint(_ text: String) -> some View {
+        HStack(spacing: 5) {
+            Image(systemName: "info.circle")
+                .font(.system(size: 10))
+            Text(text).font(Theme.body(11))
+        }
+        .foregroundStyle(Theme.inkFaint)
     }
 
     // MARK: - Lógica pendiente / validación
@@ -270,14 +328,7 @@ struct SettingsView: View {
     private func formatSalaryField() {
         let d = parseSalary(salaryText)
         guard d > 0 else { return }
-        let f = NumberFormatter()
-        f.numberStyle = .decimal
-        f.maximumFractionDigits = CurrencyCatalog.minorUnitDecimals(forCode: currencyCode)
-        f.groupingSeparator = "."
-        f.decimalSeparator = ","
-        if let s = f.string(from: NSDecimalNumber(decimal: d)) {
-            salaryText = s
-        }
+        salaryText = groupedString(d)
     }
 
     private func localDate(_ d: Date) -> LocalDate {
@@ -338,24 +389,41 @@ struct SettingsView: View {
     }
 }
 
-/// Contenedor visual de sección (título + ícono + contenido).
-struct SectionView<Content: View>: View {
+/// Tarjeta de sección con icono en cuadro (equivalente a las feature cards de la
+/// landing): título + contenido sobre fondo blanco con borde.
+struct SectionCard<Content: View>: View {
     let title: String
     let systemImage: String
     @ViewBuilder let content: Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: systemImage)
-                .font(.system(size: 13, weight: .semibold, design: .rounded))
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 11) {
+            HStack(spacing: 9) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(Theme.surface)
+                        .frame(width: 30, height: 30)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                .strokeBorder(Theme.border, lineWidth: 0.8)
+                        )
+                    Image(systemName: systemImage)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Theme.forest)
+                }
+                SectionLabel(text: title)
+                Spacer()
+            }
             content
         }
+        .padding(13)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
         .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.primary.opacity(0.05))
+            RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Theme.card)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(Theme.border, lineWidth: 1)
         )
     }
 }

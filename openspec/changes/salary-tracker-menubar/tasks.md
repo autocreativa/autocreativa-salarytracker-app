@@ -59,7 +59,7 @@
 ## 11. Empaquetado y verificación end-to-end
 
 - [x] 11.1 Compilar release, generar `dist/SalaryTracker.app` (con `AppIcon.icns` e `Info.plist` correcto: `LSUIElement=true`, `dev.triton.salarytracker`, v1.0) y verificar que abre desde `/Applications` y persiste tras reinicio — hecho el 2026-10-03: instalada en `/Applications/SalaryTracker.app`, relanzada tras cierre, `config.json` inmutable (md5), estado derivado idéntico y ganado crecido con el reloj real
-- [x] 11.2 Ejecutar la batería completa y verificar 100 % de tests en verde — **97/97**: 88 core (`swift test`, +7 tests de `totalEarned` en v1.3) + 9 app (`xcodebuild test` → `TEST SUCCEEDED`: 7 `AppModel` + 2 render `MenuBarLabel`/`DigiSeven` del fix v1.3.1), 2026-10-03 (re-verificado tras v1.3.1)
+- [x] 11.2 Ejecutar la batería completa y verificar 100 % de tests en verde — **99/99**: 88 core (`swift test`, +7 tests de `totalEarned` en v1.3) + 11 app (`xcodebuild test` → `TEST SUCCEEDED`: 7 `AppModel` + 4 render `MenuBarLabel`/`DigiSeven` del v1.2), 2026-10-03 (re-verificado tras rediseño)
 - [x] 11.3 Pasar `openspec validate salary-tracker-menubar --strict` — "Change 'salary-tracker-menubar' is valid" (2026-10-03)
 
 ## 12. Validación contra criterios de aceptación (FASE 6-7)

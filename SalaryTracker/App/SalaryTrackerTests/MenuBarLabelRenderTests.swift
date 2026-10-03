@@ -93,4 +93,86 @@ final class MenuBarLabelRenderTests: XCTestCase {
         // mayor que la de un glifo solo (~pequeño). Umbral generoso.
         XCTAssertGreaterThan(opaque, 300, "MenuBarLabel pintó muy pocos píxeles opacos: \(opaque) (archivo \(out.path))")
     }
+
+    /// El chip de la barra debe caber en la altura de la status item (~22 pt) y
+    /// ser claramente más ancho que el glifo solo.
+    func testMenuBarChipFitsStatusItemHeight() {
+        let state = TrackerEngine().state(config: config(), now: fixedDate())
+        guard case .active = state else {
+            XCTFail("Se esperaba estado activo, era: \(state)"); return
+        }
+        guard let image = render(MenuBarLabel(state: state), scale: 4) else {
+            XCTFail("ImageRenderer no produjo imagen del chip"); return
+        }
+        XCTAssertLessThanOrEqual(image.size.height, 20,
+            "El chip mide \(image.size.height) pt y no cabe en la status item")
+        XCTAssertGreaterThan(image.size.width, 40,
+            "El chip debería incluir los dígitos (ancho \(image.size.width) pt)")
+    }
+
+    // MARK: - Geometría de los dígitos
+
+    /// Regresión del bug de diseño (2026-10-03): con `VStack`/`HStack` el
+    /// segmento central `g` quedaba centrado en su fila (y `d` también), así que
+    /// los dígitos se veían deformados. Este test sondea el centro de los 7
+    /// segmentos de cada dígito y compara con el mapa canónico.
+    func testDigiSevenLightsExpectedSegmentsPerDigit() {
+        let w: CGFloat = 30, h = w * 2
+        let t = max(1, w * 0.18), g = max(0.6, w * 0.07)
+        let lenV = (h - t - 2 * g) / 2
+        let upperY = t + g + lenV / 2
+        let lowerY = h - t - g - lenV / 2
+        let probes: [(name: String, cx: CGFloat, cy: CGFloat)] = [
+            ("a", w / 2, t / 2),
+            ("f", t / 2, upperY),
+            ("g", w / 2, h / 2),
+            ("b", w - t / 2, upperY),
+            ("e", t / 2, lowerY),
+            ("d", w / 2, h - t / 2),
+            ("c", w - t / 2, lowerY),
+        ]
+        let expected: [Character: Set<String>] = [
+            "0": ["a", "b", "c", "d", "e", "f"],
+            "1": ["b", "c"],
+            "2": ["a", "b", "g", "e", "d"],
+            "3": ["a", "b", "g", "c", "d"],
+            "4": ["f", "g", "b", "c"],
+            "5": ["a", "f", "g", "c", "d"],
+            "6": ["a", "f", "g", "e", "c", "d"],
+            "7": ["a", "b", "c"],
+            "8": ["a", "b", "c", "d", "e", "f", "g"],
+            "9": ["a", "b", "c", "d", "f", "g"],
+        ]
+
+        let scale: CGFloat = 6
+        for ch in "0123456789" {
+            let view = DigiSeven(text: String(ch), color: .white,
+                                 dimColor: .black, digitWidth: w)
+                .padding(6)
+                .background(Color.white)
+            guard let image = render(view, scale: scale),
+                  let tiff = image.tiffRepresentation,
+                  let rep = NSBitmapImageRep(data: tiff) else {
+                XCTFail("No se pudo rasterizar el dígito \(ch)"); continue
+            }
+            var lit = Set<String>()
+            for p in probes {
+                let px = Int((p.cx + 6) * scale)
+                let py = Int((p.cy + 6) * scale)   // origen arriba-izquierda
+                var isLit = false
+                for dy in -2...2 {
+                    for dx in -2...2 {
+                        if let c = rep.colorAt(x: px + dx, y: py + dy) {
+                            let lum = 0.2126 * c.redComponent + 0.7152 * c.greenComponent
+                                + 0.0722 * c.blueComponent
+                            if lum > 0.6 { isLit = true }
+                        }
+                    }
+                }
+                if isLit { lit.insert(p.name) }
+            }
+            XCTAssertEqual(lit, expected[ch],
+                "Dígito \(ch): segmentos encendidos \(lit.sorted()) ≠ \(expected[ch]!.sorted())")
+        }
+    }
 }

@@ -201,6 +201,15 @@ estado intermedio.
   - Re-evaluación inmediata (sin esperar tick) ante: `NSScreen.screens`/cambio de
     `TimeZone`, `NSCalendarDayChanged` (cruce de medianoche), cambio de `NSApp`
     active/appear (despertar de suspensión), y guardado de configuración.
+- **Renderizado de la barra (dígitos 7 segmentos):** para cumplir con
+  `MenuBarExtra` (que descarta formas custom dentro del `Label`), el contenido
+  completo (chip oscuro, punto verde y dígitos) se pre-renderiza a un
+  `NSImage` no plantilla (`template = false`) mediante `ImageRenderer` y se
+  expone vía `Image(nsImage:)`. `DigiSeven` usa posicionamiento absoluto
+  (ZStack) con geometría canónica (segmentos horizontales centrados a, g, d;
+  verticales b,c a la derecha y e,f a la izquierda), con separación uniforme
+  entre filas para evitar la deformación de `g`. Cada tick genera el NSImage
+  una vez y el status item lo actualiza discretamente (sin re-layout).
 - CPU: un tick por segundo con trabajo O(años+meses) despreciable; el timer con
   tolerance permite coalescing del sistema. No hay trabajo en background.
 - Menos de 1 % de CPU objetivo en reposo (verificación manual en FASE 7).

@@ -32,7 +32,7 @@ de DerivedData) + inspección de arquitectura.
 | 16 | Casos de borde temporales: medianoche, mes, año, febrero, bisiestos | ✅ | `EdgeCasesTests` (febrero 2027 vs 2028 difieren exactamente 86 400 s; cruce de año `[2026-12-25, 2027-01-29)`; resolución multi-zona; inicio == momento de pago). Observador `.NSCalendarDayChanged` cubre la medianoche. |
 | 17 | Dark Mode y Light Mode, UI premium y minimalista | ⚠️ | Implementado con estilos de sistema de SwiftUI (sin colores hardcodeados; `PopoverView.swift` 229 l. con variantes de los 5 estados). **Pendiente:** confirmación visual en ambos modos (bloqueo TCC de captura de pantalla en el entorno de ejecución). |
 | 18 | Microanimación del valor creciente sin parpadeo/reflow | ⚠️ | Indicador de barra con dígitos de 7 segmentos (`DigiSeven.swift`) en verde dinero, pre-renderizados a `NSImage` non-template y expuestos vía `Image(nsImage:)` (ver fix v1.3.1): `MenuBarExtra` descarta shapes custom del label, solo conserva imágenes. El dígito se actualiza de forma discreta por tick (como reloj digital real), sin parpadeo ni re-layout; segmentos apagados visibles al 10 %. Evidencia automatizada: snapshot del status item real (PNG 137×34 px, 284 muestras opacas, template=false, ancho 85 pt). **Pendiente:** confirmación visual en ejecución. |
-| 19 | Tests automatizados de toda la lógica crítica con reloj inyectable | ✅ | **97/97 en verde**: 88 core (`swift test`, XCTest vía Xcode; +7 tests de `totalEarned` en v1.3) + 9 app (`xcodebuild test` → `TEST SUCCEEDED`: 7 integración `AppModel` + 2 render `MenuBarLabel`/`DigiSeven`). Ningún test usa el reloj del sistema. |
+| 19 | Tests automatizados de toda la lógica crítica con reloj inyectable | ✅ | **99/99 en verde**: 88 core (`swift test`, XCTest vía Xcode; +7 tests de `totalEarned` en v1.3) + 11 app (`xcodebuild test` → `TEST SUCCEEDED`: 7 integración `AppModel` + 4 render `MenuBarLabel`/`DigiSeven` incluyendo `testDigiSevenLightsExpectedSegmentsPerDigit` y `testMenuBarChipFitsStatusItemHeight`). Ningún test usa el reloj del sistema. |
 | 20 | Coherencia con OpenSpec como fuente de verdad | ✅ | `openspec validate salary-tracker-menubar --strict` → "Change 'salary-tracker-menubar' is valid". Los nombres de reglas (R-PAYMENT-TIME, R-SKIP, R-TZ, R-RECOVERY, R-ONESHOT…) están implementados y referenciados en el código. |
 
 ## Consumo de CPU en reposo (tarea 12.2)
@@ -113,7 +113,7 @@ t+50s: 0.30%   t+60s: 0.10%   t+70s: 0.00%   t+75s: 0.00%
    el cambio de dígito es discreto por tick (sin microanimación por segmento en
    la barra; scenario de spec actualizado). States `notConfigured`/`invalid`
    conservan sus símbolos de sistema. +2 tests de render (`MenuBarLabelRenderTests`)
-   → app 9. Tests finales v1.3.1: **97/97** (88 core + 9 app).
+   → app 11. Tests finales v1.2: **99/99** (88 core + 11 app).
 6. Build Release + re-empaquetado de `dist/SalaryTracker.app` + reinstalación
    en `/Applications` + app corriendo con la config del usuario (PID verificado
    post-instalación) en cada versión.

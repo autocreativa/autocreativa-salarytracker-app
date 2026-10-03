@@ -66,7 +66,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 cd SalaryTracker
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 
-# App: 9 tests (7 de integración de AppModel + 2 de render del indicador)
+# App: 11 tests (7 de integración de AppModel + 4 de render del indicador)
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project App/SalaryTracker.xcodeproj -scheme SalaryTracker \
   -configuration Debug test
@@ -91,11 +91,16 @@ open SalaryTracker/dist/SalaryTracker.app
 # cp -R SalaryTracker/dist/SalaryTracker.app /Applications/
 ```
 
-La app no muestra icono en el Dock: vive en la **Menu Bar** como un glifo de
-moneda + valor numérico (sin símbolo) que crece cada segundo (o un glifo según
-el estado). Clic → popover con detalles (período, próximo pago, tiempo
-restante, progreso). **Configuración** se abre en una ventana dedicada (no se
-cierra al seleccionar valores).
+La app no muestra icono en el Dock: vive en la **Menu Bar** como un chip oscuro
+estilo LCD con un punto verde y el valor en dígitos de 7 segmentos (sin símbolo
+de moneda), que se actualiza cada tick. Clic → popover con panel LCD (valor
+grande + valor "fantasma" de referencia) y tarjetas de detalles (período,
+próximo pago, tiempo restante, progreso). **Configuración** se abre en una
+ventana dedicada que no se cierra al seleccionar valores.
+
+> `MenuBarExtra` descarta shapes custom del label, por eso el contenido se
+> pre-renderiza a un `NSImage` non-template con `ImageRenderer` antes de
+> entregárselo al status item (ver `Views/MenuBarLabel.swift`).
 
 ### Config (JSON local)
 
@@ -121,7 +126,11 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
 
 ## Estado del proyecto (2026-10-03)
 
-- 97/97 tests en verde (88 core + 9 de app: 7 integración + 2 render).
+- **v1.2** — rediseño visual botanical/LCD tomado de la landing: chip oscuro en
+  la barra, popover con panel LCD y tarjetas, y ventana de configuración con
+  campos y acciones verdes.
+- 99/99 tests en verde (88 core + 11 de app: 7 integración + 4 render, dos de
+  ellos nuevos para la geometría de los dígitos 7 segmentos).
 - 18/20 criterios de aceptación verificados con evidencia automatizada o en
   vivo; 2 pendientes de confirmación visual (Dark/Light y animación del
   número): requieren permisos de captura de pantalla — ver

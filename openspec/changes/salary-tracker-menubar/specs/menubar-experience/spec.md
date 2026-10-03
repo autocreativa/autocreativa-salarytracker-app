@@ -21,7 +21,15 @@ el indicador SHALL mostrar un estado de error reconocible.
 
 #### Scenario: Indicador activo
 - **WHEN** la configuración es válida y el período está activo con dinero ganado 843 291 CLP
-- **THEN** la barra de menú muestra un glifo de moneda seguido del número sin símbolo renderizado en dígitos de 7 segmentos en verde dinero (p. ej. glifo + `843.291` en segments, no `$843.291` en texto plano)
+- **THEN** la barra de menú muestra un chip oscuro tipo LCD con punto verde y el número sin símbolo renderizado en dígitos de 7 segmentos en verde dinero (p. ej. `843.291` en segments dentro del chip, no `$843.291` en texto plano)
+
+#### Scenario: Geometría canónica de los dígitos
+- **WHEN** se renderiza cualquier dígito de 0 a 9 en el indicador
+- **THEN** cada segmento se ilumina en su posición canónica (horizontales `a`/`g`/`d` centradas en el ancho del dígito, verticales `b`/`c` en el borde derecho y `e`/`f` en el izquierdo, con separación uniforme) y el mapa de segmentos encendidos coincide con el glifo esperado para cada dígito
+
+#### Scenario: El indicador cabe en la status item
+- **WHEN** se entrega el indicador al status item de macOS
+- **THEN** su altura no supera los ~20 pt del menú y su ancho incluye el valor completo, de modo que la barra no recorta los dígitos ni ensancha el elemento
 
 #### Scenario: Indicador sin configurar
 - **WHEN** el estado es `NOT_CONFIGURED`

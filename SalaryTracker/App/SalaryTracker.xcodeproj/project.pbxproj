@@ -20,6 +20,8 @@
 		A10000000000000000000063 /* DigiSeven.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* DigiSeven.swift */; };
 		A10000000000000000000070 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* MenuBarLabel.swift */; };
 		A10000000000000000000071 /* DigiSeven.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000062 /* DigiSeven.swift */; };
+		A10000000000000000000075 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000074 /* Theme.swift */; };
+		A10000000000000000000076 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000074 /* Theme.swift */; };
 		A10000000000000000000072 /* MenuBarLabelRenderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000073 /* MenuBarLabelRenderTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +38,7 @@
 		A10000000000000000000056 /* SalaryTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SalaryTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000060 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		A10000000000000000000062 /* DigiSeven.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DigiSeven.swift; sourceTree = "<group>"; };
+		A10000000000000000000074 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -85,6 +88,7 @@
 				A10000000000000000000015 /* PopoverView.swift */,
 				A10000000000000000000016 /* SettingsView.swift */,
 				A10000000000000000000062 /* DigiSeven.swift */,
+				A10000000000000000000074 /* Theme.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -210,6 +214,7 @@
 				A10000000000000000000024 /* SettingsView.swift in Sources */,
 				A10000000000000000000061 /* SettingsWindowController.swift in Sources */,
 				A10000000000000000000063 /* DigiSeven.swift in Sources */,
+				A10000000000000000000075 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,6 +226,7 @@
 				A10000000000000000000052 /* AppModel.swift in Sources */,
 				A10000000000000000000070 /* MenuBarLabel.swift in Sources */,
 				A10000000000000000000071 /* DigiSeven.swift in Sources */,
+				A10000000000000000000076 /* Theme.swift in Sources */,
 				A10000000000000000000072 /* MenuBarLabelRenderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -303,7 +309,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -327,7 +333,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

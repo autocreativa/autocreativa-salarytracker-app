@@ -23,7 +23,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             win = existing
         } else {
             win = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 440, height: 620),
+                contentRect: NSRect(x: 0, y: 0, width: 460, height: 640),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
@@ -31,7 +31,15 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             win.title = "Configuración"
             win.delegate = self
             win.isReleasedWhenClosed = false
-            win.minSize = NSSize(width: 400, height: 540)
+            win.minSize = NSSize(width: 420, height: 560)
+            // Identidad visual de la landing: ventana crema con titlebar
+            // transparente (los botones de la ventana "flotan" sobre el
+            // encabezado, como en el mockup de la landing).
+            win.titlebarAppearsTransparent = true
+            win.titleVisibility = .hidden
+            win.isMovableByWindowBackground = true
+            win.backgroundColor = NSColor(srgbRed: 0xFA / 255, green: 0xF8 / 255,
+                                          blue: 0xF5 / 255, alpha: 1)
             win.center()
             window = win
         }
