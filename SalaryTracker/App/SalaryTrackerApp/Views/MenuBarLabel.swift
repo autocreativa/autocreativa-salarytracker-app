@@ -43,14 +43,14 @@ struct MenuBarLabel: View {
     @ViewBuilder
     private func chip(earned: Decimal, code: String) -> some View {
         let compact = CurrencyFormatter.formatCompact(earned, code: code)
-        if let image = renderChip(compact) {
+        if let image = renderChip(compact, code: code) {
             Image(nsImage: image)
                 .accessibilityLabel(
                     "Dinero ganado: \(CurrencyFormatter.format(earned, code: code))")
         } else {
             // Fallback (si el render fallara): chips SF Symbol + texto.
             HStack(spacing: 3) {
-                Circle().fill(Theme.lcdDigit).frame(width: 4.5, height: 4.5)
+                Text(CurrencyCatalog.symbol(forCode: code)).font(.system(size: 11, weight: .bold)).foregroundStyle(Theme.lcdDigit)
                 Text(compact).font(Theme.mono(10, .bold))
             }
             .foregroundStyle(Theme.lcdDigit)
@@ -61,11 +61,12 @@ struct MenuBarLabel: View {
 
     /// Pre-renderiza el chip a `NSImage` non-template (coloreado) para que
     /// `MenuBarExtra` lo muestre íntegro.
-    private func renderChip(_ compact: String) -> NSImage? {
-        let content = HStack(spacing: 6) {
-            Circle()
-                .fill(Theme.lcdDigit)
-                .frame(width: 4.0, height: 4.0)
+    private func renderChip(_ compact: String, code: String) -> NSImage? {
+        let symbol = CurrencyCatalog.symbol(forCode: code)
+        let content = HStack(spacing: 5) {
+            Text(symbol)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(Theme.lcdDigit)
             DigiSeven(text: compact,
                       color: Theme.lcdDigit,
                       dimColor: Theme.lcdDim,
@@ -74,10 +75,7 @@ struct MenuBarLabel: View {
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
-        .background(
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .fill(Theme.lcdBg)
-        )
+        .background(Color.black)
         .overlay(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .strokeBorder(Theme.lcdBorderSoft, lineWidth: 0.8)
