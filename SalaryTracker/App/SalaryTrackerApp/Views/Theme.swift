@@ -287,7 +287,6 @@ struct LCDPanel: View {
                               color: Theme.lcdDigit,
                               dimColor: Theme.lcdDim,
                               digitWidth: digitWidth)
-                        .shadow(color: Theme.lcdDigit.opacity(0.55), radius: 5)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -306,16 +305,7 @@ struct LCDPanel: View {
         .padding(.vertical, 12)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(
-                    RadialGradient(
-                        colors: [Theme.lcdBg, Theme.lcdBgDeep],
-                        center: .center, startRadius: 4, endRadius: 190
-                    )
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(Theme.lcdBorder, lineWidth: 1.4)
+                .fill(Color.black)
         )
     }
 }

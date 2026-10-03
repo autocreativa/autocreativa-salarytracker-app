@@ -5,9 +5,9 @@ import SalaryTrackerCore
 /// Indicador compacto de la barra de menú (specs/menubar-experience
 /// "Indicador de Menu Bar").
 ///
-/// Identidad visual tomada de la landing: pastilla oscura (`lcdBg`) con borde
-/// `lcdBorder`, punto verde con halo y el valor en **dígitos de 7 segmentos**
-/// verdes (`lcdDigit`) con brillo, sin símbolo de moneda.
+/// Identidad visual: pastilla **negra sólida con bordes redondeados** (sin
+/// sombras ni degradados) con el símbolo de la moneda configurada y el valor
+/// en **dígitos de 7 segmentos** verdes (`lcdDigit`), sin glow.
 ///
 /// > Restricción de `MenuBarExtra` (descubierta el 2026-10-03): el status item
 /// > solo conserva el `Image` del label; cualquier shape custom (el `DigiSeven`
@@ -39,7 +39,8 @@ struct MenuBarLabel: View {
 
     // MARK: - Chip LCD
 
-    /// Pastilla de la barra: punto + dígitos de 7 segmentos sobre fondo LCD.
+    /// Pastilla de la barra: símbolo de moneda + dígitos de 7 segmentos sobre
+    /// fondo negro sólido redondeado.
     @ViewBuilder
     private func chip(earned: Decimal, code: String) -> some View {
         let compact = CurrencyFormatter.formatCompact(earned, code: code)
@@ -70,15 +71,13 @@ struct MenuBarLabel: View {
             DigiSeven(text: compact,
                       color: Theme.lcdDigit,
                       dimColor: Theme.lcdDim,
-                      digitWidth: 8.5)
-                .shadow(color: Theme.lcdDigit.opacity(0.5), radius: 2)
+                      digitWidth: 9)
         }
-        .padding(.horizontal, 6)
+        .padding(.horizontal, 7)
         .padding(.vertical, 3)
-        .background(Color.black)
-        .overlay(
+        .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .strokeBorder(Theme.lcdBorderSoft, lineWidth: 0.8)
+                .fill(Color.black)
         )
 
         let renderer = ImageRenderer(content: content)

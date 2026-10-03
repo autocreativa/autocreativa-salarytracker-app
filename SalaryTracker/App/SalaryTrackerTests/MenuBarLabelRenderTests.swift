@@ -117,9 +117,10 @@ final class MenuBarLabelRenderTests: XCTestCase {
     /// los dígitos se veían deformados. Este test sondea el centro de los 7
     /// segmentos de cada dígito y compara con el mapa canónico.
     func testDigiSevenLightsExpectedSegmentsPerDigit() {
-        let w: CGFloat = 30, h = w * 2
-        let t = max(1, w * 0.18), g = max(0.6, w * 0.07)
-        let lenV = (h - t - 2 * g) / 2
+        // Mismas constantes de `DigiSeven` (rediseño 2026-10-03):
+        let w: CGFloat = 30, h = w * 1.9
+        let t = max(1, w * 0.19), g = max(0.6, w * 0.085)
+        let lenV = (h - 3 * t - 4 * g) / 2
         let upperY = t + g + lenV / 2
         let lowerY = h - t - g - lenV / 2
         let probes: [(name: String, cx: CGFloat, cy: CGFloat)] = [

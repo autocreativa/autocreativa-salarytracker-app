@@ -290,13 +290,13 @@ struct PopoverView: View {
         return "RATE: \(sym)\(String(format: "%.2f", perSecond)) / SEG"
     }
 
-    /// "Devengando ahora mismo: +$0.595/s"
+    /// "Ganando ahora mismo: +$0.595/s"
     private func rateFooter(_ v: PeriodView) -> String {
         guard let end = v.end, end > v.start else {
             return "Período abierto: sueldo completo"
         }
         let perSecond = (v.salary as NSDecimalNumber).doubleValue / end.timeIntervalSince(v.start)
         let sym = CurrencyCatalog.symbol(forCode: v.currencyCode)
-        return "Devengando ahora mismo  \(sym)\(String(format: "%.3f", perSecond))/s"
+        return "Ganando ahora mismo  \(sym)\(String(format: "%.3f", perSecond))/s"
     }
 }

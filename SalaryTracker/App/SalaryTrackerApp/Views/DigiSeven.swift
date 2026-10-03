@@ -35,12 +35,13 @@ struct DigiSeven: View {
         "9": ["a", "b", "c", "d", "f", "g"],
     ]
 
-    /// Altura total de un dígito.
-    private var digitHeight: CGFloat { digitWidth * 2 }
-    /// Grosor del trazo (segmentos de los displays reales).
-    private var thickness: CGFloat { max(1, digitWidth * 0.24) }
-    /// Hueco entre segmentos: da el aspecto mitrado en vez de bloque macizo.
-    private var gap: CGFloat { max(0.6, digitWidth * 0.09) }
+    /// Altura total de un dígito (proporción típica de un display 7 seg: ≈1.9×).
+    private var digitHeight: CGFloat { digitWidth * 1.9 }
+    /// Grosor del trazo: ≈19 % del ancho, como en los displays reales.
+    private var thickness: CGFloat { max(1, digitWidth * 0.19) }
+    /// Hueco entre segmentos: uniforme en ambas direcciones (~8.5 %), para que
+    /// la malla se lea como un 7 segmentos y no como bloques pegados.
+    private var gap: CGFloat { max(0.6, digitWidth * 0.085) }
     /// Separación entre dígitos.
     private var digitSpacing: CGFloat { digitWidth * 0.42 }
     /// Largo de los segmentos horizontales (a, g, d): el ancho del dígito menos
