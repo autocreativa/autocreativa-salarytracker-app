@@ -6,7 +6,7 @@ import SalaryTrackerCore
 /// visual de la landing: base crema, tarjetas blancas con borde `sageBorder`,
 /// etiqueta de sección en versalitas y botón primario verde bosque.
 ///
-/// Secciones: Sueldo, Inicio del contrato, Día de pago y Resumen. Validación +
+/// Secciones: Sueldo, Inicio del contrato, Día de pago. Validación +
 /// guardado explícito: el botón se habilita solo con config válida; descartar
 /// no persiste. El resumen recalcula en vivo sobre los valores pendientes.
 struct SettingsView: View {
@@ -46,7 +46,6 @@ struct SettingsView: View {
                     salarySection
                     startSection
                     paymentRuleSection
-                    summarySection
                     startupSection
                 }
                 .padding(16)
@@ -214,21 +213,7 @@ struct SettingsView: View {
         }
     }
 
-    private var summarySection: some View {
-        SectionCard(title: "Resumen", systemImage: "sum") {
-            if validation.isValid {
-                summaryValues
-            } else {
-                VStack(alignment: .leading, spacing: 6) {
-                    ForEach(validation.errors, id: \.self) { e in
-                        Label(e, systemImage: "exclamationmark.circle.fill")
-                            .font(Theme.body(13))
-                            .foregroundStyle(Color(hex: 0xC1442E))
-                    }
-                }
-            }
-        }
-    }
+
 
     @ViewBuilder
     private var summaryValues: some View {

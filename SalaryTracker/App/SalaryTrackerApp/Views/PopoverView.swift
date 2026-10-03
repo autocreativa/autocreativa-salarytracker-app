@@ -133,17 +133,13 @@ struct PopoverView: View {
             }
         }
 
-        // Total ganado desde el inicio del contrato.
-        DataCard(label: "Total ganado",
-                 value: CurrencyFormatter.format(v.totalEarned, code: v.currencyCode),
-                 accent: true)
     }
 
     private func earnedHeader(value: Decimal, code: String) -> some View {
         HStack {
-            SectionLabel(text: "Sueldo devengado")
+            SectionLabel(text: "Sueldo ganado")
             Spacer()
-            Chip(text: "Tiempo real", systemImage: "circle.fill")
+            Chip(text: "Tiempo real", systemImage: "eye")
         }
     }
 
@@ -286,7 +282,7 @@ struct PopoverView: View {
         return min(26, max(11, avail / CGFloat(digits * 1.85 + 1.2)))
     }
 
-    /// "+$0.59 / SEG" — ritmo de devengo por segundo.
+    /// "+$0.59 / SEG" — ritmo de ganancia por segundo.
     private func rateLabel(_ v: PeriodView) -> String {
         guard let end = v.end, end > v.start else { return "RATE: —" }
         let perSecond = (v.salary as NSDecimalNumber).doubleValue / end.timeIntervalSince(v.start)

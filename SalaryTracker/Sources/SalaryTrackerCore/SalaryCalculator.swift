@@ -101,7 +101,28 @@ public struct SalaryCalculator: Sendable {
         let elapsed = now.timeIntervalSince(start)
         // Invariante del período: start < end y now ≥ start (garantizado por el
         // flujo anterior); acotamos para robustez.
-        let ratio = min(max(duration > 0 ? elapsed / duration : 0, 0), 1)
+        var ratio = min(max(duration > 0 ? elapsed / duration : 0, 0), 1)
+        
+        // Ajuste: si es el primer período (aún no hay períodos completados),
+        // prorratear según días restantes del mes calendario de inicio
+        // (mes equivale al sueldo; descontar días que faltan para completar el ciclo)
+        if completedPeriods == 0 {
+            let cal = Calendar.gregorian(timeZone: .current)
+            let startComps = cal.dateComponents([.year, .month, .day], from: start)
+            if let sYear = startComps.year, let sMonth = startComps.month, let sDay = startComps.day {
+                var firstOfMonthComps = DateComponents(year: sYear, month: sMonth, day: 1)
+                if let firstOfMonth = cal.date(from: firstOfMonthComps),
+                   let dayRange = cal.range(of: .day, in: .month, for: firstOfMonth) {
+                    let totalDaysInMonth = dayRange.count
+                    // Días desde el inicio hasta el fin de ese mes calendario
+                    let daysRemainingInMonth = totalDaysInMonth - sDay + 1
+                    if totalDaysInMonth > 0 && daysRemainingInMonth > 0 {
+                        let monthRatio = min(max(Double(daysRemainingInMonth) / Double(totalDaysInMonth), 0), 1)
+                        ratio = min(ratio, monthRatio)
+                    }
+                }
+            }
+        }
         let earned = (config.salaryAmount as NSDecimalNumber)
             .multiplying(by: NSDecimalNumber(value: ratio))
             .decimalValue
