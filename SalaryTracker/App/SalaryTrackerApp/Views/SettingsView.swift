@@ -24,6 +24,9 @@ struct SettingsView: View {
     @State private var specificDate: Date = .now
     @FocusState private var salaryFocused: Bool
 
+    /// Login item ("abrir al iniciar sesión"); el toggle escribe en el sistema.
+    @StateObject private var loginItem = LoginItemService()
+
     private let calculator = SalaryCalculator()
 
     enum RuleType: String, CaseIterable, Identifiable {
@@ -44,6 +47,7 @@ struct SettingsView: View {
                     startSection
                     paymentRuleSection
                     summarySection
+                    startupSection
                 }
                 .padding(16)
             }
@@ -179,6 +183,37 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
+    // MARK: - Inicio automático
+
+    /// Opción "Abrir al iniciar sesión" (login item). El estado vive en
+    /// `LoginItemService`; el toggle aplica el cambio de inmediato y muestra
+    /// el error si macOS lo rechaza (p. ej. la app no está en /Applications).
+    private var startupSection: some View {
+        SectionCard(title: "Inicio automático", systemImage: "power") {
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle(isOn: loginItem.toggleBinding) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Abrir al iniciar sesión")
+                            .font(Theme.body(13, .semibold))
+                            .foregroundStyle(Theme.ink)
+                        Text("SalaryTracker se agrega a los elementos de inicio de sesión de macOS y se abre solo al encender la Mac.")
+                            .font(Theme.body(11))
+                            .foregroundStyle(Theme.inkFaint)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .toggleStyle(.switch)
+                .tint(Theme.forest)
+                if let err = loginItem.lastError {
+                    Label(err, systemImage: "exclamationmark.triangle.fill")
+                        .font(Theme.body(11))
+                        .foregroundStyle(Color(hex: 0xC1442E))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+        }
+    }
+
     private var summarySection: some View {
         SectionCard(title: "Resumen", systemImage: "sum") {
             if validation.isValid {
@@ -187,7 +222,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     ForEach(validation.errors, id: \.self) { e in
                         Label(e, systemImage: "exclamationmark.circle.fill")
-                            .font(Theme.body(12))
+                            .font(Theme.body(13))
                             .foregroundStyle(Color(hex: 0xC1442E))
                     }
                 }
@@ -217,11 +252,11 @@ struct SettingsView: View {
             }
         case .invalid(let reason):
             Label(reason, systemImage: "exclamationmark.circle.fill")
-                .font(Theme.body(12))
+                .font(Theme.body(13))
                 .foregroundStyle(Color(hex: 0xC1442E))
         case .notConfigured:
             Text("Sin valores para resumir.")
-                .font(Theme.body(12))
+                .font(Theme.body(13))
                 .foregroundStyle(Theme.inkSoft)
         }
     }
@@ -259,7 +294,7 @@ struct SettingsView: View {
     private func summaryRow(_ label: String, _ value: String, highlight: Bool = false) -> some View {
         HStack {
             Text(label)
-                .font(Theme.body(12))
+                .font(Theme.body(13))
                 .foregroundStyle(Theme.inkSoft)
             Spacer()
             Text(value)

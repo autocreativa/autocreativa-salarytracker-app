@@ -109,7 +109,7 @@ struct PopoverView: View {
             LCDPanel(
                 compactText: CurrencyFormatter.formatCompact(v.earned, code: v.currencyCode),
                 ghostText: ghostPattern(for: v.earned, code: v.currencyCode),
-                digitWidth: lcdDigitWidth(for: v.earned, code: v.currencyCode),
+                digitWidth: lcdDigitWidth(for: v.earned, code: v.currencyCode) + 6,
                 prefix: CurrencyCatalog.symbol(forCode: v.currencyCode),
                 rightLabel: rateLabel(v),
                 footer: rateFooter(v)
@@ -178,7 +178,7 @@ struct PopoverView: View {
         earnedHeader(value: 0, code: code)
         LCDPanel(compactText: CurrencyFormatter.formatCompact(0, code: code),
                  ghostText: ghostPattern(for: 0, code: code),
-                 digitWidth: 22,
+                 digitWidth: 28,
                  prefix: CurrencyCatalog.symbol(forCode: code),
                  rightLabel: "FALTA INICIAR",
                  footer: "El contrato aún no comienza")

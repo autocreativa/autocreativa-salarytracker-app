@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A10000000000000000000020 /* SalaryTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000012 /* SalaryTrackerApp.swift */; };
 		A10000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* AppModel.swift */; };
+		A10000000000000000000077 /* LoginItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* LoginItemService.swift */; };
 		A10000000000000000000022 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* MenuBarLabel.swift */; };
 		A10000000000000000000023 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* PopoverView.swift */; };
 		A10000000000000000000024 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* SettingsView.swift */; };
@@ -29,6 +30,7 @@
 		A10000000000000000000010 /* SalaryTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SalaryTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A10000000000000000000012 /* SalaryTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalaryTrackerApp.swift; sourceTree = "<group>"; };
 		A10000000000000000000013 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		A10000000000000000000078 /* LoginItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemService.swift; sourceTree = "<group>"; };
 		A10000000000000000000014 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
 		A10000000000000000000015 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 				A10000000000000000000012 /* SalaryTrackerApp.swift */,
 				A10000000000000000000013 /* AppModel.swift */,
 				A10000000000000000000060 /* SettingsWindowController.swift */,
+				A10000000000000000000078 /* LoginItemService.swift */,
 				A10000000000000000000005 /* Views */,
 				A10000000000000000000017 /* AppIcon.icns */,
 			);
@@ -213,6 +216,7 @@
 				A10000000000000000000023 /* PopoverView.swift in Sources */,
 				A10000000000000000000024 /* SettingsView.swift in Sources */,
 				A10000000000000000000061 /* SettingsWindowController.swift in Sources */,
+				A10000000000000000000077 /* LoginItemService.swift in Sources */,
 				A10000000000000000000063 /* DigiSeven.swift in Sources */,
 				A10000000000000000000075 /* Theme.swift in Sources */,
 			);

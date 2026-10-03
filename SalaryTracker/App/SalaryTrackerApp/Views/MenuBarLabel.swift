@@ -62,18 +62,18 @@ struct MenuBarLabel: View {
     /// Pre-renderiza el chip a `NSImage` non-template (coloreado) para que
     /// `MenuBarExtra` lo muestre íntegro.
     private func renderChip(_ compact: String) -> NSImage? {
-        let content = HStack(spacing: 4) {
+        let content = HStack(spacing: 5) {
             Circle()
                 .fill(Theme.lcdDigit)
-                .frame(width: 3.5, height: 3.5)
+                .frame(width: 4.0, height: 4.0)
             DigiSeven(text: compact,
                       color: Theme.lcdDigit,
                       dimColor: Theme.lcdDim,
-                      digitWidth: 5.2)
+                      digitWidth: 6.8)
                 .shadow(color: Theme.lcdDigit.opacity(0.5), radius: 2)
         }
-        .padding(.horizontal, 5)
-        .padding(.vertical, 2.5)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 3)
         .background(
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .fill(Theme.lcdBg)

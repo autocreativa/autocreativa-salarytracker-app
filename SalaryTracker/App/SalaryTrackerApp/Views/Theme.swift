@@ -252,7 +252,7 @@ struct FieldBox<Content: View>: View {
 struct LCDPanel: View {
     let compactText: String
     let ghostText: String
-    var digitWidth: CGFloat = 21
+    var digitWidth: CGFloat = 28
     var prefix: String? = nil
     var leftLabel: String = "CASIO DIGITAL VIBE"
     var rightLabel: String = ""
@@ -276,7 +276,7 @@ struct LCDPanel: View {
                     Text(prefix)
                         .font(Theme.mono(max(11, digitWidth * 0.55), .bold))
                         .foregroundStyle(Theme.lcdDigit)
-                        .padding(.bottom, digitWidth * 0.28)
+                        .padding(.bottom, digitWidth * 0.24)
                 }
                 ZStack {
                     DigiSeven(text: ghostText,
