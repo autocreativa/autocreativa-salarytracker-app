@@ -38,9 +38,9 @@ struct DigiSeven: View {
     /// Altura total de un dígito.
     private var digitHeight: CGFloat { digitWidth * 2 }
     /// Grosor del trazo (segmentos de los displays reales).
-    private var thickness: CGFloat { max(1, digitWidth * 0.18) }
+    private var thickness: CGFloat { max(1, digitWidth * 0.24) }
     /// Hueco entre segmentos: da el aspecto mitrado en vez de bloque macizo.
-    private var gap: CGFloat { max(0.6, digitWidth * 0.07) }
+    private var gap: CGFloat { max(0.6, digitWidth * 0.09) }
     /// Separación entre dígitos.
     private var digitSpacing: CGFloat { digitWidth * 0.42 }
     /// Largo de los segmentos horizontales (a, g, d): el ancho del dígito menos

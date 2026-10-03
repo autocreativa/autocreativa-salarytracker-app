@@ -254,7 +254,7 @@ struct LCDPanel: View {
     let ghostText: String
     var digitWidth: CGFloat = 28
     var prefix: String? = nil
-    var leftLabel: String = "DIGITAL DISPLAY"
+    var leftLabel: String = ""
     var rightLabel: String = ""
     var footer: String = ""
 

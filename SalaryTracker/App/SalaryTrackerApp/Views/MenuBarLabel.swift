@@ -50,7 +50,7 @@ struct MenuBarLabel: View {
         } else {
             // Fallback (si el render fallara): chips SF Symbol + texto.
             HStack(spacing: 3) {
-                Circle().fill(Theme.lcdDigit).frame(width: 4, height: 4)
+                Circle().fill(Theme.lcdDigit).frame(width: 4.5, height: 4.5)
                 Text(compact).font(Theme.mono(10, .bold))
             }
             .foregroundStyle(Theme.lcdDigit)
@@ -62,14 +62,14 @@ struct MenuBarLabel: View {
     /// Pre-renderiza el chip a `NSImage` non-template (coloreado) para que
     /// `MenuBarExtra` lo muestre íntegro.
     private func renderChip(_ compact: String) -> NSImage? {
-        let content = HStack(spacing: 5) {
+        let content = HStack(spacing: 6) {
             Circle()
                 .fill(Theme.lcdDigit)
                 .frame(width: 4.0, height: 4.0)
             DigiSeven(text: compact,
                       color: Theme.lcdDigit,
                       dimColor: Theme.lcdDim,
-                      digitWidth: 6.8)
+                      digitWidth: 8.5)
                 .shadow(color: Theme.lcdDigit.opacity(0.5), radius: 2)
         }
         .padding(.horizontal, 6)

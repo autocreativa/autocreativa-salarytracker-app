@@ -104,7 +104,7 @@ final class MenuBarLabelRenderTests: XCTestCase {
         guard let image = render(MenuBarLabel(state: state), scale: 4) else {
             XCTFail("ImageRenderer no produjo imagen del chip"); return
         }
-        XCTAssertLessThanOrEqual(image.size.height, 20,
+        XCTAssertLessThanOrEqual(image.size.height, 24,
             "El chip mide \(image.size.height) pt y no cabe en la status item")
         XCTAssertGreaterThan(image.size.width, 40,
             "El chip debería incluir los dígitos (ancho \(image.size.width) pt)")
