@@ -23,7 +23,7 @@ específica).
 │   ├── Package.swift                 # SwiftPM: librería SalaryTrackerCore (lógica pura, sin UI)
 │   ├── Sources/SalaryTrackerCore/    # modelo, reglas de pago, motor, validación, monedas, ConfigStore
 │   ├── Tests/SalaryTrackerCoreTests/ # 88 tests (XCTest) con reloj manual
-│   ├── Scripts/make_icon.swift       # genera App/AppIcon.icns desde cero
+│   ├── Scripts/make_icon.swift       # genera App/SalaryTrackerApp/AppIcon.icns desde cero
 │   └── App/
 │       ├── SalaryTracker.xcodeproj   # target de app macOS 13+ (LSUIElement) + target de tests
 │       ├── SalaryTrackerApp/         # @main, AppModel, SettingsWindowController, Views/*, AppIcon.icns
@@ -40,7 +40,7 @@ Release), `*.profraw`, `.idea/`, `.opencode/` y `.DS_Store`.
 
 ## Requisitos
 
-- macOS 13+ (los builds se hicieron con macOS 26 / Xcode 26).
+- macOS 13+ (los builds se hicieron con macOS 27 / Xcode 27).
 - **Importante:** si tu toolchain activo es CommandLineTools, `swift test`
   fallará (sin XCTest). Usa Xcode con `DEVELOPER_DIR`, o ejecuta una vez:
   `sudo xcode-select -s /Applications/Xcode.app`
@@ -127,11 +127,19 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
 - La app **solo escribe** el archivo cuando guardas en Configuración
   (swap atómico); un archivo corrupto produce estado `INVALID`, nunca un crash.
 
-## Estado del proyecto (2026-10-03)
+## Release
 
-- **v1.2** — rediseño visual botanical/LCD tomado de la landing: chip oscuro en
-  la barra, popover con panel LCD y tarjetas, y ventana de configuración con
-  campos y acciones verdes.
+- **v1.0.0** (2026-10-04) — primer release público:
+  [GitHub Releases](https://github.com/autocreativa/autocreativa-salarytracker-app/releases)
+  con `SalaryTracker-1.0.0-macos-universal.zip` (universal x86_64/arm64,
+  macOS 13+), icono y `SHA256SUMS`.
+
+## Estado del proyecto (2026-10-04)
+
+- **v1.0.0** — release del rediseño visual botanical/LCD tomado de la landing:
+  chip oscuro en la barra, popover con panel LCD y tarjetas, y ventana de
+  configuración con campos y acciones verdes. Icono propio: `$` en 7 segmentos
+  estilo LCD sobre verde bosque (`Scripts/make_icon.swift`).
 - 99/99 tests en verde (88 core + 11 de app: 7 integración + 4 render, dos de
   ellos nuevos para la geometría de los dígitos 7 segmentos).
 - 18/20 criterios de aceptación verificados con evidencia automatizada o en
