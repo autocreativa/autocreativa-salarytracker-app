@@ -76,9 +76,12 @@ silenciosamente):
   mantiene igual al sueldo (100%) y la UI indica que no hay próximo pago. La
   arquitectura permite agregar reglas recurrentes adicionales después.
 - **A3 — Primera ejecución / sin configuración.** **Regla R-BOOT:** sin
-  configuración la app queda en estado `NOT_CONFIGURED`; la Menu Bar muestra un
-  indicador estático (sin dinero) y el popover muestra una invitación a configurar.
-  El motor nunca se ejecuta con datos inexistentes.
+  configuración persistida la app arranca con una configuración **por defecto en
+  memoria** (sueldo 553.553 CLP, regla "último viernes de cada mes", inicio del
+  contrato en el instante actual); la Menu Bar muestra el dinero ganado desde ese
+  instante y la configuración solo se persiste si el usuario guarda la suya. El
+  estado `NOT_CONFIGURED` del motor se conserva para el caso de configuración
+  `nil` (el motor nunca se ejecuta con datos inexistentes).
 - **A4 — Inicio del contrato en el pasado.** **Regla R-FIRST-PERIOD:** el primer
   período inicia en el inicio del contrato y su pago es el **primer** momento de pago
   estrictamente posterior al inicio del contrato. Se asume que el usuario ya recibió

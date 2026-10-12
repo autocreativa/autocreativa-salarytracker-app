@@ -37,9 +37,12 @@ final class AppModel: ObservableObject {
         self.engine = engine
         self.clock = clock
         // Carga inicial (specs/configuration "Reconstrucción del estado al
-        // iniciar"): sin archivo → notConfigured; corrupto → invalid (sin crash).
+        // iniciar"): archivo → config persistida; sin archivo (primera
+        // ejecución) → configuración por defecto en memoria (sueldo 553.553
+        // CLP, último viernes, inicio en el instante actual; solo se persiste
+        // si el usuario guarda); corrupto → invalid (sin crash).
         do {
-            self.config = try store.load()
+            self.config = (try store.load()) ?? SalaryConfig.default(startingAt: clock.now)
             self.state = engine.state(config: self.config, now: clock.now)
         } catch {
             self.config = nil

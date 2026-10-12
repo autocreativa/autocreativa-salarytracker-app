@@ -32,7 +32,7 @@ el indicador SHALL mostrar un estado de error reconocible.
 - **THEN** su altura no supera los ~20 pt del menú y su ancho incluye el valor completo, de modo que la barra no recorta los dígitos ni ensancha el elemento
 
 #### Scenario: Indicador sin configurar
-- **WHEN** el estado es `NOT_CONFIGURED`
+- **WHEN** el estado es `NOT_CONFIGURED` (caso de motor con configuración `nil`; en la app la primera ejecución usa la configuración por defecto, ver spec de configuration)
 - **THEN** la barra de menú muestra un indicador estático (glifo 💰 o etiqueta) sin valor monetario y el popover invita a configurar
 
 #### Scenario: Crecimiento visible segundo a segundo

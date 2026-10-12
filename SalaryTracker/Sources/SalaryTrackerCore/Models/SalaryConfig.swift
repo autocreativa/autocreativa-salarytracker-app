@@ -58,4 +58,30 @@ public struct SalaryConfig: Codable, Equatable, Hashable, Sendable {
     public func contractStartDate(calendar: Calendar) -> Date {
         contractStart.resolve(at: contractStartTime, calendar: calendar)
     }
+
+    /// Configuración por defecto de la app (primera ejecución sin archivo
+    /// persistido): sueldo **553.553 CLP**, inicio del contrato en los
+    /// componentes locales del instante de referencia y regla "último viernes
+    /// de cada mes". Solo se usa en memoria hasta que el usuario guarda su
+    /// propia configuración.
+    ///
+    /// - Parameters:
+    ///   - startingAt: instante de referencia para la fecha/hora de inicio
+    ///     (por defecto `Date()`; los tests inyectan un instante fijo).
+    ///   - calendar: calendario/zona para extraer los componentes locales
+    ///     (por defecto gregoriano en `TimeZone.current`, coherente con R-TZ).
+    public static func `default`(
+        startingAt: Date = Date(),
+        calendar: Calendar = .gregorian(timeZone: .current)
+    ) -> SalaryConfig {
+        let dc = calendar.dateComponents([.year, .month, .day], from: startingAt)
+        let tc = calendar.dateComponents([.hour, .minute], from: startingAt)
+        return SalaryConfig(
+            salaryAmount: 553_553,
+            currencyCode: "CLP",
+            contractStart: LocalDate(year: dc.year ?? 2026, month: dc.month ?? 1, day: dc.day ?? 1),
+            contractStartTime: LocalTime(hour: tc.hour ?? 9, minute: tc.minute ?? 0),
+            paymentRule: .lastFriday()
+        )
+    }
 }

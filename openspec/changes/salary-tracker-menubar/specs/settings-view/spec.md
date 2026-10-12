@@ -24,9 +24,9 @@ configurado.
 - **WHEN** el usuario abre un selector (moneda, regla de pago) o un date picker dentro de la vista de configuración y selecciona un valor
 - **THEN** la vista permanece abierta y refleja la selección sin cerrarse ni perder el foco
 
-#### Scenario: Acceso desde el estado no configurado
-- **WHEN** la aplicación está en `NOT_CONFIGURED` y el usuario hace clic en "Configurar" del popover
-- **THEN** se abre la vista de configuración con campos vacíos por defecto
+#### Scenario: Acceso sin configuración válida
+- **WHEN** no hay configuración válida (primera ejecución o archivo corrupto) y el usuario abre la vista de configuración
+- **THEN** los campos se prellenan con la configuración por defecto de la app (sueldo 553.553, moneda CLP, fecha y hora actuales, regla "último viernes de cada mes"), que el usuario puede editar y guardar
 
 ### Requirement: Edición de sueldo
 La sección Sueldo SHALL permitir editar el monto (campo numérico con separadores

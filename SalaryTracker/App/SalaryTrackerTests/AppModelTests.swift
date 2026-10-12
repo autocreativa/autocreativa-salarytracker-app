@@ -51,15 +51,64 @@ final class AppModelTests: XCTestCase {
 
     // MARK: - Casos
 
-    func testFirstLaunchWithoutFileIsNotConfigured() {
+    func testFirstLaunchWithoutFileUsesDefaultConfig() {
         let store = makeStore()
         let clock = TestClock(date: localDate(2026, 9, 15, 12, 0))
         let model = makeModel(store: store, clock: clock)
         defer { model.stop() }
 
-        XCTAssertEqual(model.state, .notConfigured)
-        XCTAssertNil(model.config)
+        // Sin archivo persistido: la app arranca con la configuración por
+        // defecto (sueldo 553.553 CLP, último viernes, inicio en el instante
+        // del reloj inyectado) y el estado se deriva de ella (no notConfigured).
+        let cfg = model.config
+        XCTAssertNotNil(cfg, "debe haber una configuración (la por defecto)")
+        XCTAssertEqual(cfg?.salaryAmount, 553_553)
+        XCTAssertEqual(cfg?.currencyCode, "CLP")
+        XCTAssertEqual(cfg?.contractStart,
+                       LocalDate(year: 2026, month: 9, day: 15))
+        XCTAssertEqual(cfg?.contractStartTime, LocalTime(hour: 12, minute: 0))
+        XCTAssertEqual(cfg?.paymentRule, .lastFriday())
         XCTAssertNil(model.loadIssue)
+
+        // El período comienza en el instante del reloj (15 Sep 12:00): en el
+        // primer tick el ganado es 0 (elapsed = 0) y el próximo pago es el
+        // último viernes de septiembre de 2026 = 25.
+        guard case .active(let view) = model.state else {
+            return XCTFail("Estado esperado .active con config por defecto, fue \(model.state)")
+        }
+        XCTAssertEqual(view.salary, 553_553)
+        XCTAssertEqual(view.earned, 0)
+        XCTAssertEqual(view.progress, 0)
+        let cal = Calendar.gregorian(timeZone: .current)
+        XCTAssertEqual(cal.component(.day, from: view.end ?? .distantPast), 25)
+        XCTAssertEqual(cal.component(.month, from: view.end ?? .distantPast), 9)
+
+        // Un día después el ganado crece monótonamente (período 15 Sep → 25 Sep).
+        clock.advance(by: 86_400)
+        model.evaluateNow()
+        guard case .active(let after) = model.state else {
+            return XCTFail("Estado esperado .active tras avanzar el clock, fue \(model.state)")
+        }
+        XCTAssertGreaterThan(dv(after.earned), 0)
+        XCTAssertLessThan(dv(after.earned), dv(after.salary))
+    }
+
+    func testPersistedConfigTakesPrecedenceOverDefault() {
+        let store = makeStore()
+        // La instancia inicial persiste su propia config.
+        let clock = TestClock(date: localDate(2026, 9, 15, 12, 0))
+        let first = makeModel(store: store, clock: clock)
+        first.save(Self.baseConfig())
+        first.stop()
+
+        // Nueva instancia (relanzar la app): debe reconstruir desde el archivo,
+        // NO desde la configuración por defecto.
+        let second = makeModel(store: store, clock: clock)
+        defer { second.stop() }
+
+        XCTAssertEqual(second.config, Self.baseConfig())
+        XCTAssertEqual(second.config?.salaryAmount, 1_500_000)
+        XCTAssertNotEqual(second.config?.salaryAmount, 553_553)
     }
 
     func testSaveConfigYieldsActiveStateDerivedFromInjectedClock() {

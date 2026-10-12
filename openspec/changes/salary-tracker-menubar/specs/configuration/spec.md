@@ -75,7 +75,11 @@ en disco. El estado derivado SHALL ser uno de: `NOT_CONFIGURED` (sin configuraci
 
 #### Scenario: Primera ejecución sin configuración
 - **WHEN** la aplicación se inicia por primera vez y no existe configuración persistida
-- **THEN** el estado es `NOT_CONFIGURED` y la UI invita a configurar (sin valores de dinero en la barra)
+- **THEN** la app arranca con la configuración por defecto en memoria (sueldo 553.553 CLP, regla "último viernes de cada mes", inicio del contrato en el instante actual) y el estado se deriva de ella (`ACTIVE` desde ese instante); la configuración solo se persiste si el usuario guarda la suya
+
+#### Scenario: Configuración por defecto
+- **WHEN** se genera la configuración por defecto en el instante 2026-10-12 09:30 local
+- **THEN** el sueldo es 553.553, la moneda es CLP, el inicio del contrato es 2026-10-12 09:30 local y la regla de pago es "último viernes de cada mes"
 
 #### Scenario: Inicio después de varios pagos transcurridos
 - **WHEN** la aplicación se inicia en 2026-11-10 con configuración de inicio 2026-09-01 09:00 y regla "último viernes de cada mes"

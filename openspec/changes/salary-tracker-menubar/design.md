@@ -223,8 +223,9 @@ estado intermedio.
   `replaceItem` (equivalente `dispatch_io`/`FileManager.replaceItemAt`); el archivo
   anterior permanece válido hasta el swap (escenario "escritura atómica").
 - Versión del schema (`"v": 1`) para migraciones futuras.
-- Carga en launch: si no existe → `notConfigured`; si es corrupto → `invalid`
-  (mensura) + respeta último backup.
+- Carga en launch: si no existe → configuración por defecto en memoria
+  (`SalaryConfig.default`: sueldo 553.553 CLP, último viernes, instante actual);
+  si es corrupto → `invalid` (mensura) + respeta último backup.
 
 ### D9 — Formato de moneda
 

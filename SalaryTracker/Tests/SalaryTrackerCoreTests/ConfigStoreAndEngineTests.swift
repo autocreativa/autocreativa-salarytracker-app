@@ -114,6 +114,36 @@ final class ConfigStoreTests: XCTestCase {
     }
 }
 
+/// Tests de la configuración por defecto de la app (primera ejecución sin
+/// archivo persistido): sueldo 553.553 CLP, último viernes de cada mes,
+/// inicio del contrato en el instante de referencia.
+final class SalaryConfigDefaultTests: XCTestCase {
+
+    func testDefaultHasExpectedValues() {
+        let now = T.d(2026, 10, 12, 9, 30)
+        let cfg = SalaryConfig.default(startingAt: now, calendar: T.calendar)
+        XCTAssertEqual(cfg.salaryAmount, 553_553)
+        XCTAssertEqual(cfg.currencyCode, "CLP")
+        XCTAssertEqual(cfg.contractStart, LocalDate(year: 2026, month: 10, day: 12))
+        XCTAssertEqual(cfg.contractStartTime, LocalTime(hour: 9, minute: 30))
+        XCTAssertEqual(cfg.paymentRule, .lastFriday())
+    }
+
+    func testDefaultResolvesStartAtReferencedInstant() {
+        let now = T.d(2026, 10, 12, 9, 30)
+        let cfg = SalaryConfig.default(startingAt: now, calendar: T.calendar)
+        // Los componentes locales del instante de referencia se resuelven de
+        // vuelta al mismo instante absoluto (sin pérdida por truncamiento).
+        XCTAssertEqual(cfg.contractStartDate(calendar: T.calendar), now)
+    }
+
+    func testDefaultIsAValidConfig() {
+        let now = T.d(2026, 10, 12, 9, 30)
+        let cfg = SalaryConfig.default(startingAt: now, calendar: T.calendar)
+        XCTAssertTrue(ConfigValidator.validate(cfg).isValid)
+    }
+}
+
 /// Tests del orquestador de evaluación (task 8.2: lógica testeable con reloj
 /// inyectado). Verifica que `TrackerEngine.state` derive el estado correcto al
 /// avanzar el clock, incluyendo el caso `notConfigured`.

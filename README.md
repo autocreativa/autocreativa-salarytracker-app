@@ -22,12 +22,12 @@ específica).
 ├── SalaryTracker/
 │   ├── Package.swift                 # SwiftPM: librería SalaryTrackerCore (lógica pura, sin UI)
 │   ├── Sources/SalaryTrackerCore/    # modelo, reglas de pago, motor, validación, monedas, ConfigStore
-│   ├── Tests/SalaryTrackerCoreTests/ # 88 tests (XCTest) con reloj manual
+│   ├── Tests/SalaryTrackerCoreTests/ # 91 tests (XCTest) con reloj manual
 │   ├── Scripts/make_icon.swift       # genera App/SalaryTrackerApp/AppIcon.icns desde cero
 │   └── App/
 │       ├── SalaryTracker.xcodeproj   # target de app macOS 13+ (LSUIElement) + target de tests
 │       ├── SalaryTrackerApp/         # @main, AppModel, SettingsWindowController, Views/*, AppIcon.icns
-│       └── SalaryTrackerTests/       # 9 tests de app (7 integración AppModel + 2 render)
+│       └── SalaryTrackerTests/       # 12 tests de app (8 integración AppModel + 4 render)
 └── openspec/                         # fuente de verdad del diseño
     ├── config.yaml
     ├── specs/                        # specs vivas (capacidades)
@@ -62,11 +62,11 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 ## Tests
 
 ```bash
-# Core: 88 tests
+# Core: 91 tests
 cd SalaryTracker
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 
-# App: 11 tests (7 de integración de AppModel + 4 de render del indicador)
+# App: 12 tests (8 de integración de AppModel + 4 de render del indicador)
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
   xcodebuild -project App/SalaryTracker.xcodeproj -scheme SalaryTracker \
   -configuration Debug test
@@ -124,6 +124,10 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
 
 - `paymentRule`: `lastWeekdayOfMonth.weekday` (1=Dom…5=Vie), `monthDay.month`/`.day`
   (día N con salto de meses cortos), o `specificDate` (período abierto al pasarla).
+- **Primera ejecución:** sin `config.json` la app arranca con una configuración por
+  defecto en memoria (sueldo **553.553 CLP**, "último viernes de cada mes", inicio del
+  contrato en el instante actual) y la barra muestra el dinero ganado desde ese
+  instante; solo se escribe el archivo al guardar desde Configuración.
 - La app **solo escribe** el archivo cuando guardas en Configuración
   (swap atómico); un archivo corrupto produce estado `INVALID`, nunca un crash.
 
@@ -140,7 +144,7 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
   chip oscuro en la barra, popover con panel LCD y tarjetas, y ventana de
   configuración con campos y acciones verdes. Icono propio: `$` en 7 segmentos
   estilo LCD sobre verde bosque (`Scripts/make_icon.swift`).
-- 99/99 tests en verde (88 core + 11 de app: 7 integración + 4 render, dos de
+- 103/103 tests en verde (91 core + 12 de app: 8 integración + 4 render, dos de
   ellos nuevos para la geometría de los dígitos 7 segmentos).
 - 18/20 criterios de aceptación verificados con evidencia automatizada o en
   vivo; 2 pendientes de confirmación visual (Dark/Light y animación del

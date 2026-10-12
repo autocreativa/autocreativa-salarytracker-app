@@ -364,27 +364,21 @@ struct SettingsView: View {
     // MARK: - Acciones
 
     private func loadCurrent() {
-        if let cfg = model.config {
-            salaryText = groupedString(cfg.salaryAmount)
-            currencyCode = cfg.currencyCode
-            startDate = cfg.contractStartDate(calendar: .gregorian(timeZone: .current))
-            startTime = startDate.addingTimeInterval(TimeInterval(cfg.contractStartTime.hour * 3600 + cfg.contractStartTime.minute * 60))
-            switch cfg.paymentRule {
-            case .lastWeekdayOfMonth: ruleType = .lastFriday
-            case .monthDay(let day):  ruleType = .monthDay; monthDay = day
-            case .specificDate(let d): ruleType = .specificDate
-                specificDate = d.resolve(at: cfg.contractStartTime, calendar: .gregorian(timeZone: .current))
-            }
-        } else {
-            // Defectos razonables (scenario "Acceso desde el estado no configurado").
-            salaryText = ""
-            currencyCode = "CLP"
-            let now = Date()
-            startDate = now
-            startTime = now
-            ruleType = .lastFriday
-            monthDay = 25
-            specificDate = now
+        // Con config vigente se prellenan sus valores; sin config válida
+        // (primera ejecución o archivo corrupto) se prellenan los campos con
+        // la configuración por defecto de la app (sueldo 553.553 CLP, último
+        // viernes, instante actual) — scenario "Acceso desde el estado no
+        // configurado".
+        let cfg = model.config ?? SalaryConfig.default()
+        salaryText = groupedString(cfg.salaryAmount)
+        currencyCode = cfg.currencyCode
+        startDate = cfg.contractStartDate(calendar: .gregorian(timeZone: .current))
+        startTime = startDate.addingTimeInterval(TimeInterval(cfg.contractStartTime.hour * 3600 + cfg.contractStartTime.minute * 60))
+        switch cfg.paymentRule {
+        case .lastWeekdayOfMonth: ruleType = .lastFriday
+        case .monthDay(let day):  ruleType = .monthDay; monthDay = day
+        case .specificDate(let d): ruleType = .specificDate
+            specificDate = d.resolve(at: cfg.contractStartTime, calendar: .gregorian(timeZone: .current))
         }
     }
 
