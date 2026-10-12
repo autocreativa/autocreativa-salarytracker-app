@@ -110,6 +110,27 @@ final class MenuBarLabelRenderTests: XCTestCase {
             "El chip debería incluir los dígitos (ancho \(image.size.width) pt)")
     }
 
+    /// Exporta PNGs a gran escala para inspección visual del display
+    /// (`st_preview_digis.png` y `st_preview_chip.png` en el directorio
+    /// temporal): facilita evaluar el render del 7 segmentos en la barra.
+    func testRenderLargePreviews() {
+        // Dígitos 0-9 con el color real de la barra (fondo negro del chip).
+        let digits = DigiSeven(text: "0123456789.", color: Theme.lcdDigit,
+                               dimColor: .clear, digitWidth: 11)
+            .padding(10)
+            .background(Color.black)
+        if let img = render(digits, scale: 6) {
+            writePNG(img, to: URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent("st_preview_digis.png"))
+        }
+        // Chip real de la barra con un estado activo de referencia.
+        let state = TrackerEngine().state(config: config(), now: fixedDate())
+        if case .active = state, let img = render(MenuBarLabel(state: state), scale: 8) {
+            writePNG(img, to: URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent("st_preview_chip.png"))
+        }
+    }
+
     // MARK: - Geometría de los dígitos
 
     /// Regresión del bug de diseño (2026-10-03): con `VStack`/`HStack` el
@@ -117,9 +138,10 @@ final class MenuBarLabelRenderTests: XCTestCase {
     /// los dígitos se veían deformados. Este test sondea el centro de los 7
     /// segmentos de cada dígito y compara con el mapa canónico.
     func testDigiSevenLightsExpectedSegmentsPerDigit() {
-        // Mismas constantes de `DigiSeven` (rediseño 2026-10-03):
-        let w: CGFloat = 30, h = w * 1.9
-        let t = max(1, w * 0.19), g = max(0.6, w * 0.085)
+        // Mismas constantes de `DigiSeven` (rediseño 2026-10-12: proporción
+        // 1.55×, trazo 20 %, hueco 9 %):
+        let w: CGFloat = 30, h = w * 1.55
+        let t = max(1, w * 0.20), g = max(0.6, w * 0.09)
         let lenV = (h - 3 * t - 4 * g) / 2
         let upperY = t + g + lenV / 2
         let lowerY = h - t - g - lenV / 2

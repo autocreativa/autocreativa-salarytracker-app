@@ -70,8 +70,8 @@ struct MenuBarLabel: View {
                 .foregroundStyle(Theme.lcdDigit)
             DigiSeven(text: compact,
                       color: Theme.lcdDigit,
-                      dimColor: Theme.lcdDim,
-                      digitWidth: 9)
+                      dimColor: .clear,   // segmentos apagados: sin fondo
+                      digitWidth: 11)     // proporción real 7-seg (1.55×), trazo 20 %
         }
         .padding(.horizontal, 7)
         .padding(.vertical, 3)

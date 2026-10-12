@@ -4,11 +4,14 @@ import SalaryTrackerCore
 /// Dígitos de 7 segmentos al estilo de los relojes digitales antiguos
 /// (specs/menubar-experience "Indicador de Menu Bar").
 ///
-/// Proporciones (rediseño 2026-10-03 según el mockup LCD de la landing):
-/// - altura ≈ 2× el ancho del dígito (proporción de un 7 segmentos real);
-/// - trazo fino (18 % del ancho) con **hueco** entre segmentos (aspecto
-///   "mitred", no bloques pegados);
-/// - separación ancha entre dígitos;
+/// Geometría (rediseño 2026-10-12 para el tamaño de la menu bar de macOS):
+/// - altura ≈ 1.55× el ancho (proporción de un 7 segmentos real; el 1.9×
+///   anterior comprimía los segmentos: con `digitWidth` 9 el segmento
+///   horizontal medía solo ~2 pt y el dígito se veía deformado);
+/// - trazo ≈ 20 % del ancho (los displays reales usan 15–25 %) con **hueco**
+///   uniforme entre segmentos (aspecto "mitred", no bloques pegados);
+/// - separación entre dígitos = 34 % del ancho (suficiente para que la malla
+///   de cada dígito se lea independiente);
 /// - los segmentos apagados usan un color propio (`dimColor`, por defecto el
 ///   mismo color al 12 %), como los dígitos fantasma `8.888.888` de la landing.
 struct DigiSeven: View {
@@ -18,6 +21,9 @@ struct DigiSeven: View {
     var dimColor: Color?
     /// Ancho de cada dígito en puntos; la altura se deriva (≈ 2×).
     var digitWidth: CGFloat = 7
+    /// Ajuste extra al grosor del trazo en puntos (la barra usa +1 pt =
+    /// +2 px del chip, que se rasteriza a escala 2). 0 = sin ajuste.
+    var extraThickness: CGFloat = 0
 
     /// Mapa 7 segmentos estándar: a = superior, b = superior-der,
     /// c = inferior-der, d = inferior, e = inferior-izq, f = superior-izq,
@@ -35,15 +41,16 @@ struct DigiSeven: View {
         "9": ["a", "b", "c", "d", "f", "g"],
     ]
 
-    /// Altura total de un dígito (proporción típica de un display 7 seg: ≈1.9×).
-    private var digitHeight: CGFloat { digitWidth * 1.9 }
-    /// Grosor del trazo: ≈19 % del ancho, como en los displays reales.
-    private var thickness: CGFloat { max(1, digitWidth * 0.19) }
-    /// Hueco entre segmentos: uniforme en ambas direcciones (~8.5 %), para que
+    /// Altura total de un dígito (proporción de un display 7 seg real: ≈1.55×).
+    private var digitHeight: CGFloat { digitWidth * 1.55 }
+    /// Grosor del trazo: ≈20 % del ancho (rango de los displays reales) más el
+    /// ajuste extra opcional.
+    private var thickness: CGFloat { max(1, digitWidth * 0.20) + extraThickness }
+    /// Hueco entre segmentos: uniforme en ambas direcciones (~9 %), para que
     /// la malla se lea como un 7 segmentos y no como bloques pegados.
-    private var gap: CGFloat { max(0.6, digitWidth * 0.085) }
-    /// Separación entre dígitos.
-    private var digitSpacing: CGFloat { digitWidth * 0.42 }
+    private var gap: CGFloat { max(0.6, digitWidth * 0.09) }
+    /// Separación entre dígitos (34 % del ancho).
+    private var digitSpacing: CGFloat { digitWidth * 0.34 }
     /// Largo de los segmentos horizontales (a, g, d): el ancho del dígito menos
     /// los dos segmentos verticales y los huecos intermedios.
     private var segLengthH: CGFloat { digitWidth - 2 * thickness - 2 * gap }

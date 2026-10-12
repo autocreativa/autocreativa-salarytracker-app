@@ -13,9 +13,10 @@ ganado renderizado como **dígitos de 7 segmentos** (estilo reloj digital antigu
 SIN el símbolo de moneda (el símbolo visual lo aporta el glifo; el texto del popover
 conserva el símbolo completo). El display SHALL usar un **verde dinero** adaptativo
 (verde oscuro en barra clara, verde legible en barra oscura) y los segmentos
-"apagados" SHALL mantenerse visibles de forma tenue como en un display real. El
-indicador SHALL actualizarse automáticamente al menos una vez por segundo sin
-interacción del usuario. En estado `NOT_CONFIGURED` el indicador SHALL mostrar un
+"apagados" de la barra SHALL NO pintarse (sin fondo tenue); el estilo fantasma
+tenue se conserva únicamente en el panel LCD del popover. El indicador SHALL
+actualizarse automáticamente al menos una vez por segundo sin interacción del
+usuario. En estado `NOT_CONFIGURED` el indicador SHALL mostrar un
 glifo o etiqueta estática (sin valor monetario). En estado `INVALID_CONFIGURATION`
 el indicador SHALL mostrar un estado de error reconocible.
 
