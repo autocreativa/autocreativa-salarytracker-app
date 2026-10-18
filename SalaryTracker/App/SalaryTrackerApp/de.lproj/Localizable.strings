@@ -103,15 +103,17 @@
 
 /* ── Widgets (Menuleiste / Benachrichtigungscenter) ──────────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menubar" = "Menuleiste / Control Center";
-"widget.toggle.notificationCenter" = "Benachrichtigungscenter";
-"widget.guide.menubar" = "Zum Hinzufuegen: oeffnen Sie Control Center (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift, suchen Sie “SalaryTracker · Menuleiste” in der Galerie und fuegen Sie es hinzu. Wenn Sie es deaktivieren, wird das Widget an dieser Stelle als “deaktiviert” angezeigt.";
-"widget.guide.notificationCenter" = "Zum Hinzufuegen: oeffnen Sie Control Center (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift, suchen Sie “SalaryTracker · Benachrichtigungscenter” in der Galerie und fuegen Sie es hinzu. Wenn Sie es deaktivieren, wird das Widget an dieser Stelle als “deaktiviert” angezeigt.";
+"widget.toggle.show" = "Widgets anzeigen";
+"widget.guide" = "Zum Hinzufuegen: Oeffnen Sie das Kontrollzentrum (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift zum Bearbeiten, suchen Sie “SalaryTracker” und “SalaryTracker · Fortschritt” in der Galerie und fuegen Sie sie hinzu. Wenn Sie sie deaktivieren, werden sie als “deaktiviert” angezeigt.";
 "widget.installed" = "Installiert";
-"widget.name.menubar" = "SalaryTracker · Menuleiste";
-"widget.desc.menubar" = "Ihre Gehaltseinnahmen in Echtzeit in der Menuleiste.";
-"widget.name.nc" = "SalaryTracker · Benachrichtigungscenter";
-"widget.desc.nc" = "Ihre Gehaltseinnahmen in Echtzeit im Benachrichtigungscenter.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Verdientes Gehalt, Fortschritt und naechste Auszahlung.";
+"widget.name.progress" = "SalaryTracker · Fortschritt";
+"widget.desc.progress" = "Fortschritt der Periode und Rueckzaehlung bis zur naechsten Auszahlung.";
+"widget.progressLabel" = "Fortschritt der Periode";
+"widget.remaining" = "Noch";
+"widget.remaining.daysHours" = "%1$d T, %2$d Std.";
+"widget.remaining.hoursMinutes" = "%1$d Std., %2$d Min.";
 "widget.earnedLabel" = "Verdient";
 "widget.nextPayment" = "Naechste Auszahlung";
 "widget.futureStart" = "Der Vertrag hat noch nicht begonnen";

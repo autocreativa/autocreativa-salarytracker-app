@@ -22,15 +22,14 @@ final class WidgetStateStoreTests: XCTestCase {
         super.tearDown()
     }
 
-    func testLoadMissingReturnsDefaultBothEnabled() {
-        // Primera ejecución: sin archivo → ambas ubicaciones activas.
+    func testLoadMissingReturnsDefaultEnabled() {
+        // Primera ejecución: sin archivo → widgets activados.
         XCTAssertEqual(store.load(), .default)
-        XCTAssertTrue(store.load().menuBar)
-        XCTAssertTrue(store.load().notificationCenter)
+        XCTAssertTrue(store.load().enabled)
     }
 
     func testSaveLoadRoundtrip() {
-        let state = WidgetState(menuBar: false, notificationCenter: true)
+        let state = WidgetState(enabled: false, language: "en")
         store.save(state)
         XCTAssertEqual(store.load(), state)
     }
@@ -43,7 +42,7 @@ final class WidgetStateStoreTests: XCTestCase {
 
     func testWrongSchemaVersionFallsBackToDefault() throws {
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let json = Data(#"{"v": 99, "state": {"menuBar": true, "notificationCenter": true}}"#.utf8)
+        let json = Data(#"{"v": 99, "state": {"enabled": true}}"#.utf8)
         try json.write(to: store.fileURL)
         XCTAssertEqual(store.load(), .default)
     }
@@ -51,22 +50,35 @@ final class WidgetStateStoreTests: XCTestCase {
     func testSaveCreatesDirectoryIfNeeded() {
         let nested = dir.appendingPathComponent("a/b", isDirectory: true)
         let s = WidgetStateStore(directory: nested)
-        s.save(WidgetState(menuBar: true, notificationCenter: false))
-        XCTAssertEqual(s.load(), WidgetState(menuBar: true, notificationCenter: false))
+        s.save(WidgetState(enabled: false))
+        XCTAssertEqual(s.load(), WidgetState(enabled: false))
     }
 
-    func testLegacyFileWithoutLanguageDecodesWithDefaults() throws {
-        // Schema v1 anterior (sin la clave `language`): debe decodificar y
-        // conservar los flags, con language == nil.
+    func testV1MigrationEitherSurfaceOnMigratesToEnabled() throws {
+        // Schema v1 (toggles por superficie): si CUALQUIERA estaba activa,
+        // los widgets se consideran activos.
         let json = Data(#"{"v": 1, "state": {"menuBar": false, "notificationCenter": true}}"#.utf8)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         try json.write(to: store.fileURL)
-        let loaded = store.load()
-        XCTAssertEqual(loaded, WidgetState(menuBar: false, notificationCenter: true, language: nil))
+        XCTAssertEqual(store.load(), WidgetState(enabled: true, language: nil))
+    }
+
+    func testV1MigrationBothOffMigratesToDisabled() throws {
+        let json = Data(#"{"v": 1, "state": {"menuBar": false, "notificationCenter": false}}"#.utf8)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try json.write(to: store.fileURL)
+        XCTAssertEqual(store.load(), WidgetState(enabled: false, language: nil))
+    }
+
+    func testV1MigrationPreservesLanguage() throws {
+        let json = Data(#"{"v": 1, "state": {"menuBar": true, "notificationCenter": true, "language": "pt-BR"}}"#.utf8)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try json.write(to: store.fileURL)
+        XCTAssertEqual(store.load(), WidgetState(enabled: true, language: "pt-BR"))
     }
 
     func testRemoveDeletesFile() throws {
-        store.save(WidgetState(menuBar: false, notificationCenter: false))
+        store.save(WidgetState(enabled: false))
         store.remove()
         XCTAssertFalse(FileManager.default.fileExists(atPath: store.fileURL.path))
         XCTAssertEqual(store.load(), .default)

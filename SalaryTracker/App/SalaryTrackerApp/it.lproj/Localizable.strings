@@ -103,15 +103,17 @@
 
 /* ── Widget (barra dei menu / Centro notificazioni) ──────────────────────── */
 "section.widgets" = "Widget";
-"widget.toggle.menubar" = "Barra dei menu / Centro di controllo";
-"widget.toggle.notificationCenter" = "Centro notificazioni";
-"widget.guide.menubar" = "Per aggiungerlo: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker · Barra dei menu” nella galleria e aggiungilo. Se lo disattivi, il widget mostrera “disattivato” in quella posizione.";
-"widget.guide.notificationCenter" = "Per aggiungerlo: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker · Centro notificazioni” nella galleria e aggiungilo. Se lo disattivi, il widget mostrera “disattivato” in quella posizione.";
+"widget.toggle.show" = "Mostra widget";
+"widget.guide" = "Per aggiungerli: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker” e “SalaryTracker · Avanzamento” nella galleria e aggiungili. Se li disattivi, mostreranno “disattivato”.";
 "widget.installed" = "Installato";
-"widget.name.menubar" = "SalaryTracker · Barra dei menu";
-"widget.desc.menubar" = "Il tuo stipendio guadagnato in tempo reale, nella barra dei menu.";
-"widget.name.nc" = "SalaryTracker · Centro notificazioni";
-"widget.desc.nc" = "Il tuo stipendio guadagnato in tempo reale, nel Centro notificazioni.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Denaro guadagnato, avanzamento e prossimo pagamento.";
+"widget.name.progress" = "SalaryTracker · Avanzamento";
+"widget.desc.progress" = "Avanzamento del periodo e conto alla rovescia al prossimo pagamento.";
+"widget.progressLabel" = "Avanzamento del periodo";
+"widget.remaining" = "Restano";
+"widget.remaining.daysHours" = "%1$d gg, %2$d h";
+"widget.remaining.hoursMinutes" = "%1$d h, %2$d min";
 "widget.earnedLabel" = "Guadagnato";
 "widget.nextPayment" = "Prossimo pagamento";
 "widget.futureStart" = "Il contratto non e ancora iniziato";

@@ -106,15 +106,17 @@
 
 /* ── Widgets (barra de menús / centro de notificaciones) ─────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menubar" = "Barra de menús / Control Center";
-"widget.toggle.notificationCenter" = "Centro de Notificaciones";
-"widget.guide.menubar" = "Para agregarlo: abre Control Center (el botón de dos interruptores en la barra de menús), clic en el lápiz para editar, busca «SalaryTracker · Barra de menús» en la galería y agrégalo. Si lo desactivas, el widget mostrará «desactivado» en ese lugar.";
-"widget.guide.notificationCenter" = "Para agregarlo: abre Control Center (el botón de dos interruptores en la barra de menús), clic en el lápiz para editar, busca «SalaryTracker · Centro de Notificaciones» en la galería y agrégalo. Si lo desactivas, el widget mostrará «desactivado» en ese lugar.";
+"widget.toggle.show" = "Mostrar widgets";
+"widget.guide" = "Para agregarlos: abre Control Center (el botón de dos interruptores en la barra de menús), clic en el lápiz para editar, busca «SalaryTracker» y «SalaryTracker · Avance» en la galería y agrégalos. Si los desactivas, mostrarán «desactivado».";
 "widget.installed" = "Instalado";
-"widget.name.menubar" = "SalaryTracker · Barra de menús";
-"widget.desc.menubar" = "Tu sueldo ganado en tiempo real, en la barra de menús.";
-"widget.name.nc" = "SalaryTracker · Centro de Notificaciones";
-"widget.desc.nc" = "Tu sueldo ganado en tiempo real, en el Centro de Notificaciones.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Dinero ganado, progreso y próximo pago.";
+"widget.name.progress" = "SalaryTracker · Avance";
+"widget.desc.progress" = "Avance del período y cuenta atrás al próximo pago.";
+"widget.progressLabel" = "Avance del período";
+"widget.remaining" = "Quedan";
+"widget.remaining.daysHours" = "%1$d d, %2$d h";
+"widget.remaining.hoursMinutes" = "%1$d h, %2$d min";
 "widget.earnedLabel" = "Ganado";
 "widget.nextPayment" = "Próximo pago";
 "widget.futureStart" = "El contrato aún no comienza";

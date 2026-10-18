@@ -38,7 +38,7 @@ final class AppModel: ObservableObject {
     private var timer: Timer?
     private var observers: [NSObjectProtocol] = []
 
-    init(store: ConfigStore = ConfigStore(),
+    init(store: ConfigStore = ConfigStore(directory: SharedPaths.stateDirectory),
          engine: TrackerEngine = TrackerEngine(),
          clock: Clock = SystemClock(),
          language: LanguageManager = LanguageManager(),

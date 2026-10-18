@@ -2,22 +2,34 @@
 
 ## Contexto
 
-macOS 13+ expone dos superficies de widgets distintas para una misma app:
-Control Center / barra de menús y Centro de Notificaciones. WidgetKit **no
-permite a la app colocar ni quitar widgets** de un lugar (eso lo hace el
-usuario desde la galería). El estado de la app (sueldo, regla, inicio) vive
-en `config.json`; la extensión no puede correr código de la app, así que la
-comunicación app → extensión es **solo por archivos** (no hay
-`AppGroup` compartido en este diseño).
+macOS 13+ expone superficies de widgets (Control Center / barra de menús y
+Centro de Notificaciones); en **macOS 26 se unifican en un solo panel**, por
+lo que widgets de kinds distintos se colocan juntos (verificado en logs de
+chronod: todas las instancias de la app aparecen en el mismo panel).
+WidgetKit **no permite a la app colocar ni quitar widgets** de un lugar (eso
+lo hace el usuario desde la galería). El estado de la app (sueldo, regla,
+inicio) vive en `config.json`; la extensión no puede correr código de la
+app, así que la comunicación app → extensión es **solo por archivos** (no
+hay `AppGroup` compartido en este diseño).
 
 ## Decisiones
 
-### D1 — Dos kinds, un mismo contenido
-`SalaryTrackerMenuBar` y `SalaryTrackerNotificationCenter` comparten
-provider, timeline y vista; difieren solo en `id`/`displayName` y en su
-toggle independiente. Razón: los interruptores son **por superficie** (diseño
-A confirmado por el usuario) y WidgetKit requiere un kind distinto por
-superficie para permitir colocaciones independientes.
+### D1 — Dos kinds, contenido diferenciado (revisión)
+`SalaryTrackerMenuBar` («SalaryTracker», variante *main*) y
+`SalaryTrackerNotificationCenter` («SalaryTracker · Avance», variante
+*progress*) comparten provider y estrategia de timeline; difieren en
+`id`/`displayName` y en la vista. **Los IDs de kind se conservan** de la
+primera versión: son la identidad de la colocación y renombrarlos huérfanos
+los widgets ya colocados.
+
+Revisión (la v1 usaba un toggle **por superficie** —barra de menús vs.
+Centro de Notificaciones—): en macOS 26 ambos widgets se colocan juntos en
+el **mismo panel** (Control Center / Centro de Notificaciones unificados),
+por lo que el par de toggles no se correspondía con la realidad del sistema
+y los nombres «… Barra de menús» / «… Centro de Notificaciones» no
+describían la ubicación real. Se sustituye por un **switch maestro único**
+(D6) y contenido diferenciado: *main* (dinero ganado LCD + progreso +
+próximo pago) y *progress* (% + barra + próximo pago + cuenta atrás).
 
 ### D2 — Timeline de 60 entradas (1/min, 1 h)
 El widget muestra dinero ganado **por segundo**. El
@@ -33,16 +45,21 @@ arranque), lo cual hace el efecto «inmediato» en la práctica.
 ### D3 — Estado compartido por archivo: `widget-state.json`
 `WidgetState` (struct) + `WidgetStateStore` (carga/escritura atómica) en el
 core, junto a `config.json`
-(`~/Library/Application Support/SalaryTracker/widget-state.json`):
+(`~/Library/Application Support/SalaryTracker/widget-state.json`), esquema
+**v2**:
 
 ```json
-{ "v": 1, "state": { "menuBar": true, "notificationCenter": true, "language": "en" } }
+{ "v": 2, "state": { "enabled": true, "language": "en" } }
 ```
 
 - **Solo la app escribe**; la extensión es de solo-lectura.
 - `language`: `nil` (clave omitida) = idioma del sistema; resto = código
   corto (`es`/`en`/`pt-BR`/`it`/`de`/`fr`).
-- Ausente o corrupto → `.default` (ambos toggles ON), nunca un error.
+- **Migración v1→v2** al cargar: el esquema v1
+  (`{ "v": 1, "state": { "menuBar": bool, "notificationCenter": bool, "language": … } }`)
+  migra a `enabled = menuBar || notificationCenter` conservando `language`.
+- Ausente, corrupto o de esquema desconocido → `.default` (`enabled: true`),
+  nunca un error.
 - Se reescribe con swap atómico (mismo patrón que `config.json`).
 
 ### D4 — La extensión re-deriva, no recibe snapshots
@@ -61,15 +78,16 @@ sistema. Claves `widget.*` duplicadas en los 6 `Localizable.strings` de la
 extensión (no comparten bundle con la app).
 
 ### D6 — «Desactivado» = pintar, no remover
-El toggle OFF no puede quitar el widget del lugar (restricción de la
-plataforma). Con OFF, el widget colocado muestra un estado explícito «Widget
-desactivado» en gris; con ON vuelve a pintar datos. Es un **interruptor
-maestro de superficie**, no de colocación.
+El switch OFF no puede quitar el widget del lugar (restricción de la
+plataforma). Con OFF, cada widget colocado muestra un estado explícito
+«Widget desactivado» en gris; con ON vuelve a pintar datos. Es un
+**interruptor maestro de contenido** (común a los dos kinds), no de
+colocación.
 
 ### D7 — Detección de instalación (advisoria)
 `WidgetService.refreshDetection()` usa `WidgetCenter.getCurrentConfigurations`
-(macro macOS 13+) para marcar «Instalado» bajo cada toggle cuando el kind ya
-está colocado. Es solo informativo: la app nunca muta la colocación.
+(macro macOS 13+) para marcar «Instalado» junto al switch maestro por cada
+kind ya colocado. Es solo informativo: la app nunca muta la colocación.
 
 ### D8 — Embedding vía script phase
 La fase de copy-file estándar (`CONTENTS_FOLDER_PATH/PlugIns`) produce
@@ -84,8 +102,17 @@ de app**, no en el proyecto.
 
 ## Alternativas descartadas
 
-- **Un solo kind**: no permitiría toggles por superficie independientes.
-- **`NSUbiquitousContainer`/AppGroup**: sobreingeniería para 2 toggles + 1
+- **Un solo kind**: no permitiría dos variantes de contenido con
+  colocaciones independientes (el usuario puede colocar solo una de las dos).
+- **Conservar los toggles por superficie (v1)**: en macOS 26 ambos widgets
+  viven en el mismo panel, así que los toggles no controlaban «dónde se ve»
+  sino widgets con nombres que no correspondían a su ubicación (confusión
+  reportada por el usuario). Se prefiere un switch maestro + contenido
+  diferenciado.
+- **Renombrar los IDs de kind** (`…MenuBar`/`…NotificationCenter` → p. ej.
+  `…Main`/`…Progress`): huérfanos las colocaciones existentes; no aporta nada
+  porque el ID es solo identidad interna.
+- **`NSUbiquitousContainer`/AppGroup**: sobreingeniería para 1 switch + 1
   idioma; el patrón existente de la app ya es archivos sueltos + swap atómico.
 - **`TimelineReloadPolicy.atEnd` con 1 entrada**: el widget se congelaría
   entre recargas; 60 entradas de 1 min da sensación de movimiento

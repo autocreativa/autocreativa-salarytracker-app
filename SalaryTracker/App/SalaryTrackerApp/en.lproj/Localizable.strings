@@ -103,15 +103,17 @@
 
 /* ── Widgets (menu bar / Notification Center) ────────────────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menubar" = "Menu bar / Control Center";
-"widget.toggle.notificationCenter" = "Notification Center";
-"widget.guide.menubar" = "To add it: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker · Menu bar” in the gallery and add it. If you turn it off, the widget shows as “disabled” in that spot.";
-"widget.guide.notificationCenter" = "To add it: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker · Notification center” in the gallery and add it. If you turn it off, the widget shows as “disabled” in that spot.";
+"widget.toggle.show" = "Show widgets";
+"widget.guide" = "To add them: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker” and “SalaryTracker · Progress” in the gallery and add them. If you turn them off, they show as “disabled”.";
 "widget.installed" = "Installed";
-"widget.name.menubar" = "SalaryTracker · Menu bar";
-"widget.desc.menubar" = "Your earnings in real time, on the menu bar.";
-"widget.name.nc" = "SalaryTracker · Notification center";
-"widget.desc.nc" = "Your earnings in real time, in Notification Center.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Money earned, progress and next payment.";
+"widget.name.progress" = "SalaryTracker · Progress";
+"widget.desc.progress" = "Period progress and countdown to the next payment.";
+"widget.progressLabel" = "Period progress";
+"widget.remaining" = "Left";
+"widget.remaining.daysHours" = "%1$d d, %2$d h";
+"widget.remaining.hoursMinutes" = "%1$d h, %2$d min";
 "widget.earnedLabel" = "Earned";
 "widget.nextPayment" = "Next payment";
 "widget.futureStart" = "The contract has not started yet";

@@ -11,42 +11,40 @@ import SalaryTrackerCore
 /// - **Recarga**: `reloadTimelines(ofKind:)` ante cambios de configuración o
 ///   de idioma, y al arrancar la app.
 ///
-/// El estado (toggles por superficie + idioma) vive en `WidgetStateStore`
-/// (archivo `widget-state.json` junto a `config.json`): la extensión lo lee
-/// directamente, por lo que la app es su única escritora.
+/// El estado (switch maestro + idioma) vive en `WidgetStateStore`
+/// (archivo `widget-state.json` junto a `config.json`) en el directorio
+/// compartido `~/Library/Application Support/SalaryTracker/` (`SharedPaths`):
+/// la extensión sandboxeada lo lee gracias a su excepción de sandbox.
 @MainActor
 final class WidgetService: ObservableObject {
 
-    /// Kinds de cada superficie de widget (deben coincidir con la extensión).
-    static let menuBarKind = "SalaryTrackerMenuBar"
-    static let notificationCenterKind = "SalaryTrackerNotificationCenter"
+    /// Kinds de cada widget (deben coincidir con la extensión).
+    /// Los IDs se conservan de la primera versión (identidad de colocación).
+    static let mainKind = "SalaryTrackerMenuBar"
+    static let progressKind = "SalaryTrackerNotificationCenter"
 
     /// Kinds de widgets colocados por el usuario (vacío = ninguno).
     @Published private(set) var installedKinds: Set<String> = []
 
-    /// Estado vigente de widgets (toggles por superficie + idioma).
+    /// Estado vigente de widgets (switch maestro + idioma).
     @Published private(set) var state: WidgetState = .default
 
-    private let stateStore = WidgetStateStore()
+    /// Store sobre el directorio compartido con la extensión (ver
+    /// `SharedPaths`): la extensión sandboxeada lo lee vía su excepción
+    /// de sandbox `temporary-exception.files.home-relative-path`.
+    private let stateStore = WidgetStateStore(directory: SharedPaths.stateDirectory)
 
     init() {
         state = stateStore.load()
     }
 
-    /// Bindings de los toggles de la sección «Widgets» (leer del estado
-    /// vigente; al escribir, persisten a disco y recargan los timelines).
+    /// Binding del switch maestro de la sección «Widgets» (leer del estado
+    /// vigente; al escribir, persiste a disco y recarga los timelines).
     /// `@MainActor`: los closures se ejecutan en el thread principal (SwiftUI).
-    @MainActor var menuBarBinding: Binding<Bool> {
+    @MainActor var enabledBinding: Binding<Bool> {
         Binding(
-            get: { self.state.menuBar },
-            set: { newValue in self.updateState { $0.menuBar = newValue } }
-        )
-    }
-
-    @MainActor var notificationCenterBinding: Binding<Bool> {
-        Binding(
-            get: { self.state.notificationCenter },
-            set: { newValue in self.updateState { $0.notificationCenter = newValue } }
+            get: { self.state.enabled },
+            set: { newValue in self.updateState { $0.enabled = newValue } }
         )
     }
 
@@ -91,9 +89,9 @@ final class WidgetService: ObservableObject {
     }
 
     /// Notifica a los widgets que sus datos cambiaron (guardar config,
-    /// cambiar idioma, arranque de la app).
+    /// cambiar idioma, arranque de la app). Recarga los dos kinds.
     func reloadTimelines() {
-        WidgetCenter.shared.reloadTimelines(ofKind: Self.menuBarKind)
-        WidgetCenter.shared.reloadTimelines(ofKind: Self.notificationCenterKind)
+        WidgetCenter.shared.reloadTimelines(ofKind: Self.mainKind)
+        WidgetCenter.shared.reloadTimelines(ofKind: Self.progressKind)
     }
 }

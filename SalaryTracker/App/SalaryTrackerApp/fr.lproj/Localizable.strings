@@ -103,15 +103,17 @@
 
 /* ── Widgets (barre des menus / Centre de notifications) ─────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menubar" = "Barre des menus / Centre de controle";
-"widget.toggle.notificationCenter" = "Centre de notifications";
-"widget.guide.menubar" = "Pour l’ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker · Barre des menus » dans la galerie et ajoutez-le. Si vous le desactivez, le widget s’affichera comme « desactive » a cet endroit.";
-"widget.guide.notificationCenter" = "Pour l’ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker · Centre de notifications » dans la galerie et ajoutez-le. Si vous le desactivez, le widget s’affichera comme « desactive » a cet endroit.";
+"widget.toggle.show" = "Afficher les widgets";
+"widget.guide" = "Pour les ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker » et « SalaryTracker · Progression » dans la galerie et ajoutez-les. Si vous les desactivez, ils s’afficheront comme « desactive ».";
 "widget.installed" = "Installe";
-"widget.name.menubar" = "SalaryTracker · Barre des menus";
-"widget.desc.menubar" = "Votre salaire gagne en temps reel, dans la barre des menus.";
-"widget.name.nc" = "SalaryTracker · Centre de notifications";
-"widget.desc.nc" = "Votre salaire gagne en temps reel, dans le Centre de notifications.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Salaire gagne, progression et prochaine paie.";
+"widget.name.progress" = "SalaryTracker · Progression";
+"widget.desc.progress" = "Progression de la periode et compte a rebours jusqu’a la prochaine paie.";
+"widget.progressLabel" = "Progression de la periode";
+"widget.remaining" = "Restent";
+"widget.remaining.daysHours" = "%1$d j, %2$d h";
+"widget.remaining.hoursMinutes" = "%1$d h, %2$d min";
 "widget.earnedLabel" = "Gagne";
 "widget.nextPayment" = "Prochaine paie";
 "widget.futureStart" = "Le contrat n’a pas encore commence";

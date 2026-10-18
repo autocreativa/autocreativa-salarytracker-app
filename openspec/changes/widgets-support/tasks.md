@@ -1,7 +1,7 @@
-# Estado: 10/10 ítems completos. 111/111 tests en verde (98 core + 13 app).
-# `BUILD SUCCEEDED` (Debug y Release, app + appex) y `TEST SUCCEEDED` (app).
-# Build 1.2.0: `dist/SalaryTracker-1.2.0.dmg` + `/Applications/SalaryTracker.app`
-# desplegados.
+# Estado: 11/11 ítems completos (incluida la sección 5, revisión «ambos»:
+# switch maestro + contenido diferenciado). Core 100/100 tests + app
+# `TEST SUCCEEDED`; `BUILD SUCCEEDED` Release; deploy verificado en vivo.
+# Última verificación v1: 111/111 tests en verde, build 1.2.0 desplegado.
 
 ## 1. Core: estado compartido de widgets
 
@@ -28,3 +28,24 @@
 - [x] 4.2 Smoke en vivo: app corriendo, toggle de idioma → `widget-state.json` con `{"language":"en","menuBar":true,"notificationCenter":true}`; appex con `Localizable.strings` + 5 lproj verificado en bundle
 - [x] 4.3 Versionado 1.2.0 (app + appex), `dist/SalaryTracker-1.2.0.dmg` (UDZO, app + symlink `/Applications`), `dist/SalaryTracker.app` y `/Applications/SalaryTracker.app` actualizados
 - [x] 4.4 Docs: README (estructura, sección «Widgets», `widget-state.json`, estado del proyecto) y este change de openspec
+
+## 5. Revisión «ambos»: switch maestro + contenido diferenciado
+
+Antecedente: los widgets no se desactivaban como esperaba el usuario — en
+macOS 26 ambos kinds viven en el **mismo panel** y los toggles por
+superficie no se correspondían con la ubicación real (los nombres de cada
+widget describían la superficie «opuesta»). Diagnóstico completado
+(estrategia de rutas `getpwuid` verificada vía log de chronod + estado vivo
+del archivo; sin código de diagnóstico residual).
+
+- [x] 5.1 Core `WidgetState.swift`: `WidgetState { enabled: Bool; language: String? }`, esquema v2 + migración v1 (`enabled = menuBar || notificationCenter`, conserva `language`); v desconocida/corrupto → `.default`
+- [x] 5.2 `WidgetStateTests`: actualización a `enabled` + 3 tests de migración v1 (uno ON → ON, ambos OFF → OFF, conserva `language`) + roundtrip/corrupto/esquema errado/directorio/`remove()`
+- [x] 5.3 Provider `SalaryProvider.swift`: `WidgetSurface` → `WidgetStyle { main, progress }`; `Status.active` con `remaining`; estados de mensaje unificados en `Status.message(WidgetMessage)`; `remainingText` (días/horas o horas/minutos vía `String(format:locale:)`); `guard state.enabled`
+- [x] 5.4 `SalaryTrackerWidgetBundle.swift`: nombres «SalaryTracker» / «SalaryTracker · Avance» + descripciones nuevas; kind NC usa `ProgressWidgetView`; IDs de kind conservados
+- [x] 5.5 `SalaryWidgetViews.swift`: `ProgressWidgetView` (small/medium: % LCD, barra, próximo pago, cuenta atrás) + `WidgetMessageView` compartido
+- [x] 5.6 App `WidgetService.swift`: `enabledBinding` (reemplaza los 2 bindings por superficie); `mainKind`/`progressKind`
+- [x] 5.7 `SettingsView.swift`: switch maestro único + líneas «Instalado» por widget + guion único de galería
+- [x] 5.8 `Localizable.strings` ×6: se retiran 8 claves de toggles/nombres por superficie; se agregan `widget.toggle.show`, `widget.guide`, `widget.name.main/desc.main`, `widget.name.progress/desc.progress`, `widget.progressLabel`, `widget.remaining`, `widget.remaining.daysHours/hoursMinutes`
+- [x] 5.9 Tests: core 100/100 (`swift test`, +3 migración v1) y app `TEST SUCCEEDED` (`xcodebuild test`); `BUILD SUCCEEDED` Release con appex
+- [x] 5.10 Deploy + smoke: pkill extensión (proceso viejo), re-firma appex→app, `lsregister`, `/Applications/SalaryTracker.app` desplegado; verificado en `/tmp/chrono-boot.log`: extensión nueva carga estado v2, `SalaryTrackerMenuBar` reload «succeeded with 60 entries» / «Reload success»
+- [x] 5.11 Docs: README sección «Widgets» (switch maestro, nombres, `widget-state.json` v2, changelog)

@@ -238,50 +238,47 @@ struct SettingsView: View {
     /// Cada toggle muestra guion inline de colocación (galería de widgets);
     /// si la detección de `WidgetService` ya ve el kind instalado, el guion
     /// se reemplaza por un check «instalado».
+    /// Sección «Widgets»: switch maestro único (los dos widgets viven en el
+    /// mismo panel de macOS 26, así que se activan juntos) + estado de
+    /// colocación de cada widget (check «instalado» o guion de galería).
     private var widgetsSection: some View {
         SectionCard(title: L10n.str("section.widgets"), systemImage: "square.grid.2x2") {
-            VStack(spacing: 14) {
-                widgetToggle(
-                    titleKey: "widget.toggle.menubar",
-                    kind: WidgetService.menuBarKind,
-                    guideKey: "widget.guide.menubar",
-                    binding: model.widgetService.menuBarBinding
-                )
-                widgetToggle(
-                    titleKey: "widget.toggle.notificationCenter",
-                    kind: WidgetService.notificationCenterKind,
-                    guideKey: "widget.guide.notificationCenter",
-                    binding: model.widgetService.notificationCenterBinding
-                )
+            Toggle(isOn: model.widgetService.enabledBinding) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(L10n.str("widget.toggle.show"))
+                        .font(Theme.body(13, .semibold))
+                        .foregroundStyle(Theme.ink)
+                    installedLine(nameKey: "widget.name.main",
+                                  kind: WidgetService.mainKind)
+                    installedLine(nameKey: "widget.name.progress",
+                                  kind: WidgetService.progressKind)
+                    if model.widgetService.installedKinds.isEmpty {
+                        Text(L10n.str("widget.guide"))
+                            .font(Theme.body(11))
+                            .foregroundStyle(Theme.inkFaint)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
             }
+            .toggleStyle(.switch)
+            .tint(Theme.forest)
         }
     }
 
-    /// Un toggle de superficie: título + subtítulo de guía (o check «instalado»
-    /// si `WidgetService` detecta el kind colocado) + switch verde.
-    private func widgetToggle(titleKey: String,
-                              kind: String,
-                              guideKey: String,
-                              binding: Binding<Bool>) -> some View {
-        Toggle(isOn: binding) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.str(titleKey))
-                    .font(Theme.body(13, .semibold))
-                    .foregroundStyle(Theme.ink)
-                if model.widgetService.isInstalled(kind) {
-                    Label(L10n.str("widget.installed"), systemImage: "checkmark.circle.fill")
-                        .font(Theme.body(11))
-                        .foregroundStyle(Theme.forest)
-                } else {
-                    Text(L10n.str(guideKey))
-                        .font(Theme.body(11))
-                        .foregroundStyle(Theme.inkFaint)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+    /// Línea de estado de un widget: «{nombre} — instalado» (check verde)
+    /// si `WidgetService` detecta el kind colocado; `nil` en caso contrario.
+    @ViewBuilder
+    private func installedLine(nameKey: String, kind: String) -> some View {
+        if model.widgetService.isInstalled(kind) {
+            HStack(spacing: 4) {
+                Text(L10n.str(nameKey))
+                    .font(Theme.body(11, .medium))
+                    .foregroundStyle(Theme.inkSoft)
+                Label(L10n.str("widget.installed"), systemImage: "checkmark.circle.fill")
+                    .font(Theme.body(11))
+                    .foregroundStyle(Theme.forest)
             }
         }
-        .toggleStyle(.switch)
-        .tint(Theme.forest)
     }
 
     @ViewBuilder

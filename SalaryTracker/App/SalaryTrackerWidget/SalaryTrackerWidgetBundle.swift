@@ -3,52 +3,57 @@ import SwiftUI
 
 /// Bundle de widgets de SalaryTracker (feature: widgets).
 ///
-/// Dos **kinds** comparten la misma vista y la misma lógica de provider,
-/// pero cada uno honra su propio switch maestro de Configuración
-/// (decisión de diseño: activar/desactivar **por superficie** — WidgetKit no
-/// expone la ubicación de colocación del widget, por lo que un kind por
-/// superficie es la única forma de que el toggle funcione de forma
-/// determinista):
+/// Dos **kinds** con **contenido diferenciado** (en macOS 26 ambos se
+/// colocan juntos en el mismo panel — Control Center / Centro de
+/// Notificaciones unificados —, así que no tiene sentido activarlos por
+/// superficie):
 ///
-/// - `SalaryTrackerMenuBar`: widget para la **barra de menú (Control
-///   Center)**; honra `WidgetState.menuBar`.
-/// - `SalaryTrackerNotificationCenter`: widget para el **Centro de
-///   Notificaciones** (panel que se abre al hacer clic en el reloj);
-///   honra `WidgetState.notificationCenter`.
+/// - `SalaryTrackerMenuBar` → «SalaryTracker» (variante *main*): dinero
+///   ganado (LCD), progreso y próximo pago.
+/// - `SalaryTrackerNotificationCenter` → «SalaryTracker · Avance»
+///   (variante *progress*): avance del período y cuenta atrás al próximo
+///   pago.
 ///
-/// La colocación en cada superficie la hace el usuario desde la galería de
+/// La activación la controla el switch maestro único de Configuración
+/// (`WidgetState.enabled`), común a ambos kinds. Los **IDs de kind no se
+/// renombraron** a propósito: son la identidad de la colocación y
+/// cambiarlos huérfanos los widgets que el usuario ya colocó.
+///
+/// La colocación en el panel la hace el usuario desde la galería de
 /// widgets de macOS (no existe API pública para forzar la colocación).
 @main
 struct SalaryTrackerWidgetBundle: WidgetBundle {
 
     var body: some Widget {
-        SalaryMenuBarWidget()
-        SalaryNotificationCenterWidget()
+        SalaryMainWidget()
+        SalaryProgressWidget()
     }
 }
 
-/// Widget para la barra de menú (Control Center).
-struct SalaryMenuBarWidget: Widget {
+/// Widget principal: dinero ganado, progreso y próximo pago.
+struct SalaryMainWidget: Widget {
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "SalaryTrackerMenuBar", provider: SalaryTimelineProvider(surface: .menuBar)) { entry in
+        StaticConfiguration(kind: "SalaryTrackerMenuBar",
+                            provider: SalaryTimelineProvider(style: .main)) { entry in
             SalaryWidgetView(entry: entry)
         }
-        .configurationDisplayName(L10nWidget.str("widget.name.menubar"))
-        .description(L10nWidget.str("widget.desc.menubar"))
+        .configurationDisplayName(L10nWidget.str("widget.name.main"))
+        .description(L10nWidget.str("widget.desc.main"))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
-/// Widget para el Centro de Notificaciones (panel del reloj).
-struct SalaryNotificationCenterWidget: Widget {
+/// Widget de avance: progreso del período y cuenta atrás al próximo pago.
+struct SalaryProgressWidget: Widget {
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "SalaryTrackerNotificationCenter", provider: SalaryTimelineProvider(surface: .notificationCenter)) { entry in
-            SalaryWidgetView(entry: entry)
+        StaticConfiguration(kind: "SalaryTrackerNotificationCenter",
+                            provider: SalaryTimelineProvider(style: .progress)) { entry in
+            ProgressWidgetView(entry: entry)
         }
-        .configurationDisplayName(L10nWidget.str("widget.name.nc"))
-        .description(L10nWidget.str("widget.desc.nc"))
+        .configurationDisplayName(L10nWidget.str("widget.name.progress"))
+        .description(L10nWidget.str("widget.desc.progress"))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

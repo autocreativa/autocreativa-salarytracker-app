@@ -103,15 +103,17 @@
 
 /* ── Widgets (barra de menus / centro de notificacoes) ───────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menubar" = "Barra de menus / Central de Controle";
-"widget.toggle.notificationCenter" = "Centro de Notificações";
-"widget.guide.menubar" = "Para adicionar: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker · Barra de menus” na galeria e adicione. Se desativar, o widget aparecera como “desativado” nesse local.";
-"widget.guide.notificationCenter" = "Para adicionar: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker · Centro de Notificacoes” na galeria e adicione. Se desativar, o widget aparecera como “desativado” nesse local.";
+"widget.toggle.show" = "Mostrar widgets";
+"widget.guide" = "Para adiciona-los: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker” e “SalaryTracker · Avanco” na galeria e adicione-os. Se desativa-los, aparecerao como “desativado”.";
 "widget.installed" = "Instalado";
-"widget.name.menubar" = "SalaryTracker · Barra de menus";
-"widget.desc.menubar" = "Seu salario ganho em tempo real, na barra de menus.";
-"widget.name.nc" = "SalaryTracker · Centro de Notificacoes";
-"widget.desc.nc" = "Seu salario ganho em tempo real, no Centro de Notificacoes.";
+"widget.name.main" = "SalaryTracker";
+"widget.desc.main" = "Dinheiro ganho, progresso e proximo pagamento.";
+"widget.name.progress" = "SalaryTracker · Avanco";
+"widget.desc.progress" = "Progresso do periodo e contagem regressiva ate o proximo pagamento.";
+"widget.progressLabel" = "Progresso do periodo";
+"widget.remaining" = "Restam";
+"widget.remaining.daysHours" = "%1$d d, %2$d h";
+"widget.remaining.hoursMinutes" = "%1$d h, %2$d min";
 "widget.earnedLabel" = "Ganho";
 "widget.nextPayment" = "Proximo pagamento";
 "widget.futureStart" = "O contrato ainda nao comeca";

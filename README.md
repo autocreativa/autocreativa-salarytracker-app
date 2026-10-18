@@ -27,7 +27,7 @@ específica).
 │   └── App/
 │       ├── SalaryTracker.xcodeproj   # target de app macOS 13+ (LSUIElement) + target de widget + target de tests
 │       ├── SalaryTrackerApp/         # @main, AppModel, WidgetService, SettingsWindowController, Views/*, AppIcon.icns
-│       ├── SalaryTrackerWidget/      # extensión WidgetKit (2 kinds: barra de menús y Centro de Notificaciones)
+│   ├── SalaryTrackerWidget/      # extensión WidgetKit (2 kinds: «SalaryTracker» y «SalaryTracker · Avance»)
 │       └── SalaryTrackerTests/       # 13 tests de app (8 integración AppModel + 5 render)
 └── openspec/                         # fuente de verdad del diseño
     ├── config.yaml
@@ -142,39 +142,45 @@ Detalles de la implementación:
   las claves, registrarlo en el target (Xcode o `project.pbxproj`) y agregarlo
   a `AppLanguage`, `CFBundleLocalizations` y `knownRegions`.
 
-## Widgets (barra de menús / Centro de Notificaciones)
+## Widgets
 
-SalaryTracker incluye una extensión **WidgetKit** con **dos kinds** (mismo
-diseño, distinto interruptor):
+SalaryTracker incluye una extensión **WidgetKit** con **dos kinds de
+contenido diferenciado** (en macOS 26 ambos se colocan juntos en el mismo
+panel — Control Center / Centro de Notificaciones unificados —, así que se
+activan juntos con un solo switch):
 
-- **SalaryTracker · Barra de menús** — widget para la barra de menús /
-  Control Center.
-- **SalaryTracker · Centro de Notificaciones** — widget para el panel de
-  notificaciones.
+- **SalaryTracker** (kind `SalaryTrackerMenuBar`) — dinero ganado en el
+  período vigente (estilo LCD de la app), progreso y próximo pago.
+- **SalaryTracker · Avance** (kind `SalaryTrackerNotificationCenter`) —
+  porcentaje de avance del período, barra de progreso, próximo pago y
+  cuenta atrás al mismo.
 
-Cada uno muestra el dinero ganado en el período vigente (estilo LCD de la
-app), el progreso y —en la familia *medium*— el próximo pago; y estados de
-mensaje para «contrato aún no comienza», «sin configurar», «configuración
-inválida» y «widget desactivado».
+Ambos soportan las familias *small* y *medium* y los estados de mensaje
+«contrato aún no comienza», «sin configurar», «configuración inválida» y
+«widget desactivado». Los IDs de kind se conservan de la primera versión
+(identidad de la colocación; renombrarlos huérfanos los widgets ya
+colocados).
 
 **Colocación** (el usuario, desde la galería de widgets de macOS): abrir
 Control Center (el botón de dos interruptores en la barra de menús) → clic
-en el lápiz para editar → buscar «SalaryTracker …» y añadirlo. macOS no
-permite a la app colocar ni quitar widgets de un lugar, por eso:
+en el lápiz para editar → buscar «SalaryTracker» y «SalaryTracker · Avance»
+y añadirlos. macOS no permite a la app colocar ni quitar widgets de un
+lugar, por eso:
 
-- En **Configuración → Widgets** hay un **toggle por superficie**:
-  **ON** = el widget muestra datos; **OFF** = si ya está colocado, se pinta
-  en gris con «Widget desactivado» (interruptor maestro, no remoción).
-- Cada toggle muestra el guion de colocación; si la detección
-  (`WidgetCenter.getCurrentConfigurations`, macOS 13+) ya ve el kind
-  instalado, muestra en su lugar un check «Instalado».
+- En **Configuración → Widgets** hay un **switch maestro** («Mostrar
+  widgets»): **ON** = los widgets muestran datos; **OFF** = si ya están
+  colocados, se pintan en gris con «Widget desactivado» (interruptor de
+  contenido, no remoción).
+- Si la detección (`WidgetCenter.getCurrentConfigurations`, macOS 13+) ve
+  un kind instalado, se muestra un check «Instalado» por cada widget
+  colocado; si no hay ninguno, un guion inline de colocación.
 
 **Sincronización**: la app recarga los timelines al guardar la
 configuración, al cambiar el idioma y al arrancar
-(`WidgetCenter.reloadTimelines(ofKind:)`). El estado (toggles + idioma)
-vive en `widget-state.json` (junto a `config.json`); la extensión lo lee
-directamente y resuelve su propio `.lproj` según el idioma guardado — no
-hereda el override de `AppleLanguages` de la app.
+(`WidgetCenter.reloadTimelines(ofKind:)`). El estado (switch maestro +
+idioma) vive en `widget-state.json` (junto a `config.json`); la extensión
+lo lee directamente y resuelve su propio `.lproj` según el idioma guardado
+— no hereda el override de `AppleLanguages` de la app.
 
 ### Config (JSON local)
 
@@ -202,16 +208,22 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
 - La app **solo escribe** el archivo cuando guardas en Configuración
   (swap atómico); un archivo corrupto produce estado `INVALID`, nunca un crash.
 
-`widget-state.json` (misma carpeta, solo lo escribe la app): switches
-maestros de los widgets + idioma para la extensión.
+`widget-state.json` (misma carpeta, solo lo escribe la app; esquema **v2**):
+switch maestro de los widgets + idioma para la extensión.
 
 ```json
-{ "v": 1, "state": { "menuBar": true, "notificationCenter": true, "language": "en" } }
+{ "v": 2, "state": { "enabled": true, "language": "en" } }
 ```
 
+- `enabled`: `false` → los widgets colocados se pintan «desactivado» en
+  gris (no se quitan del lugar).
 - `language`: `nil` → el widget usa el idioma del sistema (se omite la
   clave); el resto, código corto (`es`, `en`, `pt-BR`, `it`, `de`, `fr`).
-- Corrupto o ausente → valores por defecto (ambos activos), nunca un error.
+- **Migración v1→v2** al cargar: el esquema v1
+  (`{ "v": 1, "state": { "menuBar": bool, "notificationCenter": bool, … } }`)
+  migra a `enabled = menuBar || notificationCenter` conservando `language`.
+- Corrupto, ausente o de esquema desconocido → valores por defecto
+  (`enabled: true`), nunca un error.
 
 ## Release
 
@@ -221,6 +233,27 @@ maestros de los widgets + idioma para la extensión.
   macOS 13+), icono y `SHA256SUMS`.
 
 ## Estado del proyecto
+
+### 2026-10-18 — Revisión de widgets: switch maestro + contenido diferenciado
+
+Antecedente: los toggles por superficie de la v1 no se correspondían con la
+realidad en macOS 26 — ambos widgets viven juntos en el mismo panel
+(Control Center / Centro de Notificaciones unificados) y los nombres no
+describían su ubicación, lo que hacía que el widget visible no fuera el que
+desactivaba el switch.
+
+- **Switch maestro único** en Configuración → Widgets («Mostrar widgets»):
+  activa/desactiva el contenido de **ambos** widgets a la vez; con OFF se
+  pintan «desactivado» en gris. Checks «Instalado» por widget colocado y
+  guion único de colocación.
+- **Contenido diferenciado**: «SalaryTracker» (dinero ganado LCD + progreso
+  + próximo pago) y «SalaryTracker · Avance» (% de avance + barra + próximo
+  pago + cuenta atrás). IDs de kind conservados (identidad de la colocación).
+- **`widget-state.json` v2**: `enabled` + `language`, con migración
+  automática desde v1 (`enabled = menuBar || notificationCenter`).
+- 100/100 tests del core (+3 de migración v1) y tests de app en verde;
+  build Release y deploy verificados en vivo (logs de chronod: extensión
+  nueva con estado v2, timelines recomputados con 60 entradas).
 
 ### 2026-10-18 — Widgets en barra de menús y Centro de Notificaciones · build 1.2.0
 
