@@ -57,7 +57,10 @@ final class LoginItemService: ObservableObject {
             isEnabled = (try? service.status == .enabled) ?? enabled
             return true
         } catch {
-            lastError = "No se pudo \(enabled ? "activar" : "desactivar") el inicio automático: \(error.localizedDescription)"
+            // Mensaje localizable (multilenguaje) con el detalle del sistema.
+            lastError = enabled
+                ? L10n.str("loginItem.errorEnable", error.localizedDescription)
+                : L10n.str("loginItem.errorDisable", error.localizedDescription)
             // El estado real puede haber cambiado igualmente; sincronizamos.
             isEnabled = (try? service.status == .enabled) ?? isEnabled
             return false

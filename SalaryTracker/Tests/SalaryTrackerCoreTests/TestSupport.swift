@@ -64,7 +64,7 @@ extension TrackerState {
         if case .futureStart(let s, let p, _, _) = self { return (s, p) }
         return nil
     }
-    var invalidReason: String? {
+    var invalidReason: InvalidReason? {
         if case .invalid(let r) = self { return r }
         return nil
     }

@@ -31,10 +31,20 @@ public struct PeriodView: Equatable, Sendable {
 /// configuration "Reconstrucción del estado al iniciar").
 /// La transición entre estados ocurre exclusivamente al re-evaluar (≤ 1 s).
 public enum TrackerState: Equatable, Sendable {
+    /// Causa estable del estado `invalid` (claves de máquina; la UI traduce
+    /// vía `Localization`).
+    public enum InvalidReason: Equatable, Sendable {
+        /// Fallo de validación de la configuración (claves estables).
+        case validation(ValidationIssue)
+        /// El archivo de configuración no pudo leerse/escribirse (el detalle
+        /// localizable lo mantiene la capa de app, p. ej. `AppModel.loadIssue`).
+        case configStore
+    }
+
     /// Sin configuración persistida (primera ejecución).
     case notConfigured
     /// Configuración inválida (sueldo no positivo, pago anterior al inicio, etc).
-    case invalid(reason: String)
+    case invalid(reason: InvalidReason)
     /// El inicio del contrato está en el futuro: dinero ganado = 0.
     case futureStart(startsAt: Date, firstPayment: Date?, salary: Decimal, currencyCode: String)
     /// Período en curso.

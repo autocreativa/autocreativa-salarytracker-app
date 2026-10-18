@@ -21,8 +21,13 @@ final class AppModel: ObservableObject {
     /// Configuración vigente (vigente persistida, o la pendiente en edición).
     @Published private(set) var config: SalaryConfig?
 
-    /// Mensaje de carga inicial (p. ej. archivo corrupto); `nil` si todo OK.
+    /// Mensaje de carga inicial (p. ej. archivo corrupto, ya localizable);
+    /// `nil` si todo OK.
     @Published private(set) var loadIssue: String?
+
+    /// Idioma de la app (multilenguaje): las vistas leen `language.selection`
+    /// para re-renderizar y para inyectar el locale de fechas/números.
+    @Published var language: LanguageManager
 
     private let store: ConfigStore
     private let engine: TrackerEngine
@@ -32,10 +37,12 @@ final class AppModel: ObservableObject {
 
     init(store: ConfigStore = ConfigStore(),
          engine: TrackerEngine = TrackerEngine(),
-         clock: Clock = SystemClock()) {
+         clock: Clock = SystemClock(),
+         language: LanguageManager = LanguageManager()) {
         self.store = store
         self.engine = engine
         self.clock = clock
+        self.language = language
         // Carga inicial (specs/configuration "Reconstrucción del estado al
         // iniciar"): archivo → config persistida; sin archivo (primera
         // ejecución) → configuración por defecto en memoria (sueldo 553.553
@@ -46,9 +53,9 @@ final class AppModel: ObservableObject {
             self.state = engine.state(config: self.config, now: clock.now)
         } catch {
             self.config = nil
-            self.loadIssue = (error as? ConfigStore.StoreError)?.errorDescription
-                ?? "No se pudo leer la configuración."
-            self.state = .invalid(reason: self.loadIssue ?? "Configuración no legible.")
+            self.loadIssue = (error as? ConfigStore.StoreError)?.localizedMessage
+                ?? L10n.str("store.configUnreadable")
+            self.state = .invalid(reason: .configStore)
         }
         // Arranque inmediato (idempotente): la escena MenuBarExtra no expone
         // `onAppear` a nivel Scene, por lo que el ciclo se inicia al construir
@@ -90,8 +97,8 @@ final class AppModel: ObservableObject {
         } catch {
             // El guardado falló: la configuración previa sigue vigente (spec
             // "Validación antes de guardar": la previa válida se conserva).
-            loadIssue = (error as? ConfigStore.StoreError)?.errorDescription
-                ?? "No se pudo guardar."
+            loadIssue = (error as? ConfigStore.StoreError)?.localizedMessage
+                ?? L10n.str("store.configUnwritable")
         }
     }
 
@@ -131,6 +138,14 @@ final class AppModel: ObservableObject {
         observers.append(NotificationCenter.default.addObserver(
             forName: wake, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.evaluateNow() }
+        })
+        // Cambio de idioma (multilenguaje): `language` es un ObservableObject
+        // anidado (su @Published no publica en este modelo), por lo que el
+        // cambio se propaga manualmente: re-renderiza al instante todas las
+        // vistas que observan este modelo (los textos se re-leen vía `L10n`).
+        observers.append(NotificationCenter.default.addObserver(
+            forName: LanguageManager.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor in self?.objectWillChange.send() }
         })
     }
 }

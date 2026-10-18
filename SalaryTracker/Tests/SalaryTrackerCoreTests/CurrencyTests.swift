@@ -111,14 +111,23 @@ final class CurrencyTests: XCTestCase {
         XCTAssertEqual(CurrencyFormatter.formatRemaining(3671), "01:01:11")
         XCTAssertEqual(CurrencyFormatter.formatRemaining(90_000), "1d 01:00:00")
         XCTAssertEqual(CurrencyFormatter.formatRemaining(-5), "00:00:00")
+        // Sufijo de días localizable (la UI inyecta su etiqueta).
+        XCTAssertEqual(CurrencyFormatter.formatRemaining(90_000, daysSuffix: "j"),
+                       "1j 01:00:00")
     }
 
     func testFormatProgress() {
-        // es_CL: separador decimal "," (p. ej. "67,42 %").
-        let s = CurrencyFormatter.formatProgress(0.6742)
-        XCTAssertTrue(s.contains("67"), s)
-        XCTAssertTrue(s.contains("42"), s)
-        XCTAssertTrue(s.contains("%"), s)
+        // Determinista: locale explícito. El espaciado entre el número y "%"
+        // lo decide el CLDR/ICU del sistema (macOS 27: "67,42%"; versiones
+        // anteriores: "67,42 %"), por lo que se asierte la forma canónica
+        // sin depender del espacio.
+        let s = CurrencyFormatter.formatProgress(0.6742,
+                                                 locale: Locale(identifier: "es_CL"))
+        XCTAssertEqual(s.replacingOccurrences(of: " ", with: ""), "67,42%")
+        // en_US: "67.42%".
+        let s2 = CurrencyFormatter.formatProgress(0.6742,
+                                                  locale: Locale(identifier: "en_US"))
+        XCTAssertEqual(s2.replacingOccurrences(of: " ", with: ""), "67.42%")
     }
 }
 
@@ -129,15 +138,15 @@ final class ConfigValidatorTests: XCTestCase {
     func testValidConfig() {
         let r = ConfigValidator.validate(T.baseConfig())
         XCTAssertTrue(r.isValid)
-        XCTAssertTrue(r.errors.isEmpty)
+        XCTAssertTrue(r.issues.isEmpty)
     }
 
     func testZeroAndNegativeSalaryInvalid() {
         for bad in [Decimal(0), Decimal(-1)] {
             let r = ConfigValidator.validate(T.baseConfig(salary: bad))
             XCTAssertFalse(r.isValid)
-            XCTAssertTrue(r.errors.contains { $0.lowercased().contains("sueldo") },
-                          "\(r.errors)")
+            XCTAssertTrue(r.issues.contains(.salaryNotPositive),
+                          "\(r.issues)")
         }
     }
 
@@ -160,8 +169,8 @@ final class ConfigValidatorTests: XCTestCase {
             rule: .specificDate(LocalDate(year: 2026, month: 9, day: 10)))
         let r = ConfigValidator.validate(config)
         XCTAssertFalse(r.isValid)
-        XCTAssertTrue(r.errors.contains { $0.contains("posterior al inicio") },
-                      "\(r.errors)")
+        XCTAssertTrue(r.issues.contains(.specificDateBeforeStart),
+                      "\(r.issues)")
     }
 
     func testSpecificDateSameDayAsStartIsValid() {
@@ -177,7 +186,7 @@ final class ConfigValidatorTests: XCTestCase {
         let config = T.baseConfig(rule: .monthDay(day: 32))
         let r = ConfigValidator.validate(config)
         XCTAssertFalse(r.isValid)
-        XCTAssertTrue(r.errors.contains { $0.contains("1 y 31") }, "\(r.errors)")
+        XCTAssertTrue(r.issues.contains(.invalidMonthDay), "\(r.issues)")
     }
 
     func testLastWeekdayOutOfRangeInvalid() {

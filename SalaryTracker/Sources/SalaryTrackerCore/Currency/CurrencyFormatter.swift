@@ -43,27 +43,35 @@ public enum CurrencyFormatter {
         return formatter.string(from: NSDecimalNumber(decimal: value)) ?? "\(value)"
     }
 
+    /// Sufijo de días por defecto (se mantiene neutro para no acoplar el core
+    /// a un idioma; la UI lo reemplaza con su etiqueta localizable).
+    public static let daysSuffix = "d"
+
     /// Formatea segundos restantes como "Dd HH:MM:SS" (popover, specs/menubar).
-    /// - Note: Sin días se muestra "HH:MM:SS".
-    public static func formatRemaining(_ seconds: TimeInterval) -> String {
+    /// - Note: Sin días se muestra "HH:MM:SS". El sufijo de días es un parámetro
+    ///   (por defecto `daysSuffix`) para que la UI pueda localizarlo.
+    public static func formatRemaining(_ seconds: TimeInterval,
+                                       daysSuffix: String = daysSuffix) -> String {
         let total = Int(max(0, seconds).rounded())
         let days = total / 86_400
         let hours = (total % 86_400) / 3_600
         let minutes = (total % 3_600) / 60
         let secs = total % 60
         if days > 0 {
-            return String(format: "%dd %02d:%02d:%02d", days, hours, minutes, secs)
+            return String(format: "%d%@ %02d:%02d:%02d", days, daysSuffix, hours, minutes, secs)
         }
         return String(format: "%02d:%02d:%02d", hours, minutes, secs)
     }
 
     /// Porcentaje de progreso con 2 decimales (p. ej. "67.42 %").
-    public static func formatProgress(_ ratio: Double) -> String {
+    /// - Parameter locale: locale de presentación (por defecto, el del sistema).
+    public static func formatProgress(_ ratio: Double,
+                                      locale: Locale = .current) -> String {
         let f = NumberFormatter()
         f.numberStyle = .percent
         f.minimumFractionDigits = 2
         f.maximumFractionDigits = 2
-        f.locale = Locale(identifier: "es_CL")
+        f.locale = locale
         return f.string(from: NSNumber(value: ratio)) ?? ""
     }
 

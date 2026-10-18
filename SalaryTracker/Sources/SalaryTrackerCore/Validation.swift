@@ -1,44 +1,66 @@
 import Foundation
 
+/// Causas estables de configuración inválida (specs/configuration
+/// "Validación antes de guardar").
+///
+/// Son claves de máquina (NO texto para mostrar): la UI las traduce a su
+/// idioma vía `Localizable.strings` (multilenguaje). El core es puro y no
+/// depende de la localización de la app.
+public enum ValidationIssue: String, CaseIterable, Equatable, Sendable, Codable {
+    /// Sueldo cero o negativo.
+    case salaryNotPositive
+    /// Sueldo fuera del rango soportado (> 9 999 999 999 999).
+    case salaryTooLarge
+    /// Código de moneda no es un ISO 4217 válido de 3 letras.
+    case invalidCurrencyCode
+    /// `lastWeekdayOfMonth` con weekday fuera de 1…7.
+    case invalidWeekday
+    /// `monthDay` con día fuera de 1…31.
+    case invalidMonthDay
+    /// `specificDate` anterior al inicio del contrato.
+    case specificDateBeforeStart
+}
+
 /// Validación de configuración antes de persistir (specs/configuration
-/// "Validación antes de guardar"). Mensajes específicos y estables (la UI los
-/// muestra tal cual).
+/// "Validación antes de guardar"). Devuelve causas estables y deterministas
+/// (claves `ValidationIssue`); la traducción a texto visible corresponde a la UI.
 public enum ConfigValidator {
 
     public struct Result: Equatable, Sendable {
         public let isValid: Bool
-        public let errors: [String]
-        public init(isValid: Bool, errors: [String]) {
+        /// Causas estables de invalidación (vacío si es válido).
+        public let issues: [ValidationIssue]
+        public init(isValid: Bool, issues: [ValidationIssue]) {
             self.isValid = isValid
-            self.errors = errors
+            self.issues = issues
         }
     }
 
     /// Valida una configuración candidata.
     public static func validate(_ config: SalaryConfig) -> Result {
-        var errors: [String] = []
+        var issues: [ValidationIssue] = []
 
         // 1) Monto: numérico y positivo.
         if config.salaryAmount <= 0 {
-            errors.append("El sueldo debe ser mayor que cero.")
+            issues.append(.salaryNotPositive)
         } else if config.salaryAmount > 9_999_999_999_999 {
-            errors.append("El sueldo es demasiado grande.")
+            issues.append(.salaryTooLarge)
         }
 
         // 2) Moneda: código ISO de 3 letras.
         if config.currencyCode.count != 3 || !config.currencyCode.allSatisfy(\.isLetter) {
-            errors.append("Selecciona una moneda válida del catálogo.")
+            issues.append(.invalidCurrencyCode)
         }
 
         // 3) Regla de pago completa.
         switch config.paymentRule {
         case .lastWeekdayOfMonth(let weekday):
             if !(1...7).contains(weekday) {
-                errors.append("Día de la semana inválido para la regla de pago.")
+                issues.append(.invalidWeekday)
             }
         case .monthDay(let day):
             if !(1...31).contains(day) {
-                errors.append("El día de pago debe estar entre 1 y 31.")
+                issues.append(.invalidMonthDay)
             }
         case .specificDate:
             break
@@ -48,10 +70,10 @@ public enum ConfigValidator {
         //    local; la hora de referencia es la misma en ambos).
         if case .specificDate(let payDay) = config.paymentRule {
             if payDay < config.contractStart {
-                errors.append("La fecha de pago debe ser posterior al inicio del contrato.")
+                issues.append(.specificDateBeforeStart)
             }
         }
 
-        return Result(isValid: errors.isEmpty, errors: errors)
+        return Result(isValid: issues.isEmpty, issues: issues)
     }
 }

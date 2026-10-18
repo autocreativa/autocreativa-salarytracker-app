@@ -6,9 +6,14 @@ import SalaryTrackerCore
 /// visual de la landing: base crema, tarjetas blancas con borde `sageBorder`,
 /// etiqueta de sección en versalitas y botón primario verde bosque.
 ///
-/// Secciones: Sueldo, Inicio del contrato, Día de pago. Validación +
-/// guardado explícito: el botón se habilita solo con config válida; descartar
-/// no persiste. El resumen recalcula en vivo sobre los valores pendientes.
+/// Secciones: Sueldo, Inicio del contrato, Día de pago, Idioma, Inicio
+/// automático. Validación + guardado explícito: el botón se habilita solo con
+/// config válida; descartar no persiste. El resumen recalcula en vivo sobre
+/// los valores pendientes.
+///
+/// Multilenguaje: los textos salen de `L10n`; el locale de fechas/números
+/// viene de `model.language.effectiveLocale` (picker de idioma en
+/// `languageSection`, persistido por `LanguageManager`).
 struct SettingsView: View {
     @EnvironmentObject var model: AppModel
     /// Cierra la ventana de configuración (la provee `SettingsWindowController`).
@@ -29,11 +34,24 @@ struct SettingsView: View {
 
     private let calculator = SalaryCalculator()
 
+    /// Locale del idioma vigente (para fechas y números).
+    private var locale: Locale { model.language.effectiveLocale }
+
+    /// Reglas de pago (etiqueta nativa vía `L10n`; el rawValue es una clave
+    /// estable, NO el texto visible).
     enum RuleType: String, CaseIterable, Identifiable {
-        case lastFriday = "Último viernes de cada mes"
-        case monthDay = "Día N de cada mes"
-        case specificDate = "Fecha específica"
+        case lastFriday
+        case monthDay
+        case specificDate
         var id: String { rawValue }
+        @MainActor
+        var displayName: String {
+            switch self {
+            case .lastFriday:   return L10n.str("rule.lastFriday")
+            case .monthDay:     return L10n.str("rule.monthDay")
+            case .specificDate: return L10n.str("rule.specificDate")
+            }
+        }
     }
 
     var body: some View {
@@ -46,6 +64,7 @@ struct SettingsView: View {
                     salarySection
                     startSection
                     paymentRuleSection
+                    languageSection
                     startupSection
                 }
                 .padding(16)
@@ -54,6 +73,7 @@ struct SettingsView: View {
         .frame(minWidth: 420, minHeight: 560)
         .background(Theme.base)
         .onAppear(perform: loadCurrent)
+        .id(model.language.selection)   // re-renderiza al cambiar de idioma
     }
 
     // MARK: - Encabezado
@@ -63,17 +83,17 @@ struct SettingsView: View {
             // `padding` extra a la izquierda: deja sitio a los botones de la
             // ventana (titlebar transparente) y replica el mockup de la landing.
             VStack(alignment: .leading, spacing: 1) {
-                Text("Configuración")
+                Text(L10n.str("settings.title"))
                     .font(Theme.display(16, .heavy))
                     .foregroundStyle(Theme.ink)
-                Text("SalaryTracker · datos locales")
+                Text(L10n.str("settings.subtitle"))
                     .font(Theme.mono(10, .medium))
                     .foregroundStyle(Theme.inkFaint)
             }
             Spacer()
-            Button("Descartar") { discard() }
+            Button(L10n.str("button.discard")) { discard() }
                 .buttonStyle(OutlineButtonStyle(compact: true))
-            Button("Guardar") { save() }
+            Button(L10n.str("button.save")) { save() }
                 .buttonStyle(ForestButtonStyle(compact: true))
                 .disabled(!validation.isValid)
         }
@@ -86,10 +106,10 @@ struct SettingsView: View {
     // MARK: - Secciones
 
     private var salarySection: some View {
-        SectionCard(title: "Sueldo", systemImage: "banknote") {
+        SectionCard(title: L10n.str("section.salary"), systemImage: "banknote") {
             VStack(spacing: 10) {
                 FieldBox(focused: salaryFocused) {
-                    TextField("Monto del período", text: $salaryText)
+                    TextField(L10n.str("field.salaryPlaceholder"), text: $salaryText)
                         .textFieldStyle(.plain)
                         .font(Theme.mono(14, .bold))
                         .foregroundStyle(Theme.ink)
@@ -97,7 +117,7 @@ struct SettingsView: View {
                         .onSubmit { formatSalaryField() }
                 }
                 FieldBox {
-                    Picker("Moneda", selection: $currencyCode) {
+                    Picker(L10n.str("label.currency"), selection: $currencyCode) {
                         ForEach(CurrencyCatalog.all, id: \.code) { c in
                             Text("\(c.code)  \(c.symbol)").tag(c.code)
                         }
@@ -108,7 +128,7 @@ struct SettingsView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "dollarsign.circle")
                         .font(.system(size: 11))
-                    Text("El monto corresponde a un período de pago completo.")
+                    Text(L10n.str("salary.hint"))
                         .font(Theme.body(11))
                 }
                 .foregroundStyle(Theme.inkFaint)
@@ -117,28 +137,30 @@ struct SettingsView: View {
     }
 
     private var startSection: some View {
-        SectionCard(title: "Inicio del contrato", systemImage: "calendar") {
+        SectionCard(title: L10n.str("section.contractStart"), systemImage: "calendar") {
             HStack(spacing: 10) {
                 FieldBox {
                     DatePicker("", selection: $startDate, displayedComponents: .date)
                         .labelsHidden()
+                        .environment(\.locale, locale)
                 }
                 FieldBox {
                     DatePicker("", selection: $startTime,
                                displayedComponents: .hourAndMinute)
                         .labelsHidden()
+                        .environment(\.locale, locale)
+                        .frame(width: 140)
                 }
-                .frame(width: 140)
             }
         }
     }
 
     private var paymentRuleSection: some View {
-        SectionCard(title: "Día de pago", systemImage: "clock") {
+        SectionCard(title: L10n.str("section.paymentDay"), systemImage: "clock") {
             VStack(alignment: .leading, spacing: 10) {
                 FieldBox {
-                    Picker("Regla", selection: $ruleType) {
-                        ForEach(RuleType.allCases) { t in Text(t.rawValue).tag(t) }
+                    Picker(L10n.str("label.rule"), selection: $ruleType) {
+                        ForEach(RuleType.allCases) { t in Text(t.displayName).tag(t) }
                     }
                     .pickerStyle(.menu)
                     .labelsHidden()
@@ -146,10 +168,10 @@ struct SettingsView: View {
 
                 switch ruleType {
                 case .lastFriday:
-                    hint("La hora de pago es la hora de inicio del contrato (R-PAYMENT-TIME).")
+                    hint(L10n.str("rule.hint.lastFriday"))
                 case .monthDay:
                     HStack(spacing: 8) {
-                        SectionLabel(text: "Día del mes")
+                        SectionLabel(text: L10n.str("label.dayOfMonth"))
                         FieldBox {
                             TextField("1-31", value: $monthDay, format: .number)
                                 .textFieldStyle(.plain)
@@ -164,19 +186,41 @@ struct SettingsView: View {
                         DatePicker("", selection: $specificDate,
                                    displayedComponents: .date)
                             .labelsHidden()
+                            .environment(\.locale, locale)
                     }
-                    hint("Tras esta fecha el período queda abierto (sin próximo pago).")
+                    hint(L10n.str("rule.hint.specificDate"))
                 }
 
                 if let next = nextPaymentPreview {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.right.circle.fill")
                             .font(.system(size: 11))
-                        Text("Próximo pago: \(DateFmt.dateOnly.string(from: next))")
+                        Text(L10n.str("settings.nextPaymentPreview",
+                                      DateFmt.dateOnly(locale).string(from: next)))
                             .font(Theme.mono(11, .bold))
                     }
                     .foregroundStyle(Theme.mint)
                 }
+            }
+        }
+    }
+
+    @ViewBuilder
+    // MARK: - Idioma
+
+    /// Selector de idioma de la app. El cambio se aplica al instante (los
+    /// textos se re-leen vía `L10n` y el locale se re-inyecta) y persiste en
+    /// `UserDefaults` para el próximo lanzamiento (override `AppleLanguages`).
+    private var languageSection: some View {
+        SectionCard(title: L10n.str("section.language"), systemImage: "globe") {
+            FieldBox {
+                Picker(L10n.str("label.language"), selection: $model.language.selection) {
+                    ForEach(AppLanguage.allCases) { lang in
+                        Text(lang.displayName).tag(lang)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
             }
         }
     }
@@ -188,14 +232,14 @@ struct SettingsView: View {
     /// `LoginItemService`; el toggle aplica el cambio de inmediato y muestra
     /// el error si macOS lo rechaza (p. ej. la app no está en /Applications).
     private var startupSection: some View {
-        SectionCard(title: "Inicio automático", systemImage: "power") {
+        SectionCard(title: L10n.str("section.autostart"), systemImage: "power") {
             VStack(alignment: .leading, spacing: 10) {
                 Toggle(isOn: loginItem.toggleBinding) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Abrir al iniciar sesión")
+                        Text(L10n.str("startup.title"))
                             .font(Theme.body(13, .semibold))
                             .foregroundStyle(Theme.ink)
-                        Text("SalaryTracker se agrega a los elementos de inicio de sesión de macOS y se abre solo al encender la Mac.")
+                        Text(L10n.str("startup.subtitle"))
                             .font(Theme.body(11))
                             .foregroundStyle(Theme.inkFaint)
                             .fixedSize(horizontal: false, vertical: true)
@@ -213,8 +257,6 @@ struct SettingsView: View {
         }
     }
 
-
-
     @ViewBuilder
     private var summaryValues: some View {
         // Recalcula en vivo sobre los valores pendientes (specs/settings-view
@@ -228,19 +270,23 @@ struct SettingsView: View {
         case .futureStart(startsAt: let starts, firstPayment: let firstPay,
                           salary: let salary, currencyCode: let code):
             VStack(spacing: 0) {
-                summaryRow("Sueldo base", CurrencyFormatter.format(salary, code: code))
-                summaryRow("Ganado este mes", CurrencyFormatter.format(Decimal(0), code: code))
-                summaryRow("Total ganado", CurrencyFormatter.format(Decimal(0), code: code))
-                summaryRow("Progreso", CurrencyFormatter.formatProgress(0))
-                summaryRow(firstPay == nil ? "Inicio" : "Primer pago",
-                           DateFmt.dateOnly.string(from: firstPay ?? starts))
+                summaryRow(L10n.str("label.baseSalary"),
+                           CurrencyFormatter.format(salary, code: code, locale: locale))
+                summaryRow(L10n.str("summary.earnedThisMonth"),
+                           CurrencyFormatter.format(Decimal(0), code: code, locale: locale))
+                summaryRow(L10n.str("summary.totalEarned"),
+                           CurrencyFormatter.format(Decimal(0), code: code, locale: locale))
+                summaryRow(L10n.str("label.progress"),
+                           CurrencyFormatter.formatProgress(0, locale: locale))
+                summaryRow(firstPay == nil ? L10n.str("label.start") : L10n.str("popover.firstPayment"),
+                           DateFmt.dateOnly(locale).string(from: firstPay ?? starts))
             }
         case .invalid(let reason):
-            Label(reason, systemImage: "exclamationmark.circle.fill")
+            Label(reason.localizedMessage, systemImage: "exclamationmark.circle.fill")
                 .font(Theme.body(13))
                 .foregroundStyle(Color(hex: 0xC1442E))
         case .notConfigured:
-            Text("Sin valores para resumir.")
+            Text(L10n.str("summary.empty"))
                 .font(Theme.body(13))
                 .foregroundStyle(Theme.inkSoft)
         }
@@ -248,25 +294,33 @@ struct SettingsView: View {
 
     private func summaryView(_ v: PeriodView) -> some View {
         VStack(spacing: 0) {
-            summaryRow("Sueldo base", CurrencyFormatter.format(v.salary, code: v.currencyCode))
-            summaryRow("Ganado este mes", CurrencyFormatter.format(v.earned, code: v.currencyCode), highlight: true)
-            summaryRow("Total ganado", CurrencyFormatter.format(v.totalEarned, code: v.currencyCode))
-            summaryRow("Período",
-                       "\(DateFmt.short.string(from: v.start)) → \(DateFmt.short.string(from: v.end ?? v.start))")
+            summaryRow(L10n.str("label.baseSalary"),
+                       CurrencyFormatter.format(v.salary, code: v.currencyCode, locale: locale))
+            summaryRow(L10n.str("summary.earnedThisMonth"),
+                       CurrencyFormatter.format(v.earned, code: v.currencyCode, locale: locale),
+                       highlight: true)
+            summaryRow(L10n.str("summary.totalEarned"),
+                       CurrencyFormatter.format(v.totalEarned, code: v.currencyCode, locale: locale))
+            summaryRow(L10n.str("popover.period"),
+                       "\(DateFmt.short(locale).string(from: v.start)) → \(DateFmt.short(locale).string(from: v.end ?? v.start))")
             if let end = v.end {
-                summaryRow("Próximo pago", DateFmt.dateOnly.string(from: end))
+                summaryRow(L10n.str("popover.nextPayment"),
+                           DateFmt.dateOnly(locale).string(from: end))
                 if let rem = v.remainingSeconds {
-                    summaryRow("Tiempo restante", CurrencyFormatter.formatRemaining(rem))
+                    summaryRow(L10n.str("popover.timeRemaining"),
+                               CurrencyFormatter.formatRemaining(rem,
+                                                                 daysSuffix: L10n.str("time.daysSuffix")))
                 }
             } else {
-                summaryRow("Próximo pago", "sin próximo pago")
+                summaryRow(L10n.str("popover.nextPayment"),
+                           L10n.str("summary.noNextPayment"))
             }
 
             VStack(alignment: .leading, spacing: 5) {
                 HStack {
-                    SectionLabel(text: "Progreso")
+                    SectionLabel(text: L10n.str("label.progress"))
                     Spacer()
-                    Text(CurrencyFormatter.formatProgress(v.progress))
+                    Text(CurrencyFormatter.formatProgress(v.progress, locale: locale))
                         .font(Theme.mono(11, .bold))
                         .foregroundStyle(Theme.forest)
                 }
@@ -335,14 +389,19 @@ struct SettingsView: View {
 
     // MARK: - Parsing / conversión local
 
+    /// Interpreta el texto del campo de sueldo según el locale del idioma
+    /// vigente (separadores de miles/decimal de ese locale; los espacios se
+    /// tratan como separador de miles adicional).
     private func parseSalary(_ s: String) -> Decimal {
-        var t = s.replacingOccurrences(of: " ", with: "")
-        t = t.replacingOccurrences(of: ".", with: "")   // separador de miles
-        t = t.replacingOccurrences(of: ",", with: ".")  // decimal
-        guard !t.isEmpty, let d = Decimal(string: t, locale: Locale(identifier: "en_US")) else {
-            return 0
-        }
-        return d
+        let nf = NumberFormatter()
+        nf.numberStyle = .decimal
+        nf.locale = locale
+        let normalized = s
+            .replacingOccurrences(of: nf.groupingSeparator, with: "")
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: nf.decimalSeparator, with: ".")
+        guard !normalized.isEmpty else { return 0 }
+        return Decimal(string: normalized, locale: Locale(identifier: "en_US")) ?? 0
     }
 
     private func formatSalaryField() {
@@ -382,12 +441,12 @@ struct SettingsView: View {
         }
     }
 
+    /// Formatea el monto con los separadores del locale del idioma vigente.
     private func groupedString(_ d: Decimal) -> String {
         let f = NumberFormatter()
         f.numberStyle = .decimal
+        f.locale = locale
         f.maximumFractionDigits = CurrencyCatalog.minorUnitDecimals(forCode: currencyCode)
-        f.groupingSeparator = "."
-        f.decimalSeparator = ","
         return f.string(from: NSDecimalNumber(decimal: d)) ?? String(describing: d)
     }
 

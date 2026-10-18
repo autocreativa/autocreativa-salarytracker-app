@@ -1,0 +1,105 @@
+/* ============================================================================
+   SalaryTracker — Localizable.strings (idioma fuente: Español)
+   Claves estables usadas por la UI y por el mapeo de claves del core
+   (SalaryTrackerCore entrega `ValidationIssue` / `InvalidReason`; ver
+   Localization.swift). NO editar las claves; solo sus valores.
+   ========================================================================== */
+
+/* ── Idioma ─────────────────────────────────────────────────────────────── */
+"language.system" = "Idioma del sistema";
+
+/* ── Popover: chips y accesibilidad ─────────────────────────────────────── */
+"chip.configOk" = "Config OK";
+"chip.realtime" = "Tiempo real";
+"chip.openEnded" = "Período abierto: sin próximo pago";
+"a11y.settings" = "Configuración";
+"a11y.notConfigured" = "Salary Tracker: no configurado";
+"a11y.invalidConfig" = "Salary Tracker: configuración inválida";
+"a11y.earned" = "Dinero ganado: %@";
+
+/* ── Popover: secciones ─────────────────────────────────────────────────── */
+"popover.earnedHeader" = "Sueldo ganado";
+"popover.progress" = "Progreso del período";
+"popover.period" = "Período";
+"popover.nextPayment" = "Próximo pago";
+"popover.timeRemaining" = "Tiempo restante";
+"popover.noNextPayment" = "Sin próximo pago";
+"popover.open" = "Abierto";
+"popover.salaryAmount" = "Sueldo %@";
+"popover.firstPayment" = "Primer pago";
+"popover.invalidTitle" = "Configuración inválida";
+
+/* ── Popover: panel LCD ─────────────────────────────────────────────────── */
+"lcd.notStarted" = "FALTA INICIAR";
+"lcd.notStartedFooter" = "El contrato aún no comienza";
+"lcd.rateIdle" = "RATE: —";
+"lcd.rate" = "RATE: %@ / SEG";
+"lcd.earningNow" = "Ganando ahora mismo  %@";
+"lcd.openEndedFooter" = "Período abierto: sueldo completo";
+
+/* ── Popover: bienvenida y botón ────────────────────────────────────────── */
+"welcome.title" = "Bienvenido a Salary Tracker";
+"welcome.body" = "Configura tu sueldo, moneda y regla de pago para empezar a ver tu dinero ganado en tiempo real.";
+"button.configure" = "Configurar";
+
+/* ── Tiempo restante (sufijo de días) ───────────────────────────────────── */
+"time.daysSuffix" = "d";
+
+/* ── Configuración: encabezado ──────────────────────────────────────────── */
+"settings.title" = "Configuración";
+"settings.subtitle" = "SalaryTracker · datos locales";
+"button.discard" = "Descartar";
+"button.save" = "Guardar";
+
+/* ── Configuración: secciones ───────────────────────────────────────────── */
+"section.salary" = "Sueldo";
+"section.contractStart" = "Inicio del contrato";
+"section.paymentDay" = "Día de pago";
+"section.language" = "Idioma";
+"section.autostart" = "Inicio automático";
+
+/* ── Configuración: campos ──────────────────────────────────────────────── */
+"field.salaryPlaceholder" = "Monto del período";
+"label.currency" = "Moneda";
+"label.rule" = "Regla";
+"label.language" = "Idioma de la app";
+"label.dayOfMonth" = "Día del mes";
+"label.baseSalary" = "Sueldo base";
+"label.progress" = "Progreso";
+"label.start" = "Inicio";
+
+/* ── Configuración: textos ──────────────────────────────────────────────── */
+"salary.hint" = "El monto corresponde a un período de pago completo.";
+"rule.lastFriday" = "Último viernes de cada mes";
+"rule.monthDay" = "Día N de cada mes";
+"rule.specificDate" = "Fecha específica";
+"rule.hint.lastFriday" = "La hora de pago es la hora de inicio del contrato (R-PAYMENT-TIME).";
+"rule.hint.specificDate" = "Tras esta fecha el período queda abierto (sin próximo pago).";
+"settings.nextPaymentPreview" = "Próximo pago: %@";
+
+/* ── Configuración: resumen en vivo ─────────────────────────────────────── */
+"summary.earnedThisMonth" = "Ganado este mes";
+"summary.totalEarned" = "Total ganado";
+"summary.empty" = "Sin valores para resumir.";
+"summary.noNextPayment" = "sin próximo pago";
+
+/* ── Inicio automático (login item) ─────────────────────────────────────── */
+"startup.title" = "Abrir al iniciar sesión";
+"startup.subtitle" = "SalaryTracker se agrega a los elementos de inicio de sesión de macOS y se abre solo al encender la Mac.";
+"loginItem.errorEnable" = "No se pudo activar el inicio automático: %@";
+"loginItem.errorDisable" = "No se pudo desactivar el inicio automático: %@";
+
+/* ── Validación de configuración (claves del core) ──────────────────────── */
+"validation.salaryNotPositive" = "El sueldo debe ser mayor que cero.";
+"validation.salaryTooLarge" = "El sueldo es demasiado grande.";
+"validation.invalidCurrencyCode" = "Selecciona una moneda válida del catálogo.";
+"validation.invalidWeekday" = "Día de la semana inválido para la regla de pago.";
+"validation.invalidMonthDay" = "El día de pago debe estar entre 1 y 31.";
+"validation.specificDateBeforeStart" = "La fecha de pago debe ser posterior al inicio del contrato.";
+
+/* ── Archivo de configuración (claves del core) ─────────────────────────── */
+"store.configUnreadable" = "Configuración no legible.";
+"store.configUnwritable" = "No se pudo guardar.";
+"store.corrupted" = "El archivo de configuración está corrupto.";
+"store.unreadable" = "No se pudo leer la configuración: %@";
+"store.writeFailed" = "No se pudo guardar la configuración: %@";

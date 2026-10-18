@@ -1,0 +1,102 @@
+/* ============================================================================
+   SalaryTracker — Localizable.strings (Português — Brasil)
+   ========================================================================== */
+
+/* ── Idioma ─────────────────────────────────────────────────────────────── */
+"language.system" = "Idioma do sistema";
+
+/* ── Popover: chips e acessibilidade ────────────────────────────────────── */
+"chip.configOk" = "Config OK";
+"chip.realtime" = "Tempo real";
+"chip.openEnded" = "Período aberto: sem próximo pagamento";
+"a11y.settings" = "Configurações";
+"a11y.notConfigured" = "Salary Tracker: não configurado";
+"a11y.invalidConfig" = "Salary Tracker: configuração inválida";
+"a11y.earned" = "Dinheiro ganho: %@";
+
+/* ── Popover: seções ────────────────────────────────────────────────────── */
+"popover.earnedHeader" = "Salário ganho";
+"popover.progress" = "Progresso do período";
+"popover.period" = "Período";
+"popover.nextPayment" = "Próximo pagamento";
+"popover.timeRemaining" = "Tempo restante";
+"popover.noNextPayment" = "Sem próximo pagamento";
+"popover.open" = "Aberto";
+"popover.salaryAmount" = "Salário %@";
+"popover.firstPayment" = "Primeiro pagamento";
+"popover.invalidTitle" = "Configuração inválida";
+
+/* ── Popover: painel LCD ────────────────────────────────────────────────── */
+"lcd.notStarted" = "AINDA NÃO INICIADO";
+"lcd.notStartedFooter" = "O contrato ainda não começou";
+"lcd.rateIdle" = "RITMO: —";
+"lcd.rate" = "RITMO: %@ / S";
+"lcd.earningNow" = "Ganhando agora  %@";
+"lcd.openEndedFooter" = "Período aberto: salário completo";
+
+/* ── Popover: boas-vindas e botão ───────────────────────────────────────── */
+"welcome.title" = "Bem-vindo ao Salary Tracker";
+"welcome.body" = "Configure seu salário, moeda e regra de pagamento para começar a ver seu dinheiro ganho em tempo real.";
+"button.configure" = "Configurar";
+
+/* ── Tempo restante (sufixo de dias) ────────────────────────────────────── */
+"time.daysSuffix" = "d";
+
+/* ── Configurações: cabeçalho ───────────────────────────────────────────── */
+"settings.title" = "Configurações";
+"settings.subtitle" = "SalaryTracker · dados locais";
+"button.discard" = "Descartar";
+"button.save" = "Salvar";
+
+/* ── Configurações: seções ──────────────────────────────────────────────── */
+"section.salary" = "Salário";
+"section.contractStart" = "Início do contrato";
+"section.paymentDay" = "Dia de pagamento";
+"section.language" = "Idioma";
+"section.autostart" = "Início automático";
+
+/* ── Configurações: campos ──────────────────────────────────────────────── */
+"field.salaryPlaceholder" = "Valor do período";
+"label.currency" = "Moeda";
+"label.rule" = "Regra";
+"label.language" = "Idioma do app";
+"label.dayOfMonth" = "Dia do mês";
+"label.baseSalary" = "Salário base";
+"label.progress" = "Progresso";
+"label.start" = "Início";
+
+/* ── Configurações: textos ──────────────────────────────────────────────── */
+"salary.hint" = "O valor corresponde a um período de pagamento completo.";
+"rule.lastFriday" = "Última sexta-feira de cada mês";
+"rule.monthDay" = "Dia N de cada mês";
+"rule.specificDate" = "Data específica";
+"rule.hint.lastFriday" = "O horário de pagamento é o horário de início do contrato (R-PAYMENT-TIME).";
+"rule.hint.specificDate" = "Após esta data o período fica aberto (sem próximo pagamento).";
+"settings.nextPaymentPreview" = "Próximo pagamento: %@";
+
+/* ── Configurações: resumo em tempo real ────────────────────────────────── */
+"summary.earnedThisMonth" = "Ganho este mês";
+"summary.totalEarned" = "Total ganho";
+"summary.empty" = "Sem valores para resumir.";
+"summary.noNextPayment" = "sem próximo pagamento";
+
+/* ── Início automático (login item) ─────────────────────────────────────── */
+"startup.title" = "Abrir ao iniciar sessão";
+"startup.subtitle" = "O SalaryTracker é adicionado aos Itens de Login do macOS e abre sozinho quando o Mac liga.";
+"loginItem.errorEnable" = "Não foi possível ativar o início automático: %@";
+"loginItem.errorDisable" = "Não foi possível desativar o início automático: %@";
+
+/* ── Validação de configuração (chaves do core) ─────────────────────────── */
+"validation.salaryNotPositive" = "O salário deve ser maior que zero.";
+"validation.salaryTooLarge" = "O salário é grande demais.";
+"validation.invalidCurrencyCode" = "Selecione uma moeda válida do catálogo.";
+"validation.invalidWeekday" = "Dia da semana inválido para a regra de pagamento.";
+"validation.invalidMonthDay" = "O dia de pagamento deve estar entre 1 e 31.";
+"validation.specificDateBeforeStart" = "A data de pagamento deve ser posterior ao início do contrato.";
+
+/* ── Arquivo de configuração (chaves do core) ───────────────────────────── */
+"store.configUnreadable" = "A configuração não pôde ser lida.";
+"store.configUnwritable" = "Não pôde ser salvo.";
+"store.corrupted" = "O arquivo de configuração está corrompido.";
+"store.unreadable" = "Não foi possível ler a configuração: %@";
+"store.writeFailed" = "Não foi possível salvar a configuração: %@";

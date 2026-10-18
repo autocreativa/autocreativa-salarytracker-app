@@ -18,6 +18,8 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
     /// Muestra (o re-utiliza) la ventana de configuración con el `model` dado.
     func show(model: AppModel) {
         self.model = model
+        // El título sigue el idioma vigente (la ventana puede re-utilizarse).
+        window?.title = L10n.str("settings.title")
         let win: NSWindow
         if let existing = window {
             win = existing
@@ -28,7 +30,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
                 backing: .buffered,
                 defer: false
             )
-            win.title = "Configuración"
+            win.title = L10n.str("settings.title")
             win.delegate = self
             win.isReleasedWhenClosed = false
             win.minSize = NSSize(width: 420, height: 560)
@@ -44,10 +46,12 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             window = win
         }
         // Cada apertura regenera la vista: @State se re-inicializa y
-        // onAppear recarga desde la config vigente.
+        // onAppear recarga desde la config vigente. El locale del idioma
+        // vigente inyecta el formateo nativo (DatePicker, Picker, números).
         win.contentViewController = NSHostingController(
             rootView: SettingsView(onClose: { [weak self] in self?.closeWindow() })
                 .environmentObject(model)
+                .environment(\.locale, model.language.effectiveLocale)
         )
         win.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)

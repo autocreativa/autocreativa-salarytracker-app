@@ -23,11 +23,11 @@ struct MenuBarLabel: View {
             // Glifo estático (los system image sí los renderiza MenuBarExtra).
             Image(systemName: "dollarsign")
                 .imageScale(.medium)
-                .accessibilityLabel("Salary Tracker: no configurado")
+                .accessibilityLabel(L10n.str("a11y.notConfigured"))
         case .invalid:
             Image(systemName: "exclamationmark.triangle.fill")
                 .imageScale(.medium)
-                .accessibilityLabel("Salary Tracker: configuración inválida")
+                .accessibilityLabel(L10n.str("a11y.invalidConfig"))
         case .active(let view):
             chip(earned: view.earned, code: view.currencyCode)
         case .futureStart(startsAt: _, firstPayment: _, salary: _, currencyCode: let code):
@@ -44,10 +44,10 @@ struct MenuBarLabel: View {
     @ViewBuilder
     private func chip(earned: Decimal, code: String) -> some View {
         let compact = CurrencyFormatter.formatCompact(earned, code: code)
+        let a11y = L10n.str("a11y.earned", CurrencyFormatter.format(earned, code: code))
         if let image = renderChip(compact, code: code) {
             Image(nsImage: image)
-                .accessibilityLabel(
-                    "Dinero ganado: \(CurrencyFormatter.format(earned, code: code))")
+                .accessibilityLabel(a11y)
         } else {
             // Fallback (si el render fallara): chips SF Symbol + texto.
             HStack(spacing: 3) {
@@ -55,8 +55,7 @@ struct MenuBarLabel: View {
                 Text(compact).font(Theme.mono(10, .bold))
             }
             .foregroundStyle(Theme.lcdDigit)
-            .accessibilityLabel(
-                "Dinero ganado: \(CurrencyFormatter.format(earned, code: code))")
+            .accessibilityLabel(a11y)
         }
     }
 

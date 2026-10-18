@@ -1,0 +1,102 @@
+/* ============================================================================
+   SalaryTracker — Localizable.strings (English)
+   ========================================================================== */
+
+/* ── Language ───────────────────────────────────────────────────────────── */
+"language.system" = "System language";
+
+/* ── Popover: chips and accessibility ───────────────────────────────────── */
+"chip.configOk" = "Config OK";
+"chip.realtime" = "Real time";
+"chip.openEnded" = "Open period: no next payment";
+"a11y.settings" = "Settings";
+"a11y.notConfigured" = "Salary Tracker: not configured";
+"a11y.invalidConfig" = "Salary Tracker: invalid configuration";
+"a11y.earned" = "Money earned: %@";
+
+/* ── Popover: sections ──────────────────────────────────────────────────── */
+"popover.earnedHeader" = "Salary earned";
+"popover.progress" = "Period progress";
+"popover.period" = "Period";
+"popover.nextPayment" = "Next payment";
+"popover.timeRemaining" = "Time remaining";
+"popover.noNextPayment" = "No next payment";
+"popover.open" = "Open";
+"popover.salaryAmount" = "Salary %@";
+"popover.firstPayment" = "First payment";
+"popover.invalidTitle" = "Invalid configuration";
+
+/* ── Popover: LCD panel ─────────────────────────────────────────────────── */
+"lcd.notStarted" = "NOT YET STARTED";
+"lcd.notStartedFooter" = "The contract has not started yet";
+"lcd.rateIdle" = "RATE: —";
+"lcd.rate" = "RATE: %@ / SEC";
+"lcd.earningNow" = "Earning right now  %@";
+"lcd.openEndedFooter" = "Open period: full salary";
+
+/* ── Popover: welcome and button ────────────────────────────────────────── */
+"welcome.title" = "Welcome to Salary Tracker";
+"welcome.body" = "Set your salary, currency and payment rule to start watching your money earned in real time.";
+"button.configure" = "Configure";
+
+/* ── Time remaining (days suffix) ───────────────────────────────────────── */
+"time.daysSuffix" = "d";
+
+/* ── Settings: header ───────────────────────────────────────────────────── */
+"settings.title" = "Settings";
+"settings.subtitle" = "SalaryTracker · local data";
+"button.discard" = "Discard";
+"button.save" = "Save";
+
+/* ── Settings: sections ─────────────────────────────────────────────────── */
+"section.salary" = "Salary";
+"section.contractStart" = "Contract start";
+"section.paymentDay" = "Payment day";
+"section.language" = "Language";
+"section.autostart" = "Auto start";
+
+/* ── Settings: fields ───────────────────────────────────────────────────── */
+"field.salaryPlaceholder" = "Period amount";
+"label.currency" = "Currency";
+"label.rule" = "Rule";
+"label.language" = "App language";
+"label.dayOfMonth" = "Day of the month";
+"label.baseSalary" = "Base salary";
+"label.progress" = "Progress";
+"label.start" = "Start";
+
+/* ── Settings: texts ────────────────────────────────────────────────────── */
+"salary.hint" = "The amount corresponds to a full payment period.";
+"rule.lastFriday" = "Last Friday of each month";
+"rule.monthDay" = "Day N of each month";
+"rule.specificDate" = "Specific date";
+"rule.hint.lastFriday" = "The payment time is the contract start time (R-PAYMENT-TIME).";
+"rule.hint.specificDate" = "After this date the period stays open (no next payment).";
+"settings.nextPaymentPreview" = "Next payment: %@";
+
+/* ── Settings: live summary ─────────────────────────────────────────────── */
+"summary.earnedThisMonth" = "Earned this month";
+"summary.totalEarned" = "Total earned";
+"summary.empty" = "Nothing to summarize.";
+"summary.noNextPayment" = "no next payment";
+
+/* ── Auto start (login item) ────────────────────────────────────────────── */
+"startup.title" = "Open at login";
+"startup.subtitle" = "SalaryTracker is added to macOS Login Items and opens by itself when the Mac starts.";
+"loginItem.errorEnable" = "Could not enable auto start: %@";
+"loginItem.errorDisable" = "Could not disable auto start: %@";
+
+/* ── Configuration validation (core keys) ───────────────────────────────── */
+"validation.salaryNotPositive" = "The salary must be greater than zero.";
+"validation.salaryTooLarge" = "The salary is too large.";
+"validation.invalidCurrencyCode" = "Select a valid currency from the catalog.";
+"validation.invalidWeekday" = "Invalid weekday for the payment rule.";
+"validation.invalidMonthDay" = "The payment day must be between 1 and 31.";
+"validation.specificDateBeforeStart" = "The payment date must be after the contract start.";
+
+/* ── Configuration file (core keys) ─────────────────────────────────────── */
+"store.configUnreadable" = "Configuration could not be read.";
+"store.configUnwritable" = "Could not be saved.";
+"store.corrupted" = "The configuration file is corrupted.";
+"store.unreadable" = "Could not read the configuration: %@";
+"store.writeFailed" = "Could not save the configuration: %@";

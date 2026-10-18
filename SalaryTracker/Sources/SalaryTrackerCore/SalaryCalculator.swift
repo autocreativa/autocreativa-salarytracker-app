@@ -24,7 +24,7 @@ public struct SalaryCalculator: Sendable {
     ) -> TrackerState {
         // Invariante: sueldo positivo (specs/period-engine "Configuración inválida").
         guard config.salaryAmount > 0 else {
-            return .invalid(reason: "El sueldo debe ser mayor que cero.")
+            return .invalid(reason: .validation(.salaryNotPositive))
         }
 
         let start0 = config.contractStartDate(calendar: calendar)
@@ -46,7 +46,7 @@ public struct SalaryCalculator: Sendable {
             let pay = day.resolve(at: config.contractStartTime, calendar: calendar)
             // Defensivo (la validación lo rechaza en el guardado):
             guard pay > start0 else {
-                return .invalid(reason: "La fecha de pago debe ser posterior al inicio del contrato.")
+                return .invalid(reason: .validation(.specificDateBeforeStart))
             }
             if now < pay {
                 return makeActive(start: start0, end: pay, now: now, config: config)
