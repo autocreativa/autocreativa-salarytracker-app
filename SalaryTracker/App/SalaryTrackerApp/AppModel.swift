@@ -29,6 +29,9 @@ final class AppModel: ObservableObject {
     /// para re-renderizar y para inyectar el locale de fechas/números.
     @Published var language: LanguageManager
 
+    /// Estado de widgets (toggles por superficie + detección de colocación).
+    @Published var widgetService: WidgetService
+
     private let store: ConfigStore
     private let engine: TrackerEngine
     private let clock: Clock
@@ -38,11 +41,13 @@ final class AppModel: ObservableObject {
     init(store: ConfigStore = ConfigStore(),
          engine: TrackerEngine = TrackerEngine(),
          clock: Clock = SystemClock(),
-         language: LanguageManager = LanguageManager()) {
+         language: LanguageManager = LanguageManager(),
+         widgetService: WidgetService = WidgetService()) {
         self.store = store
         self.engine = engine
         self.clock = clock
         self.language = language
+        self.widgetService = widgetService
         // Carga inicial (specs/configuration "Reconstrucción del estado al
         // iniciar"): archivo → config persistida; sin archivo (primera
         // ejecución) → configuración por defecto en memoria (sueldo 553.553
@@ -61,6 +66,12 @@ final class AppModel: ObservableObject {
         // `onAppear` a nivel Scene, por lo que el ciclo se inicia al construir
         // el modelo (main thread).
         start()
+        // Widgets (feature: widgets): sincroniza el idioma al estado de
+        // widgets, recarga los timelines (el widget refleja la config vigente
+        // al abrir la app) y refresca la detección de widgets colocados.
+        widgetService.syncLanguage(language.selection)
+        widgetService.reloadTimelines()
+        widgetService.refreshDetection()
     }
 
     /// Arranca el ciclo de actualización (timer 1 s + observadores de contexto).
@@ -94,6 +105,7 @@ final class AppModel: ObservableObject {
             config = newConfig
             loadIssue = nil
             evaluateNow()
+            widgetService.reloadTimelines()
         } catch {
             // El guardado falló: la configuración previa sigue vigente (spec
             // "Validación antes de guardar": la previa válida se conserva).
@@ -145,7 +157,11 @@ final class AppModel: ObservableObject {
         // vistas que observan este modelo (los textos se re-leen vía `L10n`).
         observers.append(NotificationCenter.default.addObserver(
             forName: LanguageManager.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
-            Task { @MainActor in self?.objectWillChange.send() }
+            Task { @MainActor in
+                guard let self else { return }
+                self.objectWillChange.send()
+                self.widgetService.syncLanguage(self.language.selection)
+            }
         })
     }
 }

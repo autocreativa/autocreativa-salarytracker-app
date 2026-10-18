@@ -100,3 +100,22 @@
 "store.corrupted" = "The configuration file is corrupted.";
 "store.unreadable" = "Could not read the configuration: %@";
 "store.writeFailed" = "Could not save the configuration: %@";
+
+/* ── Widgets (menu bar / Notification Center) ────────────────────────────── */
+"section.widgets" = "Widgets";
+"widget.toggle.menubar" = "Menu bar / Control Center";
+"widget.toggle.notificationCenter" = "Notification Center";
+"widget.guide.menubar" = "To add it: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker · Menu bar” in the gallery and add it. If you turn it off, the widget shows as “disabled” in that spot.";
+"widget.guide.notificationCenter" = "To add it: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker · Notification center” in the gallery and add it. If you turn it off, the widget shows as “disabled” in that spot.";
+"widget.installed" = "Installed";
+"widget.name.menubar" = "SalaryTracker · Menu bar";
+"widget.desc.menubar" = "Your earnings in real time, on the menu bar.";
+"widget.name.nc" = "SalaryTracker · Notification center";
+"widget.desc.nc" = "Your earnings in real time, in Notification Center.";
+"widget.earnedLabel" = "Earned";
+"widget.nextPayment" = "Next payment";
+"widget.futureStart" = "The contract has not started yet";
+"widget.notConfigured" = "Not configured";
+"widget.notConfigured.hint" = "Open SalaryTracker to set up your salary.";
+"widget.invalid" = "Invalid configuration";
+"widget.disabled" = "Widget disabled";

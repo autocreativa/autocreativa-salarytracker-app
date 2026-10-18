@@ -21,17 +21,19 @@ específica).
 .
 ├── SalaryTracker/
 │   ├── Package.swift                 # SwiftPM: librería SalaryTrackerCore (lógica pura, sin UI)
-│   ├── Sources/SalaryTrackerCore/    # modelo, reglas de pago, motor, validación, monedas, ConfigStore
-│   ├── Tests/SalaryTrackerCoreTests/ # 91 tests (XCTest) con reloj manual
+│   ├── Sources/SalaryTrackerCore/    # modelo, reglas de pago, motor, validación, monedas, ConfigStore, WidgetState
+│   ├── Tests/SalaryTrackerCoreTests/ # 98 tests (XCTest) con reloj manual
 │   ├── Scripts/make_icon.swift       # genera App/SalaryTrackerApp/AppIcon.icns desde cero
 │   └── App/
-│       ├── SalaryTracker.xcodeproj   # target de app macOS 13+ (LSUIElement) + target de tests
-│       ├── SalaryTrackerApp/         # @main, AppModel, SettingsWindowController, Views/*, AppIcon.icns
+│       ├── SalaryTracker.xcodeproj   # target de app macOS 13+ (LSUIElement) + target de widget + target de tests
+│       ├── SalaryTrackerApp/         # @main, AppModel, WidgetService, SettingsWindowController, Views/*, AppIcon.icns
+│       ├── SalaryTrackerWidget/      # extensión WidgetKit (2 kinds: barra de menús y Centro de Notificaciones)
 │       └── SalaryTrackerTests/       # 13 tests de app (8 integración AppModel + 5 render)
 └── openspec/                         # fuente de verdad del diseño
     ├── config.yaml
     ├── specs/                        # specs vivas (capacidades)
-    └── changes/salary-tracker-menubar/  # propuesta: design, 6 specs, tasks, acceptance.md
+    ├── changes/salary-tracker-menubar/  # propuesta: design, 6 specs, tasks, acceptance.md
+    └── changes/widgets-support/        # widgets: proposal, design, spec, tasks
 ```
 
 Lo que **no** se versiona (ver [`.gitignore`](.gitignore)): `.build/`,
@@ -50,7 +52,7 @@ Release), `*.profraw`, `.idea/`, `.opencode/` y `.DS_Store`.
 ```bash
 cd SalaryTracker
 
-# 1) Build + tests de la librería core (91 tests)
+# 1) Build + tests de la librería core (98 tests)
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 
 # 2) Build de la app (Debug o Release)
@@ -62,7 +64,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 ## Tests
 
 ```bash
-# Core: 91 tests
+# Core: 98 tests
 cd SalaryTracker
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 
@@ -140,6 +142,39 @@ Detalles de la implementación:
   las claves, registrarlo en el target (Xcode o `project.pbxproj`) y agregarlo
   a `AppLanguage`, `CFBundleLocalizations` y `knownRegions`.
 
+## Widgets (barra de menús / Centro de Notificaciones)
+
+SalaryTracker incluye una extensión **WidgetKit** con **dos kinds** (mismo
+diseño, distinto interruptor):
+
+- **SalaryTracker · Barra de menús** — widget para la barra de menús /
+  Control Center.
+- **SalaryTracker · Centro de Notificaciones** — widget para el panel de
+  notificaciones.
+
+Cada uno muestra el dinero ganado en el período vigente (estilo LCD de la
+app), el progreso y —en la familia *medium*— el próximo pago; y estados de
+mensaje para «contrato aún no comienza», «sin configurar», «configuración
+inválida» y «widget desactivado».
+
+**Colocación** (el usuario, desde la galería de widgets de macOS): abrir
+Control Center (el botón de dos interruptores en la barra de menús) → clic
+en el lápiz para editar → buscar «SalaryTracker …» y añadirlo. macOS no
+permite a la app colocar ni quitar widgets de un lugar, por eso:
+
+- En **Configuración → Widgets** hay un **toggle por superficie**:
+  **ON** = el widget muestra datos; **OFF** = si ya está colocado, se pinta
+  en gris con «Widget desactivado» (interruptor maestro, no remoción).
+- Cada toggle muestra el guion de colocación; si la detección
+  (`WidgetCenter.getCurrentConfigurations`, macOS 13+) ya ve el kind
+  instalado, muestra en su lugar un check «Instalado».
+
+**Sincronización**: la app recarga los timelines al guardar la
+configuración, al cambiar el idioma y al arrancar
+(`WidgetCenter.reloadTimelines(ofKind:)`). El estado (toggles + idioma)
+vive en `widget-state.json` (junto a `config.json`); la extensión lo lee
+directamente y resuelve su propio `.lproj` según el idioma guardado — no
+hereda el override de `AppleLanguages` de la app.
 
 ### Config (JSON local)
 
@@ -167,6 +202,17 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
 - La app **solo escribe** el archivo cuando guardas en Configuración
   (swap atómico); un archivo corrupto produce estado `INVALID`, nunca un crash.
 
+`widget-state.json` (misma carpeta, solo lo escribe la app): switches
+maestros de los widgets + idioma para la extensión.
+
+```json
+{ "v": 1, "state": { "menuBar": true, "notificationCenter": true, "language": "en" } }
+```
+
+- `language`: `nil` → el widget usa el idioma del sistema (se omite la
+  clave); el resto, código corto (`es`, `en`, `pt-BR`, `it`, `de`, `fr`).
+- Corrupto o ausente → valores por defecto (ambos activos), nunca un error.
+
 ## Release
 
 - **v1.0.0** (2026-10-04) — primer release público:
@@ -175,6 +221,27 @@ Ubicación: `~/Library/Application Support/SalaryTracker/config.json`
   macOS 13+), icono y `SHA256SUMS`.
 
 ## Estado del proyecto
+
+### 2026-10-18 — Widgets en barra de menús y Centro de Notificaciones · build 1.2.0
+
+- **Extensión WidgetKit** (`SalaryTrackerWidget`, bundle
+  `dev.triton.salarytracker.widget`, macOS 13+) embebida en
+  `SalaryTracker.app/Contents/PlugIns/`: dos kinds (barra de menús /
+  Centro de Notificaciones), familias small y medium, mismo estilo LCD de
+  la app. Timeline de 60 entradas (1/min) re-derivadas con el motor puro
+  del core; recarga al guardar config, cambiar idioma y al arrancar.
+- **Configuración → Widgets**: toggle por superficie (interruptor maestro;
+  OFF pinta el widget colocado como «desactivado»), guion inline de
+  colocación y check «Instalado» vía
+  `WidgetCenter.getCurrentConfigurations()`.
+- **Estado compartido**: `WidgetState`/`WidgetStateStore` en el core →
+  `widget-state.json` junto a `config.json` (escritura atómica, carga
+  tolerante); la extensión lee el idioma guardado y resuelve su `.lproj`
+  propio (17 claves `widget.*` en los 6 locales).
+- 111/111 tests en verde (98 core + 13 de app).
+- **Build 1.2.0** lista: `SalaryTracker/dist/SalaryTracker-1.2.0.dmg`
+  (SHA256 `8f61d853…7f375e2`), `dist/SalaryTracker.app` (Release) y
+  `/Applications/SalaryTracker.app` actualizados.
 
 ### 2026-10-18 — Multilenguaje: +it/de/fr y fix de «Idioma del sistema» · build 1.1.0
 

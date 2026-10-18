@@ -100,3 +100,22 @@
 "store.corrupted" = "O arquivo de configuração está corrompido.";
 "store.unreadable" = "Não foi possível ler a configuração: %@";
 "store.writeFailed" = "Não foi possível salvar a configuração: %@";
+
+/* ── Widgets (barra de menus / centro de notificacoes) ───────────────────── */
+"section.widgets" = "Widgets";
+"widget.toggle.menubar" = "Barra de menus / Central de Controle";
+"widget.toggle.notificationCenter" = "Centro de Notificações";
+"widget.guide.menubar" = "Para adicionar: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker · Barra de menus” na galeria e adicione. Se desativar, o widget aparecera como “desativado” nesse local.";
+"widget.guide.notificationCenter" = "Para adicionar: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker · Centro de Notificacoes” na galeria e adicione. Se desativar, o widget aparecera como “desativado” nesse local.";
+"widget.installed" = "Instalado";
+"widget.name.menubar" = "SalaryTracker · Barra de menus";
+"widget.desc.menubar" = "Seu salario ganho em tempo real, na barra de menus.";
+"widget.name.nc" = "SalaryTracker · Centro de Notificacoes";
+"widget.desc.nc" = "Seu salario ganho em tempo real, no Centro de Notificacoes.";
+"widget.earnedLabel" = "Ganho";
+"widget.nextPayment" = "Proximo pagamento";
+"widget.futureStart" = "O contrato ainda nao comeca";
+"widget.notConfigured" = "Sem configuracao";
+"widget.notConfigured.hint" = "Abra o SalaryTracker para configurar seu salario.";
+"widget.invalid" = "Configuracao invalida";
+"widget.disabled" = "Widget desativado";
