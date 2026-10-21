@@ -66,6 +66,7 @@ struct SettingsView: View {
                     paymentRuleSection
                     languageSection
                     widgetsSection
+                    menuBarSection
                     startupSection
                 }
                 .padding(16)
@@ -229,40 +230,53 @@ struct SettingsView: View {
     @ViewBuilder
     // MARK: - Widgets
 
-    /// Sección «Widgets»: un toggle por superficie de widget (barra de
-    /// menús/Control Center y Notificaciones). ON = el widget muestra datos;
-    /// OFF = si está colocado, muestra «desactivado» (macOS no permite
-    /// quitarlo del lugar sin intervención del usuario, por lo que el
-    /// toggle actúa como interruptor principal por superficie).
+    /// Sección «Widgets»: dos toggles **idénticos y separados** (uno por
+    /// superficie: barra superior/Control Center y centro de
+    /// notificaciones), separados por un divisor. ON = ese widget muestra
+    /// datos; OFF = si está colocado, muestra «desactivado» (macOS no
+    /// permite quitarlo del lugar sin intervención del usuario, por lo que
+    /// el toggle actúa como interruptor de contenido por superficie).
     ///
-    /// Cada toggle muestra guion inline de colocación (galería de widgets);
-    /// si la detección de `WidgetService` ya ve el kind instalado, el guion
-    /// se reemplaza por un check «instalado».
-    /// Sección «Widgets»: switch maestro único (los dos widgets viven en el
-    /// mismo panel de macOS 26, así que se activan juntos) + estado de
-    /// colocación de cada widget (check «instalado» o guion de galería).
+    /// Si la detección de `WidgetService` ve el kind instalado, bajo el
+    /// título se muestra un check «instalado»; si no hay widgets colocados
+    /// se muestra el guion inline de colocación (galería de widgets).
     private var widgetsSection: some View {
         SectionCard(title: L10n.str("section.widgets"), systemImage: "square.grid.2x2") {
-            Toggle(isOn: model.widgetService.enabledBinding) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(L10n.str("widget.toggle.show"))
-                        .font(Theme.body(13, .semibold))
-                        .foregroundStyle(Theme.ink)
-                    installedLine(nameKey: "widget.name.main",
-                                  kind: WidgetService.mainKind)
-                    installedLine(nameKey: "widget.name.progress",
-                                  kind: WidgetService.progressKind)
-                    if model.widgetService.installedKinds.isEmpty {
-                        Text(L10n.str("widget.guide"))
-                            .font(Theme.body(11))
-                            .foregroundStyle(Theme.inkFaint)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+            VStack(spacing: 10) {
+                widgetToggleRow(labelKey: "widget.toggle.menuBar",
+                                isOn: model.widgetService.menuBarBinding,
+                                nameKey: "widget.name.main",
+                                kind: WidgetService.mainKind)
+                Rectangle().fill(Theme.borderSoft).frame(height: 1)
+                widgetToggleRow(labelKey: "widget.toggle.notificationCenter",
+                                isOn: model.widgetService.notificationCenterBinding,
+                                nameKey: "widget.name.progress",
+                                kind: WidgetService.progressKind)
+                if model.widgetService.installedKinds.isEmpty {
+                    Text(L10n.str("widget.guide"))
+                        .font(Theme.body(11))
+                        .foregroundStyle(Theme.inkFaint)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .toggleStyle(.switch)
-            .tint(Theme.forest)
         }
+    }
+
+    /// Fila de toggle idéntica para cada superficie: título, estado de
+    /// colocación y switch.
+    @ViewBuilder
+    private func widgetToggleRow(labelKey: String, isOn: Binding<Bool>,
+                                 nameKey: String, kind: String) -> some View {
+        Toggle(isOn: isOn) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(L10n.str(labelKey))
+                    .font(Theme.body(13, .semibold))
+                    .foregroundStyle(Theme.ink)
+                installedLine(nameKey: nameKey, kind: kind)
+            }
+        }
+        .toggleStyle(.switch)
+        .tint(Theme.forest)
     }
 
     /// Línea de estado de un widget: «{nombre} — instalado» (check verde)
@@ -287,6 +301,24 @@ struct SettingsView: View {
     /// Opción "Abrir al iniciar sesión" (login item). El estado vive en
     /// `LoginItemService`; el toggle aplica el cambio de inmediato y muestra
     /// el error si macOS lo rechaza (p. ej. la app no está en /Applications).
+    private var menuBarSection: some View {
+        SectionCard(title: L10n.str("section.menuBar"), systemImage: "menubar.rectangle") {
+            Toggle(isOn: $model.showMenuBarChip) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(L10n.str("chip.toggle"))
+                        .font(Theme.body(13, .semibold))
+                        .foregroundStyle(Theme.ink)
+                    Text(L10n.str("chip.subtitle"))
+                        .font(Theme.body(11))
+                        .foregroundStyle(Theme.inkFaint)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .toggleStyle(.switch)
+            .tint(Theme.forest)
+        }
+    }
+
     private var startupSection: some View {
         SectionCard(title: L10n.str("section.autostart"), systemImage: "power") {
             VStack(alignment: .leading, spacing: 10) {

@@ -53,18 +53,27 @@ enum L10nWidget {
     }
 }
 
-/// Variante de contenido de cada kind de widget.
+/// Superficie de cada kind de widget.
 ///
-/// En macOS 26 ambos kinds se colocan juntos en el mismo panel (Control
-/// Center / Centro de Notificaciones unificados), por lo que se
-/// diferencian por **contenido** (no por superficie) y la activación la
-/// controla el switch maestro único `WidgetState.enabled`.
+/// Los dos kinds son **visualmente idénticos** (misma vista: dinero
+/// ganado, progreso y próximo pago) pero son widgets separados, cada uno
+/// con su superficie: la barra superior (Control Center) y el centro de
+/// notificaciones (panel del reloj). La activación la controla un toggle
+/// **por superficie** (`WidgetState.menuBar` / `WidgetState.
+/// notificationCenter`).
 enum WidgetStyle: Sendable {
-    /// «SalaryTracker»: dinero ganado (LCD), progreso y próximo pago.
-    case main
-    /// «SalaryTracker · Avance»: avance del período y cuenta atrás al
-    /// próximo pago.
-    case progress
+    /// «SalaryTracker»: barra superior (Control Center).
+    case menuBar
+    /// «SalaryTracker · Avance»: centro de notificaciones (panel del reloj).
+    case notificationCenter
+
+    /// Toggle de activación correspondiente a esta superficie.
+    func isEnabled(in state: WidgetState) -> Bool {
+        switch self {
+        case .menuBar:             return state.menuBar
+        case .notificationCenter:  return state.notificationCenter
+        }
+    }
 }
 
 /// Estados de mensaje (compartidos por los dos widgets; la vista los
@@ -76,7 +85,7 @@ enum WidgetMessage: Equatable, Sendable {
     case notConfigured
     /// La configuración guardada es inválida.
     case invalid
-    /// Los widgets están desactivados en Configuración (switch maestro).
+    /// El toggle de la superficie está OFF en Configuración.
     case disabled
 }
 
@@ -117,8 +126,9 @@ struct SalaryEntry: TimelineEntry {
 /// presupuesto). Si el inicio futuro del contrato o el fin del período caen
 /// dentro del horizonte, se agrega una entrada de frontera en ese instante.
 ///
-/// `style` marca la variante de contenido (main/avance); la activación la
-/// controla el switch maestro `WidgetState.enabled` (común a ambos kinds).
+/// `style` marca la superficie del kind; la activación la controla el
+/// toggle de esa superficie (`WidgetState.menuBar` / `WidgetState.
+/// notificationCenter`).
 struct SalaryTimelineProvider: TimelineProvider {
 
     let style: WidgetStyle
@@ -142,6 +152,23 @@ struct SalaryTimelineProvider: TimelineProvider {
         let now = Date()
         let config = (try? WidgetPaths.configStore.load()) ?? nil
         let widgetState = WidgetPaths.stateStore.load()
+        // TEMP-DEBUG (diagnóstico; se eliminará): traza cada getTimeline
+        // con el estado leído y el resultado de la primera entrada.
+        let trace: [String: Any] = [
+            "kind": style == .menuBar ? "SalaryTrackerMenuBar" : "SalaryTrackerNotificationCenter",
+            "at": ISO8601DateFormatter().string(from: now),
+            "readMenu": widgetState.menuBar,
+            "readNC": widgetState.notificationCenter,
+            "surfaceEnabled": style.isEnabled(in: widgetState),
+            "first": makeData(now: now, config: config, engine: TrackerEngine(), state: widgetState).status == .message(.disabled) ? "disabled" : "data",
+            "stateFile": WidgetPaths.stateStore.fileURL.lastPathComponent,
+        ]
+        if let d = try? JSONSerialization.data(withJSONObject: trace) {
+            let url = WidgetPaths.directory.appendingPathComponent("widget-trace.json")
+            let arr = (try? JSONSerialization.jsonObject(with: (try? Data(contentsOf: url)) ?? Data()) as? [[String: Any]]) ?? []
+            try? JSONSerialization.data(withJSONObject: arr + [trace], options: [.prettyPrinted])
+                .write(to: url)
+        }
         let engine = TrackerEngine()
         // Detección de fronteras dentro del horizonte (con la config real).
         let stateNow = engine.state(config: config, now: now)
@@ -168,17 +195,18 @@ struct SalaryTimelineProvider: TimelineProvider {
         completion(Timeline(entries: sorted, policy: .after(last)))
     }
 
-    /// Calcula los datos de presentación para `now`, aplicando el switch
-    /// maestro. Re-deriva el estado del tracker para el instante de cada
-    /// entrada (la evaluación es pura; `config`, `engine` y `state` se
-    /// inyectan para no re-leer el disco en cada minuto).
+    /// Calcula los datos de presentación para `now`, aplicando el toggle
+    /// de la superficie de este kind. Re-deriva el estado del tracker
+    /// para el instante de cada entrada (la evaluación es pura; `config`,
+    /// `engine` y `state` se inyectan para no re-leer el disco en cada
+    /// minuto).
     private func makeData(
         now: Date,
         config: SalaryConfig?,
         engine: TrackerEngine,
         state: WidgetState
     ) -> SalaryWidgetData {
-        guard state.enabled else {
+        guard style.isEnabled(in: state) else {
             return SalaryWidgetData(status: .message(.disabled))
         }
         let t = engine.state(config: config, now: now)

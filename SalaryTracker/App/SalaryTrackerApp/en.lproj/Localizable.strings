@@ -10,6 +10,7 @@
 "chip.realtime" = "Real time";
 "chip.openEnded" = "Open period: no next payment";
 "a11y.settings" = "Settings";
+"a11y.menuBarChip" = "Salary chip (SalaryTracker)";
 "a11y.notConfigured" = "Salary Tracker: not configured";
 "a11y.invalidConfig" = "Salary Tracker: invalid configuration";
 "a11y.earned" = "Money earned: %@";
@@ -103,13 +104,17 @@
 
 /* ── Widgets (menu bar / Notification Center) ────────────────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.show" = "Show widgets";
+"widget.toggle.menuBar" = "“SalaryTracker” widget (the one you added: date & time panel and/or Control Center)";
+"widget.toggle.notificationCenter" = "“SalaryTracker · Progress” widget (only appears if you added it to the date & time panel)";
+"section.menuBar" = "Menu bar";
+"chip.toggle" = "Show the salary chip in the menu bar";
+"chip.subtitle" = "Hiding it is temporary: when the app is relaunched (Spotlight or auto-start) the chip comes back.";
 "widget.guide" = "To add them: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker” and “SalaryTracker · Progress” in the gallery and add them. If you turn them off, they show as “disabled”.";
 "widget.installed" = "Installed";
 "widget.name.main" = "SalaryTracker";
-"widget.desc.main" = "Money earned, progress and next payment.";
+"widget.desc.main" = "Money earned, progress and next payment (Control Center)";
 "widget.name.progress" = "SalaryTracker · Progress";
-"widget.desc.progress" = "Period progress and countdown to the next payment.";
+"widget.desc.progress" = "Money earned, progress and next payment (Notification Center)";
 "widget.progressLabel" = "Period progress";
 "widget.remaining" = "Left";
 "widget.remaining.daysHours" = "%1$d d, %2$d h";

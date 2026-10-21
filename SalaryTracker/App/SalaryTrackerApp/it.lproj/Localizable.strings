@@ -10,6 +10,7 @@
 "chip.realtime" = "Tempo reale";
 "chip.openEnded" = "Periodo aperto: nessun prossimo pagamento";
 "a11y.settings" = "Impostazioni";
+"a11y.menuBarChip" = "Stipendio (SalaryTracker)";
 "a11y.notConfigured" = "Salary Tracker: non configurato";
 "a11y.invalidConfig" = "Salary Tracker: configurazione non valida";
 "a11y.earned" = "Soldi guadagnati: %@";
@@ -103,13 +104,17 @@
 
 /* ── Widget (barra dei menu / Centro notificazioni) ──────────────────────── */
 "section.widgets" = "Widget";
-"widget.toggle.show" = "Mostra widget";
+"widget.toggle.menuBar" = "Widget “SalaryTracker” (quello che hai aggiunto: pannello data e ora e/o Centro di controllo)";
+"widget.toggle.notificationCenter" = "Widget “SalaryTracker · Progresso” (compare solo se l’hai aggiunto nel pannello data e ora)";
+"section.menuBar" = "Barra dei menu";
+"chip.toggle" = "Mostra lo stipendio nella barra dei menu";
+"chip.subtitle" = "Nascondere è temporaneo: riaprendo l’app (Spotlight o avvio automatico) il chip torna ad apparire.";
 "widget.guide" = "Per aggiungerli: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker” e “SalaryTracker · Avanzamento” nella galleria e aggiungili. Se li disattivi, mostreranno “disattivato”.";
 "widget.installed" = "Installato";
 "widget.name.main" = "SalaryTracker";
-"widget.desc.main" = "Denaro guadagnato, avanzamento e prossimo pagamento.";
+"widget.desc.main" = "Denaro guadagnato, avanzamento e prossimo pagamento (Centro di controllo).";
 "widget.name.progress" = "SalaryTracker · Avanzamento";
-"widget.desc.progress" = "Avanzamento del periodo e conto alla rovescia al prossimo pagamento.";
+"widget.desc.progress" = "Denaro guadagnato, avanzamento e prossimo pagamento (Centro notificazioni).";
 "widget.progressLabel" = "Avanzamento del periodo";
 "widget.remaining" = "Restano";
 "widget.remaining.daysHours" = "%1$d gg, %2$d h";

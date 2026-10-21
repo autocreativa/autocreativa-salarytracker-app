@@ -21,6 +21,7 @@
 		A10000000000000000000021 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000013 /* AppModel.swift */; };
 		A10000000000000000000077 /* LoginItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000078 /* LoginItemService.swift */; };
 		A10000000000000000000022 /* MenuBarLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000014 /* MenuBarLabel.swift */; };
+		A100000000000000000000A1 /* MenuBarChipController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100000000000000000000A0 /* MenuBarChipController.swift */; };
 		A10000000000000000000023 /* PopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000015 /* PopoverView.swift */; };
 		A10000000000000000000024 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000016 /* SettingsView.swift */; };
 		A10000000000000000000025 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000017 /* AppIcon.icns */; };
@@ -63,6 +64,7 @@
 		A10000000000000000000078 /* LoginItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemService.swift; sourceTree = "<group>"; };
 		A10000000000000000000080 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000000000000000000014 /* MenuBarLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarLabel.swift; sourceTree = "<group>"; };
+		A100000000000000000000A0 /* MenuBarChipController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarChipController.swift; sourceTree = "<group>"; };
 		A10000000000000000000015 /* PopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopoverView.swift; sourceTree = "<group>"; };
 		A10000000000000000000016 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A10000000000000000000017 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = file.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000014 /* MenuBarLabel.swift */,
+				A100000000000000000000A0 /* MenuBarChipController.swift */,
 				A10000000000000000000015 /* PopoverView.swift */,
 				A10000000000000000000016 /* SettingsView.swift */,
 				A10000000000000000000062 /* DigiSeven.swift */,
@@ -383,6 +386,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000020 /* SalaryTrackerApp.swift in Sources */,
+				A100000000000000000000A1 /* MenuBarChipController.swift in Sources */,
 				A10000000000000000000021 /* AppModel.swift in Sources */,
 				A10000000000000000000022 /* MenuBarLabel.swift in Sources */,
 				A10000000000000000000023 /* PopoverView.swift in Sources */,
@@ -506,7 +510,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -528,7 +532,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -580,7 +584,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -605,7 +609,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

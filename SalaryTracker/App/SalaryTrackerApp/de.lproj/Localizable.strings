@@ -10,6 +10,7 @@
 "chip.realtime" = "Echtzeit";
 "chip.openEnded" = "Offener Zeitraum: keine nächste Auszahlung";
 "a11y.settings" = "Einstellungen";
+"a11y.menuBarChip" = "Gehalt-Chip (SalaryTracker)";
 "a11y.notConfigured" = "Salary Tracker: nicht konfiguriert";
 "a11y.invalidConfig" = "Salary Tracker: ungültige Konfiguration";
 "a11y.earned" = "Verdientes Geld: %@";
@@ -103,13 +104,17 @@
 
 /* ── Widgets (Menuleiste / Benachrichtigungscenter) ──────────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.show" = "Widgets anzeigen";
+"widget.toggle.menuBar" = "Widget „SalaryTracker“ (das, das du hinzugefügt hast: Datum/Uhrzeit-Panel und/oder Kontrollzentrum)";
+"widget.toggle.notificationCenter" = "Widget „SalaryTracker · Fortschritt“ (erscheint nur, wenn du es im Datum/Uhrzeit-Panel hinzugefügt hast)";
+"section.menuBar" = "Menüleiste";
+"chip.toggle" = "Gehalt-Chip in der Menüleiste anzeigen";
+"chip.subtitle" = "Ausblenden ist temporär: Beim Neustart der App (Spotlight oder Autostart) erscheint der Chip wieder.";
 "widget.guide" = "Zum Hinzufuegen: Oeffnen Sie das Kontrollzentrum (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift zum Bearbeiten, suchen Sie “SalaryTracker” und “SalaryTracker · Fortschritt” in der Galerie und fuegen Sie sie hinzu. Wenn Sie sie deaktivieren, werden sie als “deaktiviert” angezeigt.";
 "widget.installed" = "Installiert";
 "widget.name.main" = "SalaryTracker";
-"widget.desc.main" = "Verdientes Gehalt, Fortschritt und naechste Auszahlung.";
+"widget.desc.main" = "Verdientes Gehalt, Fortschritt und nächste Auszahlung (Kontrollzentrum).";
 "widget.name.progress" = "SalaryTracker · Fortschritt";
-"widget.desc.progress" = "Fortschritt der Periode und Rueckzaehlung bis zur naechsten Auszahlung.";
+"widget.desc.progress" = "Verdientes Gehalt, Fortschritt und nächste Auszahlung (Benachrichtigungszentrum).";
 "widget.progressLabel" = "Fortschritt der Periode";
 "widget.remaining" = "Noch";
 "widget.remaining.daysHours" = "%1$d T, %2$d Std.";

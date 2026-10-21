@@ -2,27 +2,33 @@ import Foundation
 
 /// Estado del widget (feature: widgets).
 ///
-/// Los dos kinds («SalaryTracker» y «SalaryTracker · Avance») se muestran
-/// juntos en el mismo panel de macOS 26, por lo que la activación es
-/// **maestra y única**: `enabled` es el switch de Configuración que controla
-/// ambos widgets. Si está desactivado y un widget ya fue colocado, el
-/// widget se muestra en estado "desactivado" (gris) — la colocación siempre
-/// es del usuario (galería de widgets de macOS); no existe API para
-/// des-colocar un widget programáticamente.
+/// Hay **dos kinds** con apariencia idéntica pero colocación independiente:
+/// «SalaryTracker» (`SalaryTrackerMenuBar`, superficie *barra superior* /
+/// Control Center) y «SalaryTracker · Avance»
+/// (`SalaryTrackerNotificationCenter`, superficie *centro de
+/// notificaciones*, el panel que se abre al presionar la fecha y hora).
+/// Cada superficie tiene su **propio toggle** (`menuBar` /
+/// `notificationCenter`), así el usuario activa o desactiva cada widget
+/// por separado. Si un widget está desactivado y ya fue colocado, se
+/// muestra en estado "desactivado" (gris): la colocación siempre es del
+/// usuario (galería de widgets de macOS) y no existe API para des-colocar
+/// un widget programáticamente.
 ///
 /// - Archivo JSON en `Application Support/SalaryTracker/widget-state.json`
 ///   (junto a `config.json`; directorio inyectable para tests).
 /// - Escritura **atómica** (temp file + `replaceItemAt`), mismo patrón que
 ///   `ConfigStore`.
 /// - Carga tolerante: no existe o corrupto → valores por defecto
-///   (widgets activados), nunca un error. El schema v1 (toggles por
-///   superficie: `menuBar`/`notificationCenter`) se migra en la carga:
-///   `enabled = menuBar || notificationCenter`.
+///   (widgets activados), nunca un error. Los esquemas anteriores se
+///   migran en la carga: v2 (switch maestro `enabled`) → ambos toggles al
+///   valor de `enabled`; v1 (toggles por superficie) → mapeo directo.
 public struct WidgetState: Codable, Equatable, Sendable {
 
-    /// Switch maestro: widgets visibles (contenido activo). `false` → los
-    /// widgets colocados muestran el estado «desactivado» en gris.
-    public var enabled: Bool
+    /// Widget activo en la barra superior (Control Center).
+    public var menuBar: Bool
+
+    /// Widget activo en el centro de notificaciones (panel del reloj).
+    public var notificationCenter: Bool
 
     /// Idioma elegido en la app (identificador BCP-47 de `AppLanguage`,
     /// p. ej. `"en"`, `"pt-BR"`). `nil` → el widget usa el idioma del
@@ -31,19 +37,23 @@ public struct WidgetState: Codable, Equatable, Sendable {
     /// del dominio de la app).
     public var language: String?
 
-    public init(enabled: Bool = true, language: String? = nil) {
-        self.enabled = enabled
+    public init(menuBar: Bool = true, notificationCenter: Bool = true,
+                language: String? = nil) {
+        self.menuBar = menuBar
+        self.notificationCenter = notificationCenter
         self.language = language
     }
 
-    /// Valores por defecto: widgets activados.
+    /// Valores por defecto: ambos widgets activados.
     public static let `default` = WidgetState()
 
     /// Decodificación tolerante: las claves ausentes toman su valor por
-    /// defecto (compatibilidad con archivos sin `language`).
+    /// defecto (compatibilidad con archivos parciales).
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        self.enabled = try c.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        self.menuBar = try c.decodeIfPresent(Bool.self, forKey: .menuBar) ?? true
+        self.notificationCenter = try c.decodeIfPresent(
+            Bool.self, forKey: .notificationCenter) ?? true
         self.language = try c.decodeIfPresent(String.self, forKey: .language)
     }
 }
@@ -52,23 +62,28 @@ public struct WidgetState: Codable, Equatable, Sendable {
 public struct WidgetStateStore: Sendable {
 
     /// Versión actual del schema de persistencia.
-    public static let schemaVersion = 2
+    public static let schemaVersion = 3
 
     private struct Envelope: Codable {
         var v: Int
         var state: WidgetState
     }
 
-    /// Schema v1 (toggles por superficie). Solo lectura, para migrar.
-    private struct LegacyV1State: Codable {
-        var menuBar: Bool
-        var notificationCenter: Bool
+    /// Schema v2 (switch maestro único). Solo lectura, para migrar.
+    private struct V2State: Codable {
+        var enabled: Bool
         var language: String?
     }
 
-    private struct LegacyV1Envelope: Codable {
+    private struct V2Envelope: Codable {
         var v: Int
-        var state: LegacyV1State
+        var state: V2State
+    }
+
+    /// Schema v1 (toggles por superficie). Solo lectura, para migrar.
+    private struct V1Envelope: Codable {
+        var v: Int
+        var state: WidgetState
     }
 
     private let url: URL
@@ -93,9 +108,9 @@ public struct WidgetStateStore: Sendable {
 
     /// Carga el estado persistido.
     /// - Note: No existe, está corrupto o tiene un schema desconocido →
-    ///   `WidgetState.default` (nunca lanza). El schema v1 se migra:
-    ///   `enabled = menuBar || notificationCenter` (si alguna superficie
-    ///   estaba activa, los widgets se consideran activos).
+    ///   `WidgetState.default` (nunca lanza). Migraciones: v2
+    ///   (`enabled`) → ambos toggles al valor del switch maestro; v1
+    ///   (toggles por superficie) → mapeo directo. Se conserva `language`.
     public func load() -> WidgetState {
         let fm = FileManager.default
         guard fm.fileExists(atPath: url.path),
@@ -107,12 +122,17 @@ public struct WidgetStateStore: Sendable {
            env.v == Self.schemaVersion {
             return env.state
         }
-        if let legacy = try? decoder.decode(LegacyV1Envelope.self, from: data),
-           legacy.v == 1 {
+        if let v2 = try? decoder.decode(V2Envelope.self, from: data),
+           v2.v == 2 {
             return WidgetState(
-                enabled: legacy.state.menuBar || legacy.state.notificationCenter,
-                language: legacy.state.language
+                menuBar: v2.state.enabled,
+                notificationCenter: v2.state.enabled,
+                language: v2.state.language
             )
+        }
+        if let v1 = try? decoder.decode(V1Envelope.self, from: data),
+           v1.v == 1 {
+            return v1.state
         }
         return .default
     }

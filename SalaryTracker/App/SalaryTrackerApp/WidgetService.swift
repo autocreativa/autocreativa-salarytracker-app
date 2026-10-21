@@ -11,7 +11,8 @@ import SalaryTrackerCore
 /// - **Recarga**: `reloadTimelines(ofKind:)` ante cambios de configuración o
 ///   de idioma, y al arrancar la app.
 ///
-/// El estado (switch maestro + idioma) vive en `WidgetStateStore`
+/// El estado (un toggle **por superficie**: barra superior / centro de
+/// notificaciones, + idioma) vive en `WidgetStateStore`
 /// (archivo `widget-state.json` junto a `config.json`) en el directorio
 /// compartido `~/Library/Application Support/SalaryTracker/` (`SharedPaths`):
 /// la extensión sandboxeada lo lee gracias a su excepción de sandbox.
@@ -26,7 +27,7 @@ final class WidgetService: ObservableObject {
     /// Kinds de widgets colocados por el usuario (vacío = ninguno).
     @Published private(set) var installedKinds: Set<String> = []
 
-    /// Estado vigente de widgets (switch maestro + idioma).
+    /// Estado vigente de widgets (toggles por superficie + idioma).
     @Published private(set) var state: WidgetState = .default
 
     /// Store sobre el directorio compartido con la extensión (ver
@@ -38,13 +39,22 @@ final class WidgetService: ObservableObject {
         state = stateStore.load()
     }
 
-    /// Binding del switch maestro de la sección «Widgets» (leer del estado
-    /// vigente; al escribir, persiste a disco y recarga los timelines).
+    /// Binding del toggle de la barra superior (Control Center). Al
+    /// escribir, persiste a disco y recarga los timelines.
     /// `@MainActor`: los closures se ejecutan en el thread principal (SwiftUI).
-    @MainActor var enabledBinding: Binding<Bool> {
+    @MainActor var menuBarBinding: Binding<Bool> {
         Binding(
-            get: { self.state.enabled },
-            set: { newValue in self.updateState { $0.enabled = newValue } }
+            get: { self.state.menuBar },
+            set: { newValue in self.updateState { $0.menuBar = newValue } }
+        )
+    }
+
+    /// Binding del toggle del centro de notificaciones (panel del reloj).
+    /// Al escribir, persiste a disco y recarga los timelines.
+    @MainActor var notificationCenterBinding: Binding<Bool> {
+        Binding(
+            get: { self.state.notificationCenter },
+            set: { newValue in self.updateState { $0.notificationCenter = newValue } }
         )
     }
 
@@ -53,6 +63,15 @@ final class WidgetService: ObservableObject {
         WidgetCenter.shared.getCurrentConfigurations { [weak self] result in
             guard let self, case .success(let infos) = result else { return }
             let kinds = Set(infos.map(\.kind))
+            // TEMP-DEBUG (diagnóstico; se eliminará): traza los widgets
+            // colocados según el sistema.
+            if let d = try? JSONSerialization.data(withJSONObject: [
+                "at": ISO8601DateFormatter().string(from: Date()),
+                "placed": infos.map { "\($0.kind):\($0.family.rawValue)" }.sorted(),
+            ], options: [.prettyPrinted]) {
+                try? d.write(to: SharedPaths.stateDirectory
+                    .appendingPathComponent("widget-placed.json"))
+            }
             Task { @MainActor in
                 self.installedKinds = kinds
             }

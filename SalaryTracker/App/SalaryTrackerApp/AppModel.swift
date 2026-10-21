@@ -3,6 +3,13 @@ import SwiftUI
 import AppKit
 import SalaryTrackerCore
 
+/// Reapertura de la app ya en ejecución (la emite `AppDelegate` al detectar
+/// `applicationShouldHandleReopen`: Spotlight, `open -a`, relanzamiento).
+extension Notification.Name {
+    static let salaryTrackerAppReopen =
+        Notification.Name("com.triton.salarytracker.appReopen")
+}
+
 /// Estado observable de la aplicación (design.md D7).
 ///
 /// Es la única orquestación de la app: carga la configuración persistida, deriva
@@ -32,6 +39,17 @@ final class AppModel: ObservableObject {
     /// Estado de widgets (toggles por superficie + detección de colocación).
     @Published var widgetService: WidgetService
 
+    /// Chip de sueldo en la barra de menús (el `NSStatusItem` de la propia
+    /// app; independiente de los widgets de WidgetKit).
+    ///
+    /// **No se persiste**: ocultar el chip es una acción de la sesión (p. ej.
+    /// para limpiar la barra al compartir pantalla). Al relanzar la app el
+    /// chip vuelve a aparecer. Persistirlo dejaría a la app sin ninguna UI
+    /// sin forma de reactivarse: las apps `LSUIElement` no reciben
+    /// `applicationShouldHandleReopen` al relanzarlas (verificado), así que
+    /// no habría punto de entrada para volver a mostrarlo.
+    @Published var showMenuBarChip: Bool = true
+
     private let store: ConfigStore
     private let engine: TrackerEngine
     private let clock: Clock
@@ -48,6 +66,9 @@ final class AppModel: ObservableObject {
         self.clock = clock
         self.language = language
         self.widgetService = widgetService
+        // Chip de la barra de menús: siempre visible al arrancar (el ocultar
+        // es temporal por sesión, ver `showMenuBarChip`).
+        self.showMenuBarChip = true
         // Carga inicial (specs/configuration "Reconstrucción del estado al
         // iniciar"): archivo → config persistida; sin archivo (primera
         // ejecución) → configuración por defecto en memoria (sueldo 553.553

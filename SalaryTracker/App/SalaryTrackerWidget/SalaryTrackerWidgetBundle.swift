@@ -3,21 +3,19 @@ import SwiftUI
 
 /// Bundle de widgets de SalaryTracker (feature: widgets).
 ///
-/// Dos **kinds** con **contenido diferenciado** (en macOS 26 ambos se
-/// colocan juntos en el mismo panel — Control Center / Centro de
-/// Notificaciones unificados —, así que no tiene sentido activarlos por
-/// superficie):
+/// Dos **kinds** **visualmente idénticos** (misma vista: dinero ganado
+/// LCD, progreso y próximo pago) pero **separados**, cada uno en su
+/// superficie y con su propio toggle de activación en Configuración:
 ///
-/// - `SalaryTrackerMenuBar` → «SalaryTracker» (variante *main*): dinero
-///   ganado (LCD), progreso y próximo pago.
-/// - `SalaryTrackerNotificationCenter` → «SalaryTracker · Avance»
-///   (variante *progress*): avance del período y cuenta atrás al próximo
-///   pago.
+/// - `SalaryTrackerMenuBar` → «SalaryTracker»: barra superior / Control
+///   Center (toggle `WidgetState.menuBar`).
+/// - `SalaryTrackerNotificationCenter` → «SalaryTracker · Avance»: centro
+///   de notificaciones, el panel que se abre al presionar la fecha y hora
+///   (toggle `WidgetState.notificationCenter`).
 ///
-/// La activación la controla el switch maestro único de Configuración
-/// (`WidgetState.enabled`), común a ambos kinds. Los **IDs de kind no se
-/// renombraron** a propósito: son la identidad de la colocación y
-/// cambiarlos huérfanos los widgets que el usuario ya colocó.
+/// Los **IDs de kind no se renombraron** a propósito: son la identidad de
+/// la colocación y cambiarlos huérfanos los widgets que el usuario ya
+/// colocó.
 ///
 /// La colocación en el panel la hace el usuario desde la galería de
 /// widgets de macOS (no existe API pública para forzar la colocación).
@@ -30,12 +28,13 @@ struct SalaryTrackerWidgetBundle: WidgetBundle {
     }
 }
 
-/// Widget principal: dinero ganado, progreso y próximo pago.
+/// Widget de la barra superior (Control Center): dinero ganado, progreso
+/// y próximo pago.
 struct SalaryMainWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SalaryTrackerMenuBar",
-                            provider: SalaryTimelineProvider(style: .main)) { entry in
+                            provider: SalaryTimelineProvider(style: .menuBar)) { entry in
             SalaryWidgetView(entry: entry)
         }
         .configurationDisplayName(L10nWidget.str("widget.name.main"))
@@ -44,13 +43,14 @@ struct SalaryMainWidget: Widget {
     }
 }
 
-/// Widget de avance: progreso del período y cuenta atrás al próximo pago.
+/// Widget del centro de notificaciones (panel del reloj): mismo contenido
+/// que el de la barra superior, como widget separado.
 struct SalaryProgressWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SalaryTrackerNotificationCenter",
-                            provider: SalaryTimelineProvider(style: .progress)) { entry in
-            ProgressWidgetView(entry: entry)
+                            provider: SalaryTimelineProvider(style: .notificationCenter)) { entry in
+            SalaryWidgetView(entry: entry)
         }
         .configurationDisplayName(L10nWidget.str("widget.name.progress"))
         .description(L10nWidget.str("widget.desc.progress"))

@@ -108,8 +108,11 @@ struct WidgetMessageView: View {
     }
 }
 
-/// Widget principal «SalaryTracker» (small + medium): dinero ganado (LCD),
-/// progreso y próximo pago.
+/// Vista única de ambos widgets (small + medium): dinero ganado (LCD),
+/// progreso y próximo pago. Los dos kinds («SalaryTracker» y «SalaryTracker
+/// · Avance») la comparten: son visualmente idénticos pero widgets
+/// separados, cada uno en su superficie (barra superior / centro de
+/// notificaciones) y con su propio toggle de activación.
 struct SalaryWidgetView: View {
 
     @Environment(\.widgetFamily) private var family
@@ -204,125 +207,6 @@ struct SalaryWidgetView: View {
                         .foregroundStyle(WidgetTheme.ink)
                         .lineLimit(1)
                 }
-            }
-            Spacer(minLength: 0)
-        }
-    }
-}
-
-/// Widget «SalaryTracker · Avance» (small + medium): % grande, barra de
-/// progreso y cuenta atrás al próximo pago.
-struct ProgressWidgetView: View {
-
-    @Environment(\.widgetFamily) private var family
-
-    let entry: SalaryEntry
-
-    var body: some View {
-        Group {
-            switch entry.data.status {
-            case .active(_, let progress, let progressValue, let nextPayment, let remaining):
-                if family == .systemMedium {
-                    mediumProgress(progress: progress, progressValue: progressValue,
-                                   nextPayment: nextPayment, remaining: remaining)
-                } else {
-                    smallProgress(progress: progress, progressValue: progressValue,
-                                  nextPayment: nextPayment, remaining: remaining)
-                }
-            case .message(let msg):
-                WidgetMessageView(message: msg)
-            }
-        }
-        .widgetBackground(WidgetTheme.base)
-    }
-
-    // MARK: - Estados
-
-    /// Small: glifo + «Avance» + % grande + mini-barra + fecha del pago.
-    private func smallProgress(progress: String, progressValue: Double,
-                               nextPayment: String?, remaining: String?) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 5) {
-                Image(systemName: "chart.bar.fill")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(WidgetTheme.mint)
-                Text(L10nWidget.str("widget.progressLabel"))
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(WidgetTheme.inkSoft)
-                Spacer(minLength: 0)
-            }
-            Spacer(minLength: 0)
-            Text(progress)
-                .font(.system(size: 24, weight: .bold, design: .monospaced))
-                .foregroundStyle(WidgetTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-            Spacer(minLength: 0)
-            HStack(spacing: 6) {
-                MiniProgressBar(ratio: progressValue)
-                    .frame(height: 5)
-                if let nextPayment {
-                    Text(nextPayment)
-                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
-                        .foregroundStyle(WidgetTheme.inkSoft)
-                        .lineLimit(1)
-                }
-            }
-        }
-    }
-
-    /// Medium: glifo + «Avance del período» + % grande (LCD), barra de
-    /// progreso, próximo pago y cuenta atrás.
-    private func mediumProgress(progress: String, progressValue: Double,
-                                nextPayment: String?, remaining: String?) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "chart.bar.fill")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(WidgetTheme.mint)
-                Text(L10nWidget.str("widget.progressLabel"))
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(WidgetTheme.inkSoft)
-                Spacer(minLength: 0)
-            }
-            Spacer(minLength: 0)
-            LcdText(progress)
-                .font(.system(size: 34, weight: .bold, design: .monospaced))
-                .lineLimit(1)
-                .minimumScaleFactor(0.45)
-            Spacer(minLength: 0)
-            MiniProgressBar(ratio: progressValue)
-                .frame(height: 6)
-            HStack(spacing: 12) {
-                if let nextPayment {
-                    HStack(spacing: 5) {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 11))
-                            .foregroundStyle(WidgetTheme.inkSoft)
-                        Text(L10nWidget.str("widget.nextPayment"))
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(WidgetTheme.inkSoft)
-                        Text(nextPayment)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(WidgetTheme.ink)
-                            .lineLimit(1)
-                    }
-                }
-                if let remaining {
-                    HStack(spacing: 5) {
-                        Image(systemName: "timer")
-                            .font(.system(size: 11))
-                            .foregroundStyle(WidgetTheme.inkSoft)
-                        Text(L10nWidget.str("widget.remaining"))
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(WidgetTheme.inkSoft)
-                        Text(remaining)
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(WidgetTheme.ink)
-                            .lineLimit(1)
-                    }
-                }
-                Spacer(minLength: 0)
             }
             Spacer(minLength: 0)
         }
