@@ -109,7 +109,7 @@
 "section.menuBar" = "Barre des menus";
 "chip.toggle" = "Afficher le salaire dans la barre des menus";
 "chip.subtitle" = "Le masquage est temporaire : à la relance de l’app (Spotlight ou démarrage auto), le chip réapparaît.";
-"widget.guide" = "Pour les ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker » et « SalaryTracker · Progression » dans la galerie et ajoutez-les. Si vous les desactivez, ils s’afficheront comme « desactive ».";
+"widget.guide" = "Pour les ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker » et « SalaryTracker · Progression » dans la galerie et ajoutez-les. Si vous les desactivez, ils seront masques a leur emplacement ; reactivez-les pour les reafficher. (macOS ne permet pas de retirer un widget programmatiquement, l’emplacement reste donc invisible.)";
 "widget.installed" = "Installe";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Salaire gagné, progression et prochaine paie (Centre de contrôle).";

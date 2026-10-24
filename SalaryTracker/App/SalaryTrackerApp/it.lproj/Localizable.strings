@@ -109,7 +109,7 @@
 "section.menuBar" = "Barra dei menu";
 "chip.toggle" = "Mostra lo stipendio nella barra dei menu";
 "chip.subtitle" = "Nascondere è temporaneo: riaprendo l’app (Spotlight o avvio automatico) il chip torna ad apparire.";
-"widget.guide" = "Per aggiungerli: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker” e “SalaryTracker · Avanzamento” nella galleria e aggiungili. Se li disattivi, mostreranno “disattivato”.";
+"widget.guide" = "Per aggiungerli: apri il Centro di controllo (il pulsante con due interruttori nella barra dei menu), clicca sulla matita per modificare, cerca “SalaryTracker” e “SalaryTracker · Avanzamento” nella galleria e aggiungili. Se li disattivi, verranno nascosti dalla loro posizione; riattivandoli riappariranno. (macOS non consente di rimuovere un widget programmaticamente, quindi lo spazio resta invisibile.)";
 "widget.installed" = "Installato";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Denaro guadagnato, avanzamento e prossimo pagamento (Centro di controllo).";

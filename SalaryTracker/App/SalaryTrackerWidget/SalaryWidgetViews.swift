@@ -82,6 +82,8 @@ struct WidgetMessageView: View {
                 ("exclamationmark.triangle", L10nWidget.str("widget.invalid"),
                  nil, WidgetTheme.inkSoft)
             case .disabled:
+                // No llega aquí: `SalaryWidgetView` intercepta `.disabled` y
+                // pinta la tile transparente. Fallback defensivo.
                 ("pause.circle", L10nWidget.str("widget.disabled"), nil,
                  WidgetTheme.disabledGray)
             }
@@ -119,6 +121,11 @@ struct SalaryWidgetView: View {
 
     let entry: SalaryEntry
 
+    /// Superficie desactivada desde Configuración (toggle OFF de este kind).
+    private var isHiddenSurface: Bool {
+        entry.data.status == .message(.disabled)
+    }
+
     var body: some View {
         Group {
             switch entry.data.status {
@@ -130,11 +137,20 @@ struct SalaryWidgetView: View {
                     smallActive(earned: earned, progress: progress,
                                 progressValue: progressValue, nextPayment: nextPayment)
                 }
+            case .message(.disabled):
+                // Superficie OFF: el widget se OCULTA de su lugar. macOS no
+                // expone API para des-colocar un widget ya agregado, así que
+                // la tile se pinta completamente transparente (fondo y
+                // contenido): desaparece visualmente de la barra de menús /
+                // centro de notificaciones y conserva el hueco; al volver a
+                // activar el switch recupera los datos sin moverlo.
+                Color.clear
             case .message(let msg):
                 WidgetMessageView(message: msg)
             }
         }
-        .widgetBackground(WidgetTheme.base)
+        .widgetBackground(isHiddenSurface ? Color.clear : WidgetTheme.base)
+        .accessibilityHidden(isHiddenSurface)
     }
 
     // MARK: - Estados

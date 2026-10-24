@@ -10,9 +10,11 @@ import Foundation
 /// Cada superficie tiene su **propio toggle** (`menuBar` /
 /// `notificationCenter`), así el usuario activa o desactiva cada widget
 /// por separado. Si un widget está desactivado y ya fue colocado, se
-/// muestra en estado "desactivado" (gris): la colocación siempre es del
-/// usuario (galería de widgets de macOS) y no existe API para des-colocar
-/// un widget programáticamente.
+/// **oculta** (su tile se pinta completamente transparente): la colocación
+/// siempre es del usuario (galería de widgets de macOS) y no existe API
+/// para des-colocar un widget programáticamente, por lo que la tile
+/// conservada e invisible deja el hueco para volver a mostrarlo al
+/// re-activar el toggle.
 ///
 /// - Archivo JSON en `Application Support/SalaryTracker/widget-state.json`
 ///   (junto a `config.json`; directorio inyectable para tests).

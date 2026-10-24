@@ -53,66 +53,12 @@ enum L10nWidget {
     }
 }
 
-/// Superficie de cada kind de widget.
-///
-/// Los dos kinds son **visualmente idénticos** (misma vista: dinero
-/// ganado, progreso y próximo pago) pero son widgets separados, cada uno
-/// con su superficie: la barra superior (Control Center) y el centro de
-/// notificaciones (panel del reloj). La activación la controla un toggle
-/// **por superficie** (`WidgetState.menuBar` / `WidgetState.
-/// notificationCenter`).
-enum WidgetStyle: Sendable {
-    /// «SalaryTracker»: barra superior (Control Center).
-    case menuBar
-    /// «SalaryTracker · Avance»: centro de notificaciones (panel del reloj).
-    case notificationCenter
-
-    /// Toggle de activación correspondiente a esta superficie.
-    func isEnabled(in state: WidgetState) -> Bool {
-        switch self {
-        case .menuBar:             return state.menuBar
-        case .notificationCenter:  return state.notificationCenter
-        }
-    }
-}
-
-/// Estados de mensaje (compartidos por los dos widgets; la vista los
-/// resuelve a icono/título/detalle localizados).
-enum WidgetMessage: Equatable, Sendable {
-    /// El inicio del contrato está en el futuro (fecha de inicio).
-    case futureStart(startsAt: String)
-    /// La app aún no tiene configuración guardada.
-    case notConfigured
-    /// La configuración guardada es inválida.
-    case invalid
-    /// El toggle de la superficie está OFF en Configuración.
-    case disabled
-}
-
-/// Datos precomputados por el provider (las vistas no dependen del core).
-struct SalaryWidgetData: Equatable, Sendable {
-
-    enum Status: Equatable, Sendable {
-        /// Período en curso (o período abierto con sueldo completo).
-        /// `progress` es el texto formateado; `progressValue` el ratio
-        /// [0, 1] para la barra; `remaining` la cuenta atrás al próximo
-        /// pago (texto formateado; `nil` en período abierto).
-        case active(earned: String, progress: String, progressValue: Double,
-                    nextPayment: String?, remaining: String?)
-        /// Estado de mensaje (compartido por ambos widgets).
-        case message(WidgetMessage)
-    }
-
-    let status: Status
-
-    /// Muestra de galería (placeholder).
-    static let placeholder = SalaryWidgetData(
-        status: .active(earned: "1.250.000", progress: "45,00 %", progressValue: 0.45,
-                        nextPayment: nil, remaining: nil)
-    )
-}
-
 /// Entrada de timeline.
+///
+/// Nota: `WidgetStyle`, `WidgetMessage`, `SalaryWidgetData` y la derivación
+/// pura (`WidgetDataMaker`) viven en `SalaryTrackerCore` (ver
+/// `WidgetData.swift`), para que el gate de superficie (toggle OFF ⇒ tile
+/// ocultada) sea unit-testable sin WidgetKit/SwiftUI.
 struct SalaryEntry: TimelineEntry {
     let date: Date
     let data: SalaryWidgetData
@@ -196,63 +142,27 @@ struct SalaryTimelineProvider: TimelineProvider {
     }
 
     /// Calcula los datos de presentación para `now`, aplicando el toggle
-    /// de la superficie de este kind. Re-deriva el estado del tracker
-    /// para el instante de cada entrada (la evaluación es pura; `config`,
-    /// `engine` y `state` se inyectan para no re-leer el disco en cada
-    /// minuto).
+    /// de la superficie de este kind. Si el toggle está OFF, todas las
+    /// entradas del timeline son `.message(.disabled)` y la vista pinta la
+    /// tile transparente (widget ocultado de su lugar).
+    ///
+    /// La derivación pura vive en `WidgetDataMaker` (core); aquí solo se
+    /// inyectan la localización (`L10nWidget`) y el estado del toggle.
     private func makeData(
         now: Date,
         config: SalaryConfig?,
         engine: TrackerEngine,
         state: WidgetState
     ) -> SalaryWidgetData {
-        guard style.isEnabled(in: state) else {
-            return SalaryWidgetData(status: .message(.disabled))
-        }
-        let t = engine.state(config: config, now: now)
-        let locale = L10nWidget.locale
-        let dateFmt = DateFormatter()
-        dateFmt.locale = locale
-        dateFmt.dateStyle = .medium
-        dateFmt.timeStyle = .none
-        let dateText: (Date) -> String = { dateFmt.string(from: $0) }
-        // Cuenta atrás al próximo pago: "d d, h h" (o "h h, m min" si
-        // faltan menos de 24 h); `nil` en período abierto.
-        let remainingText: (TimeInterval?) -> String? = { seconds in
-            guard let s = seconds, s > 0 else { return nil }
-            let totalMinutes = Int(s / 60)
-            let days = totalMinutes / (24 * 60)
-            let hours = (totalMinutes % (24 * 60)) / 60
-            let minutes = totalMinutes % 60
-            let template = days > 0
-                ? L10nWidget.str("widget.remaining.daysHours")
-                : L10nWidget.str("widget.remaining.hoursMinutes")
-            return String(format: template, locale: locale, days, hours, minutes)
-        }
-        switch t {
-        case .active(let view):
-            return SalaryWidgetData(status: .active(
-                earned: CurrencyFormatter.format(view.earned, code: view.currencyCode, locale: locale),
-                progress: CurrencyFormatter.formatProgress(view.progress, locale: locale),
-                progressValue: view.progress,
-                nextPayment: view.end.map(dateText),
-                remaining: remainingText(view.remainingSeconds)
-            ))
-        case .openEnded(let view):
-            return SalaryWidgetData(status: .active(
-                earned: CurrencyFormatter.format(view.earned, code: view.currencyCode, locale: locale),
-                progress: CurrencyFormatter.formatProgress(view.progress, locale: locale),
-                progressValue: view.progress,
-                nextPayment: nil,
-                remaining: nil
-            ))
-        case .futureStart(let startsAt, _, _, _):
-            return SalaryWidgetData(
-                status: .message(.futureStart(startsAt: dateText(startsAt))))
-        case .notConfigured:
-            return SalaryWidgetData(status: .message(.notConfigured))
-        case .invalid:
-            return SalaryWidgetData(status: .message(.invalid))
-        }
+        WidgetDataMaker.makeData(
+            now: now,
+            config: config,
+            engine: engine,
+            state: state,
+            isEnabled: style.isEnabled(in: state),
+            locale: L10nWidget.locale,
+            remainingDaysHoursTemplate: L10nWidget.str("widget.remaining.daysHours"),
+            remainingHoursMinutesTemplate: L10nWidget.str("widget.remaining.hoursMinutes")
+        )
     }
 }

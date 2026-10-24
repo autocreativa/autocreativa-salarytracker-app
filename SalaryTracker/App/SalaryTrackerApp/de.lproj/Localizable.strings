@@ -109,7 +109,7 @@
 "section.menuBar" = "Menüleiste";
 "chip.toggle" = "Gehalt-Chip in der Menüleiste anzeigen";
 "chip.subtitle" = "Ausblenden ist temporär: Beim Neustart der App (Spotlight oder Autostart) erscheint der Chip wieder.";
-"widget.guide" = "Zum Hinzufuegen: Oeffnen Sie das Kontrollzentrum (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift zum Bearbeiten, suchen Sie “SalaryTracker” und “SalaryTracker · Fortschritt” in der Galerie und fuegen Sie sie hinzu. Wenn Sie sie deaktivieren, werden sie als “deaktiviert” angezeigt.";
+"widget.guide" = "Zum Hinzufuegen: Oeffnen Sie das Kontrollzentrum (die Schaltflaeche mit zwei Schaltern in der Menuleiste), klicken Sie auf den Stift zum Bearbeiten, suchen Sie “SalaryTracker” und “SalaryTracker · Fortschritt” in der Galerie und fuegen Sie sie hinzu. Wenn Sie sie deaktivieren, werden sie an ihrem Platz ausgeblendet; bei Reaktivierung erscheinen sie wieder. (macOS koennte ein Widget nicht programmgesteuert entfernen, daher bleibt der Platz unsichtbar erhalten.)";
 "widget.installed" = "Installiert";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Verdientes Gehalt, Fortschritt und nächste Auszahlung (Kontrollzentrum).";

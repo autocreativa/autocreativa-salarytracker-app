@@ -23,23 +23,42 @@ final class MenuBarChipController: NSObject, NSPopoverDelegate {
     private var popover: NSPopover?
     private var chipObservation: AnyCancellable?
     private var lastVisible: Bool?
-    private weak var model: AppModel?
+    /// El modelo se retiene en fuerte: el ciclo de vida del chip está
+    /// atado a este controlador. Con `weak`, el salto asíncrono a main
+    /// podía encontrar el modelo ya liberado (o a `self` sin modelo) y el
+    /// toggle «Barra superior» dejaría de ocultar/mostrar el chip.
+    private var model: AppModel?
+    private var applyScheduled = false
 
     /// Conecta el modelo y (re)establece la visibilidad según su toggle.
     /// Se suscribe a `objectWillChange`: el toggle «Barra superior»
     /// (AppModel.showMenuBarChip) muestra/oculta el chip **en caliente**.
     /// `objectWillChange` avisa ANTES del cambio, así la lectura del valor
-    /// nuevo se hace en la siguiente vuelta del main loop (`Task`); solo
-    /// actúa si el valor efectivamente cambió (dedupe contra el tick de 1 s).
+    /// se hace en la siguiente vuelta del main loop (`Task`), donde ya
+    /// tiene el valor nuevo. Solo actúa si el valor efectivamente cambió
+    /// (dedupe contra el tick de 1 s del chip).
     func attach(model: AppModel) {
         self.model = model
         chipObservation = model.objectWillChange.sink { [weak self] _ in
-            Task { @MainActor in
-                guard let self, let m = self.model else { return }
+            self?.scheduleApply()
+        }
+        apply(model.showMenuBarChip)
+    }
+
+    /// Coalesce las emisiones de `objectWillChange` (el timer del chip
+    /// dispara una por segundo) en un solo salto a main, y siempre aplica
+    /// el valor **corriente** del switch al ejecutar (nunca un valor leído
+    /// en el momento de la emisión, que podría estar desfasado).
+    private func scheduleApply() {
+        guard !applyScheduled else { return }
+        applyScheduled = true
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.applyScheduled = false
+            if let m = self.model {
                 self.apply(m.showMenuBarChip)
             }
         }
-        apply(model.showMenuBarChip)
     }
 
     private func apply(_ visible: Bool) {

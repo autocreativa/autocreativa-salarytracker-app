@@ -109,7 +109,7 @@
 "section.menuBar" = "Menu bar";
 "chip.toggle" = "Show the salary chip in the menu bar";
 "chip.subtitle" = "Hiding it is temporary: when the app is relaunched (Spotlight or auto-start) the chip comes back.";
-"widget.guide" = "To add them: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker” and “SalaryTracker · Progress” in the gallery and add them. If you turn them off, they show as “disabled”.";
+"widget.guide" = "To add them: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker” and “SalaryTracker · Progress” in the gallery and add them. If you turn them off, they are hidden from their place; turning them back on restores them. (macOS cannot unplace a widget programmatically, so the slot stays, invisible.)";
 "widget.installed" = "Installed";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Money earned, progress and next payment (Control Center)";
