@@ -64,21 +64,31 @@ struct SalaryEntry: TimelineEntry {
     let data: SalaryWidgetData
 }
 
-/// Provider compartido de los dos kinds.
+/// Provider compartido de los dos kinds (reloj en vivo, cadencia 1 s).
 ///
-/// Estrategia de timeline: una entrada por minuto durante 60 minutos y
-/// política `.after(última)`, de modo que WidgetKit vuelve a pedir timeline
-/// al agotarse las entradas (~24 recargas/día por widget, dentro del
-/// presupuesto). Si el inicio futuro del contrato o el fin del período caen
-/// dentro del horizonte, se agrega una entrada de frontera en ese instante.
+/// **Estrategia de timeline en vivo**: `getTimeline` precalcula una entrada
+/// por segundo para los próximos `liveSeconds` (5 min) y usa política
+/// `.atEnd`; WidgetKit avanza por las entradas con el reloj, así el monto
+/// ganado cambia **cada segundo** sin depender del presupuesto de recargas
+/// (`reloadTimelines`/`.after(1 s)`): WidgetKit agrupa/limita esas
+/// peticiones y el widget se quedaba congelado. Al agotarse el horizonte se
+/// pide un timeline nuevo y el reloj sigue.
 ///
-/// `style` marca la superficie del kind; la activación la controla el
-/// toggle de esa superficie (`WidgetState.menuBar` / `WidgetState.
-/// notificationCenter`).
+/// `style` marca la superficie declarada del kind; la activación la
+/// controla el switch «Centro de notificaciones» (`WidgetState.
+/// notificationCenter`): OFF ⇒ `.message(.disabled)` ⇒ mensaje de
+/// reactivación (nunca una tile en blanco).
 struct SalaryTimelineProvider: TimelineProvider {
+
+    /// Segundos de reloj precalculados por timeline (1 entrada por segundo).
+    /// 5 min cubre de sobra una consulta del panel; el coste es trivial
+    /// (cálculo aritmético, sin I/O por entrada).
+    static let liveSeconds = 300
 
     let style: WidgetStyle
 
+    /// Muestra de galería (solo previews/inspector; nunca en vivo): valor
+    /// de muestra y superficie activa.
     func placeholder(in context: Context) -> SalaryEntry {
         .init(date: Date(), data: .placeholder)
     }
@@ -94,57 +104,34 @@ struct SalaryTimelineProvider: TimelineProvider {
         }
     }
 
+    /// Timeline de reloj vivo: una entrada por segundo + `.atEnd` (ver
+    /// encabezado del provider). Se comparten config/estado/engine entre
+    /// entradas (una sola lectura por timeline).
     func getTimeline(in context: Context, completion: @escaping (Timeline<SalaryEntry>) -> Void) {
         let now = Date()
         let config = (try? WidgetPaths.configStore.load()) ?? nil
         let widgetState = WidgetPaths.stateStore.load()
-        // TEMP-DEBUG (diagnóstico; se eliminará): traza cada getTimeline
-        // con el estado leído y el resultado de la primera entrada.
-        let trace: [String: Any] = [
-            "kind": style == .menuBar ? "SalaryTrackerMenuBar" : "SalaryTrackerNotificationCenter",
-            "at": ISO8601DateFormatter().string(from: now),
-            "readMenu": widgetState.menuBar,
-            "readNC": widgetState.notificationCenter,
-            "surfaceEnabled": style.isEnabled(in: widgetState),
-            "first": makeData(now: now, config: config, engine: TrackerEngine(), state: widgetState).status == .message(.disabled) ? "disabled" : "data",
-            "stateFile": WidgetPaths.stateStore.fileURL.lastPathComponent,
-        ]
-        if let d = try? JSONSerialization.data(withJSONObject: trace) {
-            let url = WidgetPaths.directory.appendingPathComponent("widget-trace.json")
-            let arr = (try? JSONSerialization.jsonObject(with: (try? Data(contentsOf: url)) ?? Data()) as? [[String: Any]]) ?? []
-            try? JSONSerialization.data(withJSONObject: arr + [trace], options: [.prettyPrinted])
-                .write(to: url)
-        }
         let engine = TrackerEngine()
-        // Detección de fronteras dentro del horizonte (con la config real).
-        let stateNow = engine.state(config: config, now: now)
-        var entries: [SalaryEntry] = []
-        let minute: TimeInterval = 60
-        let maxEntries = 60
-        var t = now
-        for _ in 0..<maxEntries {
-            entries.append(.init(date: t, data: makeData(now: t, config: config, engine: engine, state: widgetState)))
-            t.addTimeInterval(minute)
+        let entries: [SalaryEntry] = (0..<Self.liveSeconds).map { offset in
+            let date = now.addingTimeInterval(TimeInterval(offset))
+            return SalaryEntry(
+                date: date,
+                data: makeData(now: date, config: config, engine: engine, state: widgetState)
+            )
         }
-        // Frontera: inicio futuro del contrato (dentro del horizonte).
-        if case .futureStart(let start, _, _, _) = stateNow,
-           start > now, start <= t {
-            entries.append(.init(date: start, data: makeData(now: start, config: config, engine: engine, state: widgetState)))
-        }
-        // Frontera: fin del período activo (dentro del horizonte).
-        if case .active(let view) = stateNow,
-           let end = view.end, end > now, end <= t {
-            entries.append(.init(date: end, data: makeData(now: end, config: config, engine: engine, state: widgetState)))
-        }
-        let sorted = entries.sorted { $0.date < $1.date }
-        let last = sorted.last!.date
-        completion(Timeline(entries: sorted, policy: .after(last)))
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 
-    /// Calcula los datos de presentación para `now`, aplicando el toggle
-    /// de la superficie de este kind. Si el toggle está OFF, todas las
-    /// entradas del timeline son `.message(.disabled)` y la vista pinta la
-    /// tile transparente (widget ocultado de su lugar).
+    /// Calcula los datos de presentación para `now`, aplicando el toggle de
+    /// widgets (`WidgetState.notificationCenter`).
+    ///
+    /// **Reparto de switches**: el switch «Barra superior» controla SOLO el
+    /// chip de la app en la barra de menús (`AppModel.showMenuBarChip`); el
+    /// switch «Centro de notificaciones» controla la tile del widget (los
+    /// dos kinds: macOS coloca los widgets en el panel del reloj o en el
+    /// escritorio, no realmente «en la barra superior»). Así, apagar el chip
+    /// no hace desaparecer el widget ya colocado y cada switch tiene un
+    /// efecto visible propio.
     ///
     /// La derivación pura vive en `WidgetDataMaker` (core); aquí solo se
     /// inyectan la localización (`L10nWidget`) y el estado del toggle.
@@ -154,12 +141,12 @@ struct SalaryTimelineProvider: TimelineProvider {
         engine: TrackerEngine,
         state: WidgetState
     ) -> SalaryWidgetData {
-        WidgetDataMaker.makeData(
+        return WidgetDataMaker.makeData(
             now: now,
             config: config,
             engine: engine,
             state: state,
-            isEnabled: style.isEnabled(in: state),
+            isEnabled: state.notificationCenter,
             locale: L10nWidget.locale,
             remainingDaysHoursTemplate: L10nWidget.str("widget.remaining.daysHours"),
             remainingHoursMinutesTemplate: L10nWidget.str("widget.remaining.hoursMinutes")

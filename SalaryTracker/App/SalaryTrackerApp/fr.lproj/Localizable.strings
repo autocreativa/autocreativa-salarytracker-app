@@ -104,12 +104,6 @@
 
 /* ── Widgets (barre des menus / Centre de notifications) ─────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menuBar" = "Widget « SalaryTracker » (celui que vous avez ajouté : panneau date et heure et/ou Centre de contrôle)";
-"widget.toggle.notificationCenter" = "Widget « SalaryTracker · Progression » (n’apparaît que si vous l’avez ajouté au panneau date et heure)";
-"section.menuBar" = "Barre des menus";
-"chip.toggle" = "Afficher le salaire dans la barre des menus";
-"chip.subtitle" = "Le masquage est temporaire : à la relance de l’app (Spotlight ou démarrage auto), le chip réapparaît.";
-"widget.guide" = "Pour les ajouter : ouvrez le Centre de controle (le bouton a deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, recherchez « SalaryTracker » et « SalaryTracker · Progression » dans la galerie et ajoutez-les. Si vous les desactivez, ils seront masques a leur emplacement ; reactivez-les pour les reafficher. (macOS ne permet pas de retirer un widget programmatiquement, l’emplacement reste donc invisible.)";
 "widget.installed" = "Installe";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Salaire gagné, progression et prochaine paie (Centre de contrôle).";
@@ -126,3 +120,9 @@
 "widget.notConfigured.hint" = "Ouvrez SalaryTracker pour configurer votre salaire.";
 "widget.invalid" = "Configuration invalide";
 "widget.disabled" = "Widget desactive";
+"widget.disabled.enableHint" = "Pour le réactiver : SalaryTracker → Réglages → Widgets → interrupteur « Afficher les widgets ».";
+"widget.guide" = "Pour l'ajouter : ouvrez le Centre de contrôle (le bouton à deux interrupteurs dans la barre des menus), cliquez sur le crayon pour modifier, trouvez « SalaryTracker · Avance » dans la galerie et ajoutez-le. Si vous le désactivez, il indique comment le réactiver ; réactivé, il réapparaît avec les données.";
+"widget.toggle.notificationCenter.sub" = "« SalaryTracker · Avance » dans le panneau de l'horloge. Un clic ouvre la même vue que la barre supérieure. S'actualise chaque seconde.";
+"widget.toggle.notificationCenter" = "Centre de notifications";
+"widget.toggle.menuBar.sub" = "Puce dans la barre des menus : un clic ouvre la vue du salaire. Affiche ou masque aussi le widget « SalaryTracker » de cette même barre.";
+"widget.toggle.menuBar" = "Barre supérieure";

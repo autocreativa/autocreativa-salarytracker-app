@@ -2,11 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>com.apple.security.app-sandbox</key>
+	<!--
+		La extensión del widget NO está sandboxeada (coherentemente con la
+		app principal, que tampoco lo está). Por eso puede leer/escribir
+		directamente `~/Library/Application Support/SalaryTracker/` — donde
+		comparte `config.json`, `widget-state.json` y
+		`widget-open-request.json` con la app — sin necesidad de ninguna
+		excepción de sandbox.
+
+		Historial: antes la extensión sí estaba sandboxeada con la excepción
+		`temporary-exception.files.home-relative-path.read-write`. Su valor
+		estaba escrito como path absoluto del sistema
+		(`/Library/Application Support/SalaryTracker/`) en vez de
+		home-relative (`Library/...`), así que la excepción cubría el
+		directorio equivocado y la escritura de `widget-open-request.json`
+		(fallos de pulsación del widget del centro de notificaciones) se
+		perdía en silencio (el intent usaba `try?`). Al quitar el sandbox,
+		la extensión tiene el mismo acceso de la app y el canal directo
+		funciona siempre.
+	-->
+	<key>com.apple.security.get-task-allow</key>
 	<true/>
-	<key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
-	<array>
-		<string>/Library/Application Support/SalaryTracker/</string>
-	</array>
 </dict>
 </plist>

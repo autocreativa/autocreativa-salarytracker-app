@@ -113,18 +113,24 @@ struct WidgetMessageView: View {
 /// Vista única de ambos widgets (small + medium): dinero ganado (LCD),
 /// progreso y próximo pago. Los dos kinds («SalaryTracker» y «SalaryTracker
 /// · Avance») la comparten: son visualmente idénticos pero widgets
-/// separados, cada uno en su superficie (barra superior / centro de
-/// notificaciones) y con su propio toggle de activación.
+/// separados, cada uno con su identidad de colocación.
+///
+/// Comportamiento al estar los widgets OFF (switch «Centro de
+/// notificaciones» desactivado): la tile muestra un **mensaje** con las
+/// instrucciones para reactivarlo (nunca queda en blanco ni desaparece: el
+/// usuario siempre sabe qué widget es y cómo encenderlo).
+///
+/// El switch «Barra superior» NO afecta a la tile: controla únicamente el
+/// chip de la app en la barra de menús (`AppModel.showMenuBarChip`).
 struct SalaryWidgetView: View {
 
     @Environment(\.widgetFamily) private var family
 
     let entry: SalaryEntry
-
-    /// Superficie desactivada desde Configuración (toggle OFF de este kind).
-    private var isHiddenSurface: Bool {
-        entry.data.status == .message(.disabled)
-    }
+    /// Superficie declarada del kind. Se conserva para la identidad/estilos
+    /// por kind; la activación la decide el switch de widgets (ver
+    /// `SalaryTimelineProvider.makeData`).
+    let style: WidgetStyle
 
     var body: some View {
         Group {
@@ -138,19 +144,37 @@ struct SalaryWidgetView: View {
                                 progressValue: progressValue, nextPayment: nextPayment)
                 }
             case .message(.disabled):
-                // Superficie OFF: el widget se OCULTA de su lugar. macOS no
-                // expone API para des-colocar un widget ya agregado, así que
-                // la tile se pinta completamente transparente (fondo y
-                // contenido): desaparece visualmente de la barra de menús /
-                // centro de notificaciones y conserva el hueco; al volver a
-                // activar el switch recupera los datos sin moverlo.
-                Color.clear
+                // Widgets desactivados: mensaje con instrucciones para
+                // reactivarlos (visible en cualquier superficie).
+                disabledHintView
             case .message(let msg):
                 WidgetMessageView(message: msg)
             }
         }
-        .widgetBackground(isHiddenSurface ? Color.clear : WidgetTheme.base)
-        .accessibilityHidden(isHiddenSurface)
+        .widgetBackground(WidgetTheme.base)
+    }
+
+    /// Tile de superficie desactivada en el centro de notificaciones:
+    /// icono + título + instrucciones para reactivar el widget.
+    private var disabledHintView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Spacer(minLength: 0)
+            Image(systemName: "pause.circle.fill")
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundStyle(WidgetTheme.disabledGray)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(L10nWidget.str("widget.disabled"))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(WidgetTheme.ink)
+                    .lineLimit(2)
+                Text(L10nWidget.str("widget.disabled.enableHint"))
+                    .font(.system(size: 11))
+                    .foregroundStyle(WidgetTheme.inkSoft)
+                    .lineLimit(3)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Estados

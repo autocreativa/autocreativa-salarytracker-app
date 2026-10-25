@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import AppKit
+import Combine
 import SalaryTrackerCore
 
 /// Reapertura de la app ya en ejecución (la emite `AppDelegate` al detectar
@@ -8,6 +9,15 @@ import SalaryTrackerCore
 extension Notification.Name {
     static let salaryTrackerAppReopen =
         Notification.Name("com.triton.salarytracker.appReopen")
+
+    /// Clic en el widget del centro de notificaciones: el intent
+    /// `OpenSalaryTrackerIntent` (interactividad de widgets, macOS 14+) se
+    /// ejecuta en el proceso de la app y escribe `widget-open-request.json`
+    /// en el estado compartido; el `AppDelegate` lo detecta (monitor de
+    /// directorio) y abre la misma vista que abre el clic en el chip de la
+    /// barra superior.
+    static let salaryTrackerWidgetOpen =
+        Notification.Name("com.triton.salarytracker.widgetOpen")
 }
 
 /// Estado observable de la aplicación (design.md D7).
@@ -40,14 +50,18 @@ final class AppModel: ObservableObject {
     @Published var widgetService: WidgetService
 
     /// Chip de sueldo en la barra de menús (el `NSStatusItem` de la propia
-    /// app; independiente de los widgets de WidgetKit).
+    /// app; comparte superficie con el widget «SalaryTracker»).
     ///
-    /// **No se persiste**: ocultar el chip es una acción de la sesión (p. ej.
-    /// para limpiar la barra al compartir pantalla). Al relanzar la app el
-    /// chip vuelve a aparecer. Persistirlo dejaría a la app sin ninguna UI
-    /// sin forma de reactivarse: las apps `LSUIElement` no reciben
-    /// `applicationShouldHandleReopen` al relanzarlas (verificado), así que
-    /// no habría punto de entrada para volver a mostrarlo.
+    /// **Derivado del switch maestro de widgets** (`WidgetState.menuBar`,
+    /// persistido en `widget-state.json`): el toggle único de la sección
+    /// «Widgets» muestra/oculta el chip y ambos widgets a la vez. Al
+    /// arrancar se lee del estado persistido (por defecto, visible).
+    ///
+    /// Siempre existe al menos un punto de reactivación con el chip oculto:
+    /// el widget del centro de notificaciones sigue activo y al presionarlo
+    /// se abre la vista del sueldo (con botón a Configuración; ver
+    /// `AppDelegate`), y la reapertura (Spotlight/`open`) abre la ventana
+    /// de configuración.
     @Published var showMenuBarChip: Bool = true
 
     private let store: ConfigStore
@@ -55,6 +69,9 @@ final class AppModel: ObservableObject {
     private let clock: Clock
     private var timer: Timer?
     private var observers: [NSObjectProtocol] = []
+    /// Suscripción al estado de widgets (switch maestro → visibilidad del
+    /// chip, en caliente).
+    private var widgetObservation: AnyCancellable?
 
     init(store: ConfigStore = ConfigStore(directory: SharedPaths.stateDirectory),
          engine: TrackerEngine = TrackerEngine(),
@@ -66,9 +83,9 @@ final class AppModel: ObservableObject {
         self.clock = clock
         self.language = language
         self.widgetService = widgetService
-        // Chip de la barra de menús: siempre visible al arrancar (el ocultar
-        // es temporal por sesión, ver `showMenuBarChip`).
-        self.showMenuBarChip = true
+        // Chip de la barra de menús: derivado del switch maestro de widgets
+        // persistido (`WidgetState.menuBar`); por defecto, visible.
+        self.showMenuBarChip = widgetService.state.menuBar
         // Carga inicial (specs/configuration "Reconstrucción del estado al
         // iniciar"): archivo → config persistida; sin archivo (primera
         // ejecución) → configuración por defecto en memoria (sueldo 553.553
@@ -93,6 +110,18 @@ final class AppModel: ObservableObject {
         widgetService.syncLanguage(language.selection)
         widgetService.reloadTimelines()
         widgetService.refreshDetection()
+        // Switch maestro → chip, en caliente: al cambiar el toggle desde la
+        // UI, `WidgetService.state` muta → `objectWillChange` → se re-fija
+        // `showMenuBarChip` (el chip lo aplica vía su propio observer).
+        widgetObservation = widgetService.objectWillChange.sink { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                let visible = self.widgetService.state.menuBar
+                if visible != self.showMenuBarChip {
+                    self.showMenuBarChip = visible
+                }
+            }
+        }
     }
 
     /// Arranca el ciclo de actualización (timer 1 s + observadores de contexto).
@@ -109,6 +138,8 @@ final class AppModel: ObservableObject {
         timer = nil
         for o in observers { NotificationCenter.default.removeObserver(o) }
         observers.removeAll()
+        widgetObservation?.cancel()
+        widgetObservation = nil
     }
 
     /// Re-deriva el estado desde el instante actual del reloj y publica.

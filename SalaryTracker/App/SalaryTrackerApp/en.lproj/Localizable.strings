@@ -104,12 +104,6 @@
 
 /* ── Widgets (menu bar / Notification Center) ────────────────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menuBar" = "“SalaryTracker” widget (the one you added: date & time panel and/or Control Center)";
-"widget.toggle.notificationCenter" = "“SalaryTracker · Progress” widget (only appears if you added it to the date & time panel)";
-"section.menuBar" = "Menu bar";
-"chip.toggle" = "Show the salary chip in the menu bar";
-"chip.subtitle" = "Hiding it is temporary: when the app is relaunched (Spotlight or auto-start) the chip comes back.";
-"widget.guide" = "To add them: open Control Center (the two-switches button in the menu bar), click the pencil to edit, find “SalaryTracker” and “SalaryTracker · Progress” in the gallery and add them. If you turn them off, they are hidden from their place; turning them back on restores them. (macOS cannot unplace a widget programmatically, so the slot stays, invisible.)";
 "widget.installed" = "Installed";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Money earned, progress and next payment (Control Center)";
@@ -126,3 +120,9 @@
 "widget.notConfigured.hint" = "Open SalaryTracker to set up your salary.";
 "widget.invalid" = "Invalid configuration";
 "widget.disabled" = "Widget disabled";
+"widget.disabled.enableHint" = "To re-enable: SalaryTracker → Settings → Widgets → “Show widgets” switch.";
+"widget.guide" = "To add it: open Control Center (the two-switch button in the menu bar), click the pencil to edit, find “SalaryTracker · Progress” in the gallery and add it. If you turn it off, it shows how to re-enable it; when re-enabled it comes back with data.";
+"widget.toggle.notificationCenter.sub" = "“SalaryTracker · Progress” in the clock panel. Clicking it opens the same view as the top bar. Updates every second.";
+"widget.toggle.notificationCenter" = "Notification Center";
+"widget.toggle.menuBar.sub" = "Chip in the menu bar: clicking it opens the salary view. Also shows or hides the “SalaryTracker” widget in that same bar.";
+"widget.toggle.menuBar" = "Top bar";

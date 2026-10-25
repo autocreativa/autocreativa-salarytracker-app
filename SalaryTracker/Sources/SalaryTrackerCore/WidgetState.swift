@@ -3,18 +3,17 @@ import Foundation
 /// Estado del widget (feature: widgets).
 ///
 /// Hay **dos kinds** con apariencia idéntica pero colocación independiente:
-/// «SalaryTracker» (`SalaryTrackerMenuBar`, superficie *barra superior* /
-/// Control Center) y «SalaryTracker · Avance»
-/// (`SalaryTrackerNotificationCenter`, superficie *centro de
-/// notificaciones*, el panel que se abre al presionar la fecha y hora).
-/// Cada superficie tiene su **propio toggle** (`menuBar` /
-/// `notificationCenter`), así el usuario activa o desactiva cada widget
-/// por separado. Si un widget está desactivado y ya fue colocado, se
-/// **oculta** (su tile se pinta completamente transparente): la colocación
-/// siempre es del usuario (galería de widgets de macOS) y no existe API
-/// para des-colocar un widget programáticamente, por lo que la tile
-/// conservada e invisible deja el hueco para volver a mostrarlo al
-/// re-activar el toggle.
+/// «SalaryTracker» (`SalaryTrackerMenuBar`) y «SalaryTracker · Avance»
+/// (`SalaryTrackerNotificationCenter`).
+///
+/// **Reparto de switches** (dos toggles independientes en Configuración):
+/// - `menuBar` → **solo el chip de la app** en la barra de menús
+///   (`AppModel.showMenuBarChip`). No afecta a las tiles de widget: macOS
+///   coloca los widgets en el panel del reloj o en el escritorio, así que
+///   apagar el chip no debe hacer desaparecer un widget ya colocado.
+/// - `notificationCenter` → **la tile del widget** (los dos kinds): ON pinta
+///   los datos; OFF pinta un mensaje con las instrucciones para reactivarla
+///   (la tile nunca queda en blanco ni desaparece).
 ///
 /// - Archivo JSON en `Application Support/SalaryTracker/widget-state.json`
 ///   (junto a `config.json`; directorio inyectable para tests).
@@ -26,7 +25,7 @@ import Foundation
 ///   valor de `enabled`; v1 (toggles por superficie) → mapeo directo.
 public struct WidgetState: Codable, Equatable, Sendable {
 
-    /// Widget activo en la barra superior (Control Center).
+    /// Chip activo en la barra superior (menú de la app).
     public var menuBar: Bool
 
     /// Widget activo en el centro de notificaciones (panel del reloj).

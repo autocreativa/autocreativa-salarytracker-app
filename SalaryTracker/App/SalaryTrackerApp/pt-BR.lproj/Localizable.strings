@@ -104,12 +104,6 @@
 
 /* ── Widgets (barra de menus / centro de notificacoes) ───────────────────── */
 "section.widgets" = "Widgets";
-"widget.toggle.menuBar" = "Widget “SalaryTracker” (o que você adicionou: painel de data e hora e/ou Central de Controle)";
-"widget.toggle.notificationCenter" = "Widget “SalaryTracker · Progresso” (só aparece se você adicionou no painel de data e hora)";
-"section.menuBar" = "Barra de menus";
-"chip.toggle" = "Mostrar o chip de salário na barra de menus";
-"chip.subtitle" = "Ocultar é temporário: ao reabrir o app (Spotlight ou início automático) o chip volta a aparecer.";
-"widget.guide" = "Para adiciona-los: abra a Central de Controle (o botao de dois interruptores na barra de menus), clique no lapis para editar, procure “SalaryTracker” e “SalaryTracker · Avanco” na galeria e adicione-os. Se os desativar, ficam ocultos no lugar; ao reativá-los, voltam a aparecer. (o macOS nao permite remover um widget programaticamente, entao o espaco fica invisivel.)";
 "widget.installed" = "Instalado";
 "widget.name.main" = "SalaryTracker";
 "widget.desc.main" = "Dinheiro ganho, progresso e próximo pagamento (Central de Controle).";
@@ -126,3 +120,9 @@
 "widget.notConfigured.hint" = "Abra o SalaryTracker para configurar seu salario.";
 "widget.invalid" = "Configuracao invalida";
 "widget.disabled" = "Widget desativado";
+"widget.disabled.enableHint" = "Para reativar: SalaryTracker → Configurações → Widgets → interruptor «Mostrar widgets».";
+"widget.guide" = "Para adicioná-lo: abra o Control Center (o botão de dois interruptores na barra de menus), clique no lápis para editar, encontre «SalaryTracker · Avance» na galeria e adicione-o. Se desativá-lo, mostra como reativá-lo; ao reativar, volta com os dados.";
+"widget.toggle.notificationCenter.sub" = "«SalaryTracker · Avance» no painel do relógio. Ao pressioná-lo abre a mesma vista da barra superior. Atualiza a cada segundo.";
+"widget.toggle.notificationCenter" = "Centro de notificações";
+"widget.toggle.menuBar.sub" = "Chip na barra de menus: ao pressioná-lo abre a vista do salário. Também mostra ou oculta o widget «SalaryTracker» dessa mesma barra.";
+"widget.toggle.menuBar" = "Barra superior";

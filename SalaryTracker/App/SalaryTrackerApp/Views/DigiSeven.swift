@@ -120,11 +120,20 @@ struct DigiSeven: View {
             .position(x: cx, y: cy)
     }
 
+    /// Punto decimal en una celda de la MISMA altura que un dígito.
+    ///
+    /// Antes usaba `.frame(maxHeight: .infinity, alignment: .bottom)`, lo que
+    /// hacía que la vista aceptara cualquier altura propuesta: al medir el
+    /// popover (`sizeThatFits`) toda la jerarquía devolvía la altura de la
+    /// propuesta (4096) en vez de la ideal, y el `NSPopover` quedaba más
+    /// grande que su contenido (marco visible arriba/derecha). Con la celda
+    /// fija (alineada abajo + el mismo hueco) el alto ideal es finito y el
+    /// glifo se ve igual.
     private var decimalPoint: some View {
         Circle()
             .fill(color)
             .frame(width: thickness, height: thickness)
-            .frame(maxHeight: .infinity, alignment: .bottom)
             .padding(.bottom, gap)
+            .frame(width: thickness, height: digitHeight, alignment: .bottom)
     }
 }

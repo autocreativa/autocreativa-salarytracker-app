@@ -66,7 +66,6 @@ struct SettingsView: View {
                     paymentRuleSection
                     languageSection
                     widgetsSection
-                    menuBarSection
                     startupSection
                 }
                 .padding(16)
@@ -230,94 +229,54 @@ struct SettingsView: View {
     @ViewBuilder
     // MARK: - Widgets
 
-    /// Sección «Widgets»: dos toggles **idénticos y separados** (uno por
-    /// superficie: barra superior/Control Center y centro de
-    /// notificaciones), separados por un divisor. ON = ese widget muestra
-    /// datos; OFF = si está colocado, muestra «desactivado» (macOS no
-    /// permite quitarlo del lugar sin intervención del usuario, por lo que
-    /// el toggle actúa como interruptor de contenido por superficie).
+    /// Sección «Widgets» con **dos switches** independientes:
     ///
-    /// Si la detección de `WidgetService` ve el kind instalado, bajo el
-    /// título se muestra un check «instalado»; si no hay widgets colocados
-    /// se muestra el guion inline de colocación (galería de widgets).
+    /// 1. **Barra superior** (`menuBarBinding`): solo el chip de la app en
+    ///    la barra de menús (lo que abre la vista de sueldo al presionarlo).
+    ///    Su visibilidad es derivada y persistente
+    ///    (`AppModel.showMenuBarChip` ← `WidgetState.menuBar`).
+    /// 2. **Centro de notificaciones** (`notificationCenterBinding`):
+    ///    activa/desactiva la tile del widget (los dos kinds; macOS coloca
+    ///    los widgets en el panel del reloj o en el escritorio). Al
+    ///    presionarla se abre la misma vista que el chip; se actualiza cada
+    ///    segundo; desactivada muestra cómo reactivarla.
+    ///
+    /// Solo títulos. Cada fila ocupa **todo el ancho de la tarjeta**: el
+    /// nombre a la izquierda y el switch pegado al borde derecho, alineados
+    /// entre sí (sin esto, los `Toggle` toman su ancho ideal y la columna de
+    /// switches queda descuadrada respecto a la tarjeta).
     private var widgetsSection: some View {
         SectionCard(title: L10n.str("section.widgets"), systemImage: "square.grid.2x2") {
             VStack(spacing: 10) {
-                widgetToggleRow(labelKey: "widget.toggle.menuBar",
-                                isOn: model.widgetService.menuBarBinding,
-                                nameKey: "widget.name.main",
-                                kind: WidgetService.mainKind)
-                Rectangle().fill(Theme.borderSoft).frame(height: 1)
-                widgetToggleRow(labelKey: "widget.toggle.notificationCenter",
-                                isOn: model.widgetService.notificationCenterBinding,
-                                nameKey: "widget.name.progress",
-                                kind: WidgetService.progressKind)
-                if model.widgetService.installedKinds.isEmpty {
-                    Text(L10n.str("widget.guide"))
-                        .font(Theme.body(11))
-                        .foregroundStyle(Theme.inkFaint)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                widgetToggle(
+                    titleKey: "widget.toggle.menuBar",
+                    isOn: model.widgetService.menuBarBinding
+                )
+                widgetToggle(
+                    titleKey: "widget.toggle.notificationCenter",
+                    isOn: model.widgetService.notificationCenterBinding
+                )
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
-    /// Fila de toggle idéntica para cada superficie: título, estado de
-    /// colocación y switch.
-    @ViewBuilder
-    private func widgetToggleRow(labelKey: String, isOn: Binding<Bool>,
-                                 nameKey: String, kind: String) -> some View {
+    /// Fila estándar de la tarjeta Widgets: título a la izquierda, switch a
+    /// la derecha (ancho completo, ambas filas alineadas).
+    private func widgetToggle(titleKey: String, isOn: Binding<Bool>) -> some View {
         Toggle(isOn: isOn) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(L10n.str(labelKey))
-                    .font(Theme.body(13, .semibold))
-                    .foregroundStyle(Theme.ink)
-                installedLine(nameKey: nameKey, kind: kind)
-            }
+            Text(L10n.str(titleKey))
+                .font(Theme.body(13, .semibold))
+                .foregroundStyle(Theme.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .toggleStyle(.switch)
         .tint(Theme.forest)
-    }
-
-    /// Línea de estado de un widget: «{nombre} — instalado» (check verde)
-    /// si `WidgetService` detecta el kind colocado; `nil` en caso contrario.
-    @ViewBuilder
-    private func installedLine(nameKey: String, kind: String) -> some View {
-        if model.widgetService.isInstalled(kind) {
-            HStack(spacing: 4) {
-                Text(L10n.str(nameKey))
-                    .font(Theme.body(11, .medium))
-                    .foregroundStyle(Theme.inkSoft)
-                Label(L10n.str("widget.installed"), systemImage: "checkmark.circle.fill")
-                    .font(Theme.body(11))
-                    .foregroundStyle(Theme.forest)
-            }
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
     // MARK: - Inicio automático
-
-    /// Opción "Abrir al iniciar sesión" (login item). El estado vive en
-    /// `LoginItemService`; el toggle aplica el cambio de inmediato y muestra
-    /// el error si macOS lo rechaza (p. ej. la app no está en /Applications).
-    private var menuBarSection: some View {
-        SectionCard(title: L10n.str("section.menuBar"), systemImage: "menubar.rectangle") {
-            Toggle(isOn: $model.showMenuBarChip) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(L10n.str("chip.toggle"))
-                        .font(Theme.body(13, .semibold))
-                        .foregroundStyle(Theme.ink)
-                    Text(L10n.str("chip.subtitle"))
-                        .font(Theme.body(11))
-                        .foregroundStyle(Theme.inkFaint)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .toggleStyle(.switch)
-            .tint(Theme.forest)
-        }
-    }
 
     private var startupSection: some View {
         SectionCard(title: L10n.str("section.autostart"), systemImage: "power") {

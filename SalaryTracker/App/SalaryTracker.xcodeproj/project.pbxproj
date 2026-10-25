@@ -38,6 +38,7 @@
 		A10000000000000000000220 /* SalaryTrackerWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000210 /* SalaryTrackerWidgetBundle.swift */; };
 		A10000000000000000000221 /* SalaryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000211 /* SalaryProvider.swift */; };
 		A10000000000000000000222 /* SalaryWidgetViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000212 /* SalaryWidgetViews.swift */; };
+		A10000000000000000000231 /* OpenSalaryTrackerIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000235 /* OpenSalaryTrackerIntent.swift */; };
 		A10000000000000000000223 /* SalaryTrackerCore in Frameworks */ = {isa = PBXBuildFile; productRef = A10000000000000000000041 /* SalaryTrackerCore */; };
 		A10000000000000000000225 /* es in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000215 /* es */; };
 		A10000000000000000000226 /* en in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000216 /* en */; };
@@ -78,6 +79,7 @@
 		A10000000000000000000210 /* SalaryTrackerWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalaryTrackerWidgetBundle.swift; sourceTree = "<group>"; };
 		A10000000000000000000211 /* SalaryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalaryProvider.swift; sourceTree = "<group>"; };
 		A10000000000000000000212 /* SalaryWidgetViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalaryWidgetViews.swift; sourceTree = "<group>"; };
+		A10000000000000000000235 /* OpenSalaryTrackerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenSalaryTrackerIntent.swift; sourceTree = "<group>"; };
 		A10000000000000000000213 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000000000000000000215 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = ../SalaryTrackerApp/Localizable.strings; sourceTree = "<group>"; };
 		A10000000000000000000216 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = ../SalaryTrackerApp/en.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -115,6 +117,7 @@
 				A10000000000000000000210 /* SalaryTrackerWidgetBundle.swift */,
 				A10000000000000000000211 /* SalaryProvider.swift */,
 				A10000000000000000000212 /* SalaryWidgetViews.swift */,
+				A10000000000000000000235 /* OpenSalaryTrackerIntent.swift */,
 				A10000000000000000000214 /* Localizable.strings */,
 				A10000000000000000000213 /* Info.plist */,
 			);
@@ -332,7 +335,7 @@
 				isa = PBXResourcesBuildPhase;
 				buildActionMask = 2147483647;
 				files = (
-					A10000000000000000000019 /* AppIcon.icns in Resources */,
+					A10000000000000000000025 /* AppIcon.icns in Resources */,
 					A10000000000000000000105 /* es in Resources */,
 					A10000000000000000000106 /* en in Resources */,
 					A10000000000000000000107 /* pt-BR in Resources */,
@@ -424,6 +427,7 @@
 				A10000000000000000000220 /* SalaryTrackerWidgetBundle.swift in Sources */,
 				A10000000000000000000221 /* SalaryProvider.swift in Sources */,
 				A10000000000000000000222 /* SalaryWidgetViews.swift in Sources */,
+				A10000000000000000000231 /* OpenSalaryTrackerIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -510,7 +514,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -532,7 +536,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -584,7 +588,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -609,7 +613,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.triton.salarytracker.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

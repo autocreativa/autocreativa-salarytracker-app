@@ -11,11 +11,16 @@ import SalaryTrackerCore
 /// - **Recarga**: `reloadTimelines(ofKind:)` ante cambios de configuración o
 ///   de idioma, y al arrancar la app.
 ///
-/// El estado (un toggle **por superficie**: barra superior / centro de
-/// notificaciones, + idioma) vive en `WidgetStateStore`
+/// El estado (switches + idioma) vive en `WidgetStateStore`
 /// (archivo `widget-state.json` junto a `config.json`) en el directorio
 /// compartido `~/Library/Application Support/SalaryTracker/` (`SharedPaths`):
 /// la extensión sandboxeada lo lee gracias a su excepción de sandbox.
+///
+/// **Dos switches, uno por superficie**: la UI expone dos toggles
+/// (`menuBarBinding` y `notificationCenterBinding`), cada uno sobre su campo
+/// del schema v3 (`menuBar` / `notificationCenter`), que la extensión lee
+/// por superficie. El chip de la barra de menús sigue `menuBar`
+/// (persistente; `AppModel.showMenuBarChip` lo deriva en caliente).
 @MainActor
 final class WidgetService: ObservableObject {
 
@@ -27,7 +32,7 @@ final class WidgetService: ObservableObject {
     /// Kinds de widgets colocados por el usuario (vacío = ninguno).
     @Published private(set) var installedKinds: Set<String> = []
 
-    /// Estado vigente de widgets (toggles por superficie + idioma).
+    /// Estado vigente de widgets (schema v3: campos por superficie + idioma).
     @Published private(set) var state: WidgetState = .default
 
     /// Store sobre el directorio compartido con la extensión (ver
@@ -39,22 +44,29 @@ final class WidgetService: ObservableObject {
         state = stateStore.load()
     }
 
-    /// Binding del toggle de la barra superior (Control Center). Al
-    /// escribir, persiste a disco y recarga los timelines.
+    /// Binding del switch de la **barra superior** (sección «Widgets»):
+    /// activa/desactiva el chip de la barra de menús (persistente) y el
+    /// widget «SalaryTracker» de esa misma barra. Al escribir, persiste a
+    /// disco y recarga los timelines.
     /// `@MainActor`: los closures se ejecutan en el thread principal (SwiftUI).
     @MainActor var menuBarBinding: Binding<Bool> {
         Binding(
             get: { self.state.menuBar },
-            set: { newValue in self.updateState { $0.menuBar = newValue } }
+            set: { newValue in
+                self.updateState { $0.menuBar = newValue }
+            }
         )
     }
 
-    /// Binding del toggle del centro de notificaciones (panel del reloj).
+    /// Binding del switch del **centro de notificaciones** (sección
+    /// «Widgets»): activa/desactiva el widget «SalaryTracker · Avance».
     /// Al escribir, persiste a disco y recarga los timelines.
     @MainActor var notificationCenterBinding: Binding<Bool> {
         Binding(
             get: { self.state.notificationCenter },
-            set: { newValue in self.updateState { $0.notificationCenter = newValue } }
+            set: { newValue in
+                self.updateState { $0.notificationCenter = newValue }
+            }
         )
     }
 
@@ -63,15 +75,6 @@ final class WidgetService: ObservableObject {
         WidgetCenter.shared.getCurrentConfigurations { [weak self] result in
             guard let self, case .success(let infos) = result else { return }
             let kinds = Set(infos.map(\.kind))
-            // TEMP-DEBUG (diagnóstico; se eliminará): traza los widgets
-            // colocados según el sistema.
-            if let d = try? JSONSerialization.data(withJSONObject: [
-                "at": ISO8601DateFormatter().string(from: Date()),
-                "placed": infos.map { "\($0.kind):\($0.family.rawValue)" }.sorted(),
-            ], options: [.prettyPrinted]) {
-                try? d.write(to: SharedPaths.stateDirectory
-                    .appendingPathComponent("widget-placed.json"))
-            }
             Task { @MainActor in
                 self.installedKinds = kinds
             }
