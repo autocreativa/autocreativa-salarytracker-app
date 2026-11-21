@@ -231,8 +231,23 @@ switch maestro de los widgets + idioma para la extensión.
   [GitHub Releases](https://github.com/autocreativa/autocreativa-salarytracker-app/releases)
   con `SalaryTracker-1.0.0-macos-universal.zip` (universal x86_64/arm64,
   macOS 13+), icono y `SHA256SUMS`.
+- **v1.5.1** (2026-11-21) — fix: el widget del Centro de Notificaciones no
+  aparecía en instalaciones limpias. `SalaryTracker-1.5.1.dmg`.
 
 ## Estado del proyecto
+
+### 2026-11-21 — Fix: widget ausente en instalación limpia · build 1.5.1
+
+- En v1.5.0 se quitó `com.apple.security.app-sandbox` de la extensión del
+  widget. macOS (PlugInKit) descarta en silencio las extensiones WidgetKit
+  sin sandbox, así que en una instalación desde cero el widget no aparecía
+  en la galería del Centro de Notificaciones (solo seguía visible donde había
+  un registro cacheado de builds anteriores).
+- Se restaura el sandbox con la excepción home-relative de lectura/escritura
+  sobre `~/Library/Application Support/SalaryTracker/` (los paths se
+  resuelven con el home real vía `getpwuid`, ver `SharedPaths`).
+- Probado desde cero (sin rastros previos de la app): el widget se registra,
+  aparece en la galería y responde al pulsarlo.
 
 ### 2026-10-18 — Revisión de widgets: switch maestro + contenido diferenciado
 
